@@ -1,0 +1,459 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý phòng | DNK Hotel</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/admin-rooms.css">
+    <script src="/js/admin-rooms.js" defer></script>
+    <script src="/js/admin-room-photos.js" defer></script>
+    <script src="/js/admin-room-extras.js" defer></script>
+</head>
+<body data-page="rooms">
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-brand">DNK HOTEL</div>
+        <nav>
+            <a href="/admin/dashboard.html">Tổng quan</a>
+            <a href="/admin/rooms.html" class="active">Quản lý phòng</a>
+            <a href="/admin/bookings.html">Quản lý đặt phòng</a>
+            <a href="/admin/customers.html">Khách hàng</a>
+            <a href="/admin/employees.html">Nhân viên</a>
+            <a href="/admin/services.html">Dịch vụ</a>
+            <a href="/admin/invoices.html">Hóa đơn</a>
+            <a href="/admin/reports.html">Báo cáo</a>
+        </nav>
+        <button id="logoutButton" type="button"
+                class="admin-button secondary">
+            Đăng xuất
+        </button>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <div>
+                <span class="admin-label">DNK HOTEL · QUẢN TRỊ</span>
+                <h1>Quản lý phòng</h1>
+            </div>
+            <div id="adminUsername" class="admin-user">
+                Quản trị viên
+            </div>
+        </header>
+
+        <p id="roomMessage"
+           class="room-management-message"
+           role="status"></p>
+
+        <section class="room-overview">
+            <div class="room-overview-card">
+                <span>Tổng số phòng</span>
+                <strong id="totalRooms">0</strong>
+            </div>
+            <div class="room-overview-card">
+                <span>Phòng trống</span>
+                <strong id="availableRooms">0</strong>
+            </div>
+            <div class="room-overview-card">
+                <span>Đang sử dụng</span>
+                <strong id="occupiedRooms">0</strong>
+            </div>
+            <div class="room-overview-card">
+                <span>Bảo trì</span>
+                <strong id="maintenanceRooms">0</strong>
+            </div>
+        </section>
+
+        <div class="room-management-tabs">
+            <button class="room-tab active" type="button"
+                    data-tab="rooms">Danh sách phòng</button>
+            <button class="room-tab" type="button"
+                    data-tab="types">Loại phòng</button>
+            <button class="room-tab" type="button"
+                    data-tab="amenities">Tiện nghi</button>
+            <button class="room-tab" type="button"
+                    data-tab="images">Hình ảnh phòng</button>
+        </div>
+
+        <section id="roomsSection" class="room-section">
+            <div class="room-section-top">
+                <div>
+                    <h2>Danh sách phòng</h2>
+                    <p>Quản lý tình trạng hoạt động của các phòng tại DNK Hotel.</p>
+                </div>
+            </div>
+
+            <div class="room-toolbar">
+                <input id="roomSearch" type="search"
+                       placeholder="Tìm số phòng, loại phòng...">
+
+                <select id="roomFloorFilter">
+                    <option value="">Tất cả tầng</option>
+                    <option value="1">Tầng 1</option>
+                    <option value="2">Tầng 2</option>
+                    <option value="3">Tầng 3</option>
+                    <option value="4">Tầng 4</option>
+                    <option value="5">Tầng 5</option>
+                </select>
+
+                <select id="roomStatusFilter">
+                    <option value="">Tất cả trạng thái</option>
+                    <option>Trống</option>
+                    <option>Đang sử dụng</option>
+                    <option>Đang dọn</option>
+                    <option>Bảo trì</option>
+                    <option>Ngừng hoạt động</option>
+                </select>
+            </div>
+
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Số phòng</th>
+                            <th>Loại phòng</th>
+                            <th>Tầng</th>
+                            <th>Giá cơ bản</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roomsTableBody"></tbody>
+                </table>
+            </div>
+
+            <p id="roomRecordCount" class="room-record-count"></p>
+        </section>
+
+        <section id="typesSection" class="room-section" hidden>
+            <div class="room-section-top">
+                <div>
+                    <h2>Quản lý loại phòng</h2>
+                    <p>Chỉnh sửa giá, diện tích, sức chứa và mô tả loại phòng.</p>
+                </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Loại phòng</th>
+                            <th>Người lớn</th>
+                            <th>Trẻ em</th>
+                            <th>Diện tích</th>
+                            <th>Giá cơ bản</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="typesTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="amenitiesSection" class="room-section" hidden>
+            <div class="room-section-top">
+                <div>
+                    <h2>Quản lý tiện nghi</h2>
+                    <p>Thêm, sửa, tạm ngừng và gán tiện nghi cho từng loại phòng.</p>
+                </div>
+            </div>
+
+            <div class="room-extra-panel">
+                <h3>Danh mục tiện nghi</h3>
+
+                <form id="amenityCatalogForm" class="room-extra-form">
+                    <input id="amenityCatalogId" type="hidden">
+
+                    <div class="room-field">
+                        <label for="amenityCatalogName">Tên tiện nghi</label>
+                        <input id="amenityCatalogName"
+                               maxlength="100"
+                               placeholder="Ví dụ: Máy pha cà phê"
+                               required>
+                    </div>
+
+                    <label class="room-checkbox-line">
+                        <input id="amenityCatalogActive"
+                               type="checkbox"
+                               checked>
+                        Đang hoạt động
+                    </label>
+
+                    <div class="room-extra-actions">
+                        <button id="amenityCatalogSubmit"
+                                class="admin-button"
+                                type="submit">
+                            Thêm tiện nghi
+                        </button>
+
+                        <button id="amenityCatalogReset"
+                                class="room-cancel-button"
+                                type="button">
+                            Làm mới
+                        </button>
+                    </div>
+                </form>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Tên tiện nghi</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="amenityCatalogBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="room-extra-panel">
+                <h3>Gán tiện nghi cho loại phòng</h3>
+
+                <div class="room-field">
+                    <label for="amenityTypeSelect">Chọn loại phòng</label>
+                    <select id="amenityTypeSelect"></select>
+                </div>
+
+                <div id="amenityCheckboxes"
+                     class="room-checkbox-grid"></div>
+
+                <button id="saveAmenitiesButton"
+                        type="button"
+                        class="admin-button">
+                    Lưu tiện nghi theo loại phòng
+                </button>
+            </div>
+        </section>
+
+        <section id="imagesSection" class="room-section" hidden>
+            <div class="room-section-top">
+                <div>
+                    <h2>Hình ảnh phòng</h2>
+                    <p>Tải ảnh từ máy tính, chọn ảnh đại diện hoặc xóa ảnh.</p>
+                </div>
+            </div>
+
+            <div class="room-image-tabs">
+                <button id="showTypeImages"
+                        type="button"
+                        class="room-image-tab active">
+                    Ảnh loại phòng
+                </button>
+                <button id="showIndividualImages"
+                        type="button"
+                        class="room-image-tab">
+                    Ảnh từng phòng
+                </button>
+            </div>
+
+            <div id="typeImagesPanel">
+                <div class="room-field">
+                    <label for="imageTypeSelect">Chọn loại phòng</label>
+                    <select id="imageTypeSelect"></select>
+                </div>
+
+                <div id="roomImageGrid"
+                     class="room-image-grid"></div>
+
+                <form id="typeUploadForm" class="room-extra-panel">
+                    <h3>Tải ảnh loại phòng từ máy tính</h3>
+
+                    <div class="room-field">
+                        <label for="typeImageFiles">Chọn hình ảnh</label>
+                        <input id="typeImageFiles"
+                               type="file"
+                               accept=".jpg,.jpeg,.png,.webp"
+                               multiple
+                               required>
+                    </div>
+
+                    <p>Tối đa 10 ảnh mỗi lần, mỗi ảnh không quá 5 MB.</p>
+
+                    <button id="typeUploadSubmit"
+                            type="submit"
+                            class="admin-button">
+                        Tải ảnh lên
+                    </button>
+                </form>
+
+                <form id="imageForm" class="room-image-form">
+                    <div class="room-field">
+                        <label for="imagePath">
+                            Hoặc nhập đường dẫn ảnh có sẵn
+                        </label>
+                        <input id="imagePath"
+                               placeholder="/images/phong.jpg"
+                               required>
+                    </div>
+
+                    <div class="room-field">
+                        <label for="imageDescription">Mô tả</label>
+                        <input id="imageDescription" maxlength="255">
+                    </div>
+
+                    <label class="room-checkbox-line">
+                        <input id="imageCover" type="checkbox">
+                        Đặt làm ảnh đại diện
+                    </label>
+
+                    <button type="submit" class="admin-button">
+                        Thêm ảnh bằng đường dẫn
+                    </button>
+                </form>
+            </div>
+
+            <div id="individualImagesPanel" hidden>
+                <div class="room-field">
+                    <label for="photoRoomSelect">Chọn phòng cụ thể</label>
+                    <select id="photoRoomSelect"></select>
+                </div>
+
+                <h3 id="selectedRoomTitle">Hình ảnh từng phòng</h3>
+
+                <div id="individualPhotoGrid"
+                     class="room-image-grid"></div>
+
+                <form id="individualPhotoForm" class="room-extra-panel">
+                    <h3>Tải ảnh riêng của phòng</h3>
+
+                    <div class="room-field">
+                        <label for="individualPhotoFiles">
+                            Chọn ảnh từ máy tính
+                        </label>
+                        <input id="individualPhotoFiles"
+                               type="file"
+                               accept=".jpg,.jpeg,.png,.webp"
+                               multiple
+                               required>
+                    </div>
+
+                    <p>Tối đa 10 ảnh mỗi lần, mỗi ảnh không quá 5 MB.</p>
+
+                    <button id="uploadIndividualPhotos"
+                            type="submit"
+                            class="admin-button">
+                        Tải ảnh lên
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <dialog id="roomDialog" class="room-dialog">
+            <form id="roomForm">
+                <h2 id="roomDialogTitle">Trạng thái phòng</h2>
+                <input id="roomId" type="hidden">
+
+                <div class="room-form-grid">
+                    <div class="room-field">
+                        <label for="roomNumber">Số phòng</label>
+                        <input id="roomNumber" readonly>
+                    </div>
+
+                    <div class="room-field">
+                        <label for="roomType">Loại phòng</label>
+                        <select id="roomType" disabled></select>
+                    </div>
+
+                    <div class="room-field">
+                        <label for="roomFloor">Tầng</label>
+                        <input id="roomFloor" readonly>
+                    </div>
+
+                    <div class="room-field">
+                        <label for="roomStatus">Trạng thái</label>
+                        <select id="roomStatus">
+                            <option>Trống</option>
+                            <option>Đang sử dụng</option>
+                            <option>Đang dọn</option>
+                            <option>Bảo trì</option>
+                            <option>Ngừng hoạt động</option>
+                        </select>
+                    </div>
+
+                    <div class="room-field room-full-width">
+                        <label for="roomDescription">Ghi chú</label>
+                        <textarea id="roomDescription" readonly></textarea>
+                    </div>
+                </div>
+
+                <div class="room-dialog-actions">
+                    <button id="closeRoomDialog"
+                            type="button"
+                            class="room-cancel-button">Hủy</button>
+                    <button type="submit"
+                            class="admin-button">Lưu trạng thái</button>
+                </div>
+            </form>
+        </dialog>
+
+        <dialog id="typeDialog" class="room-dialog">
+            <form id="typeForm">
+                <h2 id="typeDialogTitle">Chỉnh sửa loại phòng</h2>
+                <input id="typeId" type="hidden">
+
+                <div class="room-form-grid">
+                    <div class="room-field room-full-width">
+                        <label for="typeName">Tên loại phòng</label>
+                        <input id="typeName" maxlength="100" required>
+                    </div>
+
+                    <div class="room-field">
+                        <label for="typePrice">Giá cơ bản (VNĐ)</label>
+                        <input id="typePrice" type="number" min="1" required>
+                    </div>
+
+                    <div class="room-field">
+                        <label for="typeArea">Diện tích (m²)</label>
+                        <input id="typeArea"
+                               type="number" min="0" step="0.01">
+                    </div>
+
+                    <div class="room-field">
+                        <label for="typeAdults">Người lớn</label>
+                        <input id="typeAdults" type="number" min="1" required>
+                    </div>
+
+                    <div class="room-field">
+                        <label for="typeChildren">Trẻ em</label>
+                        <input id="typeChildren" type="number" min="0" required>
+                    </div>
+
+                    <div class="room-field">
+                        <label for="typeBeds">Số giường</label>
+                        <input id="typeBeds" type="number" min="0">
+                    </div>
+
+                    <div class="room-field">
+                        <label for="typeBedName">Loại giường</label>
+                        <input id="typeBedName" maxlength="100">
+                    </div>
+
+                    <div class="room-field room-full-width">
+                        <label for="typeDescription">Mô tả</label>
+                        <textarea id="typeDescription"
+                                  maxlength="1000"></textarea>
+                    </div>
+
+                    <label class="room-checkbox-line room-full-width">
+                        <input id="typeActive" type="checkbox">
+                        Đang hoạt động
+                    </label>
+                </div>
+
+                <div class="room-dialog-actions">
+                    <button id="closeTypeDialog"
+                            type="button"
+                            class="room-cancel-button">Hủy</button>
+                    <button type="submit"
+                            class="admin-button">Lưu thay đổi</button>
+                </div>
+            </form>
+        </dialog>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiểm tra phòng trống | DNK Hotel</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/availability.css">
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main class="availability-page">
+        <div class="availability-container">
+            <div class="availability-heading">
+                <span>DNK HOTEL</span>
+                <h1>Tìm phòng còn trống</h1>
+                <p>
+                    Chọn ngày nhận và ngày trả phòng để xem
+                    những phòng có thể đặt trong khoảng thời gian đó.
+                </p>
+            </div>
+
+            <form id="availabilityForm" class="availability-form">
+                <div class="availability-field">
+                    <label for="checkIn">Ngày nhận phòng</label>
+                    <input id="checkIn" type="date" required>
+                </div>
+
+                <div class="availability-field">
+                    <label for="checkOut">Ngày trả phòng</label>
+                    <input id="checkOut" type="date" required>
+                </div>
+
+                <button type="submit" id="searchAvailability">
+                    Tìm phòng trống
+                </button>
+            </form>
+
+            <p id="availabilityMessage" role="status"></p>
+
+            <div class="availability-results-heading">
+                <h2>Phòng phù hợp</h2>
+                <span id="availabilityCount"></span>
+            </div>
+
+            <div id="availabilityResults" class="availability-grid"></div>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+    <script src="/js/availability.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Trang chủ | DNK Hotel</title>
+
+    <meta
+        name="description"
+        content="DNK Hotel - Hệ thống đặt phòng và gợi ý phòng khách sạn thông minh."
+    >
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/home.css">
+
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/home.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+</head>
+
+<body>
+    <div id="site-header"></div>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <span class="home-eyebrow">
+                    DNK HOTEL · YOUR PERFECT STAY
+                </span>
+
+                <h1>
+                    Nơi mỗi kỳ nghỉ<br>
+                    trở thành một <em>kỷ niệm.</em>
+                </h1>
+
+                <p>
+                    Tận hưởng không gian nghỉ dưỡng tinh tế,
+                    dịch vụ chu đáo và lựa chọn phòng phù hợp
+                    với nhu cầu của riêng bạn.
+                </p>
+
+                <div class="hero-actions">
+                    <a
+                        href="/rooms.html"
+                        class="home-btn home-btn-primary"
+                    >
+                        Khám phá phòng nghỉ →
+                    </a>
+
+                    <a
+                        href="/rooms.html#roomsSearchForm"
+                        class="home-btn home-btn-outline"
+                    >
+                        Tìm phòng trống
+                    </a>
+
+                    <a
+                        href="#recommend"
+                        class="home-btn home-btn-outline"
+                    >
+                        Gợi ý phòng cho tôi
+                    </a>
+                </div>
+
+                <div class="hero-caption">
+                    <span class="caption-line"></span>
+                    KHÔNG GIAN TINH TẾ · TRẢI NGHIỆM CÁ NHÂN
+                </div>
+            </div>
+
+            <div class="hero-art" aria-hidden="true">
+                <div class="art-circle"></div>
+
+                <div class="art-frame">
+                    <span class="art-icon">✦</span>
+                    <span class="art-label">DNK</span>
+                    <span class="art-subtitle">HOTEL & RESORT</span>
+                </div>
+
+                <div class="art-decoration"></div>
+            </div>
+        </section>
+
+        <section
+            class="search-section"
+            aria-label="Tìm phòng"
+        >
+            <form class="search-bar" id="searchForm">
+                <div class="search-field">
+                    <label for="checkin">
+                        Ngày nhận phòng
+                    </label>
+
+                    <input
+                        type="date"
+                        id="checkin"
+                        required
+                    >
+                </div>
+
+                <div class="search-field">
+                    <label for="checkout">
+                        Ngày trả phòng
+                    </label>
+
+                    <input
+                        type="date"
+                        id="checkout"
+                        required
+                    >
+                </div>
+
+                <div class="search-field">
+                    <label for="guests">
+                        Số khách
+                    </label>
+
+                    <select id="guests">
+                        <option value="1">1 khách</option>
+                        <option value="2" selected>2 khách</option>
+                        <option value="3">3 khách</option>
+                        <option value="4">4 khách</option>
+                        <option value="5">5 khách</option>
+                        <option value="6">6 khách</option>
+                    </select>
+                </div>
+
+                <button
+                    type="submit"
+                    class="search-button"
+                >
+                    Tìm phòng →
+                </button>
+            </form>
+
+            <p
+                id="searchMessage"
+                class="search-message"
+                role="status"
+                aria-live="polite"
+            ></p>
+        </section>
+
+        <section class="intro-section">
+            <div class="intro-heading">
+                <span class="home-eyebrow">
+                    CHÀO MỪNG ĐẾN VỚI DNK HOTEL
+                </span>
+
+                <h2>
+                    Nghỉ dưỡng theo<br>
+                    <em>phong cách của bạn.</em>
+                </h2>
+            </div>
+
+            <div class="intro-description">
+                <p>
+                    DNK Hotel mang đến trải nghiệm lưu trú thoải mái,
+                    tiện nghi và được cá nhân hóa cho từng khách hàng.
+                </p>
+
+                <p>
+                    Hệ thống gợi ý phòng thông minh giúp bạn lựa chọn
+                    không gian phù hợp với ngân sách, số lượng người
+                    và sở thích cá nhân.
+                </p>
+            </div>
+        </section>
+
+        <section class="rooms-section" id="rooms">
+            <div class="section-heading">
+                <div>
+                    <span class="home-eyebrow">
+                        KHÔNG GIAN NGHỈ DƯỠNG
+                    </span>
+
+                    <h2>Khám phá phòng nghỉ</h2>
+                </div>
+
+                <a
+                    href="/rooms.html"
+                    class="text-link"
+                >
+                    Xem tất cả phòng →
+                </a>
+            </div>
+
+            <div class="room-grid">
+                <article class="room-card">
+                    <div class="room-image room-image-one">
+                        <span class="room-tag">
+                            PHÒNG TIÊU CHUẨN
+                        </span>
+
+                        <span class="room-symbol">✧</span>
+                    </div>
+
+                    <div class="room-info">
+                        <span class="room-category">
+                            SỰ THOẢI MÁI
+                        </span>
+
+                        <h3>Standard Room</h3>
+
+                        <p>
+                            Không gian ấm cúng với những tiện nghi
+                            thiết yếu cho kỳ nghỉ thoải mái.
+                        </p>
+
+                        <a
+                            href="/room-detail.html?id=1"
+                            class="room-link"
+                        >
+                            Khám phá phòng <span>↗</span>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="room-card">
+                    <div class="room-image room-image-two">
+                        <span class="room-tag">
+                            PHÒNG CAO CẤP
+                        </span>
+
+                        <span class="room-symbol">✦</span>
+                    </div>
+
+                    <div class="room-info">
+                        <span class="room-category">
+                            SỰ TINH TẾ
+                        </span>
+
+                        <h3>Deluxe Room</h3>
+
+                        <p>
+                            Thiết kế thanh lịch cùng không gian
+                            thư giãn rộng rãi, phù hợp cho kỳ nghỉ.
+                        </p>
+
+                        <a
+                            href="/room-detail.html?id=2"
+                            class="room-link"
+                        >
+                            Khám phá phòng <span>↗</span>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="room-card">
+                    <div class="room-image room-image-three">
+                        <span class="room-tag">
+                            PHÒNG SANG TRỌNG
+                        </span>
+
+                        <span class="room-symbol">✳</span>
+                    </div>
+
+                    <div class="room-info">
+                        <span class="room-category">
+                            SỰ ĐẲNG CẤP
+                        </span>
+
+                        <h3>Suite Room</h3>
+
+                        <p>
+                            Trải nghiệm lưu trú riêng tư
+                            với phong cách sang trọng và tiện nghi.
+                        </p>
+
+                        <a
+                            href="/room-detail.html?id=3"
+                            class="room-link"
+                        >
+                            Khám phá phòng <span>↗</span>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section
+            class="recommend-section"
+            id="recommend"
+        >
+            <div
+                class="recommend-decoration"
+                aria-hidden="true"
+            >
+                ✦
+            </div>
+
+            <div class="recommend-content">
+                <span class="home-eyebrow">
+                    PERSONALIZED ROOM RECOMMENDATION
+                </span>
+
+                <h2>
+                    Một căn phòng<br>
+                    <em>dành riêng cho bạn.</em>
+                </h2>
+
+                <p>
+                    Không cần mất nhiều thời gian lựa chọn.
+                    Hệ thống gợi ý phòng giúp tìm kiếm
+                    những phương án phù hợp với nhu cầu,
+                    ngân sách và sở thích cá nhân.
+                </p>
+
+                <a
+                    href="/recommendations.html"
+                    class="home-btn home-btn-primary"
+                >
+                    Khám phá gợi ý thông minh
+                    <span>→</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="account-section">
+            <span class="home-eyebrow">
+                DNK HOTEL MEMBERSHIP
+            </span>
+
+            <h2>
+                Hành trình của bạn bắt đầu tại đây.
+            </h2>
+
+            <p>
+                Đăng nhập để theo dõi đặt phòng và quản lý
+                trải nghiệm lưu trú của bạn.
+            </p>
+
+            <a
+                href="/login.html"
+                class="home-btn home-btn-primary"
+            >
+                Đăng nhập ngay →
+            </a>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+</body>
+</html>

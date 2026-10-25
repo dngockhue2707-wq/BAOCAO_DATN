@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Đăng ký tài khoản | DNK Hotel</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/register.css">
+
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/register.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+</head>
+
+<body>
+
+    <div id="site-header"></div>
+
+    <main class="register-page">
+
+        <section class="register-card">
+
+            <div class="register-heading">
+                <span>DNK HOTEL</span>
+
+                <h1>Tạo tài khoản</h1>
+
+                <p>
+                    Đăng ký tài khoản để đặt phòng
+                    và trải nghiệm dịch vụ tại DNK Hotel.
+                </p>
+            </div>
+
+            <form id="registerForm">
+
+                <!-- HỌ VÀ TÊN -->
+                <div class="register-field">
+                    <label for="hoTen">Họ và tên</label>
+
+                    <input
+                        type="text"
+                        id="hoTen"
+                        name="hoTen"
+                        placeholder="Nhập họ và tên"
+                        maxlength="100"
+                        autocomplete="name"
+                        required
+                    >
+                </div>
+
+                <!-- TÊN ĐĂNG NHẬP -->
+                <div class="register-field">
+                    <label for="tenDangNhap">
+                        Tên đăng nhập
+                    </label>
+
+                    <input
+                        type="text"
+                        id="tenDangNhap"
+                        name="tenDangNhap"
+                        placeholder="Nhập tên đăng nhập"
+                        minlength="4"
+                        maxlength="100"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <!-- EMAIL -->
+                <div class="register-field">
+                    <label for="email">Email</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Nhập địa chỉ email"
+                        maxlength="150"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <!-- SỐ ĐIỆN THOẠI -->
+                <div class="register-field">
+                    <label for="soDienThoai">
+                        Số điện thoại
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="soDienThoai"
+                        name="soDienThoai"
+                        placeholder="Nhập số điện thoại"
+                        maxlength="20"
+                        autocomplete="tel"
+                    >
+                </div>
+
+                <!-- MẬT KHẨU -->
+                <div class="register-field">
+                    <label for="matKhau">Mật khẩu</label>
+
+                    <input
+                        type="password"
+                        id="matKhau"
+                        name="matKhau"
+                        placeholder="Nhập mật khẩu (ít nhất 12 ký tự)"
+                        minlength="12"
+                        maxlength="128"
+                        autocomplete="new-password"
+                        required
+                    >
+                </div>
+
+                <!-- XÁC NHẬN MẬT KHẨU -->
+                <div class="register-field">
+                    <label for="xacNhanMatKhau">
+                        Xác nhận mật khẩu
+                    </label>
+
+                    <input
+                        type="password"
+                        id="xacNhanMatKhau"
+                        name="xacNhanMatKhau"
+                        placeholder="Nhập lại mật khẩu"
+                        minlength="12"
+                        maxlength="128"
+                        autocomplete="new-password"
+                        required
+                    >
+                </div>
+
+                <!-- THÔNG BÁO -->
+                <p
+                    id="registerMessage"
+                    class="register-message"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+
+                <!-- NÚT ĐĂNG KÝ -->
+                <button
+                    type="submit"
+                    id="registerButton"
+                >
+                    Đăng ký tài khoản →
+                </button>
+
+            </form>
+
+            <!-- CHUYỂN SANG ĐĂNG NHẬP -->
+            <p class="register-login">
+                Đã có tài khoản?
+                <a href="/login.html">
+                    Đăng nhập ngay
+                </a>
+            </p>
+
+        </section>
+
+    </main>
+
+    <div id="site-footer"></div>
+
+</body>
+</html>

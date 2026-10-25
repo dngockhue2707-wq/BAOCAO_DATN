@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phòng nghỉ | DNK Hotel</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/rooms.css">
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+    <script src="/js/rooms.js" defer></script>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main class="rooms-page">
+        <section class="rooms-banner">
+            <span class="rooms-eyebrow">DNK HOTEL</span>
+            <h1 id="pageTitle">Không gian nghỉ dưỡng</h1>
+            <p id="pageDescription">
+                Khám phá 5 hạng phòng thanh lịch tại DNK Hotel.
+                Lựa chọn loại phòng phù hợp và tận hưởng kỳ nghỉ
+                theo phong cách riêng của bạn.
+            </p>
+        </section>
+
+        <div class="rooms-container">
+            <section id="overviewPanel">
+                <div class="rooms-section-title">
+                    <span class="rooms-eyebrow">
+                        KHÁM PHÁ DNK HOTEL
+                    </span>
+                    <h2>Danh mục phòng nghỉ</h2>
+                    <p>
+                        Chọn một trong các hạng phòng bên dưới
+                        để xem danh sách phòng tương ứng.
+                    </p>
+                </div>
+
+                <div class="rooms-tabs" id="roomTypeTabs"></div>
+            </section>
+
+            <section id="typeNavigation" hidden>
+                <a href="/rooms.html" class="rooms-back">
+                    ← Quay lại tất cả loại phòng
+                </a>
+            </section>
+
+            <p id="roomsMessage"
+               class="rooms-notice"
+               role="status"></p>
+
+            <section id="typeSummary"
+                     class="rooms-type-summary"
+                     hidden>
+                <div class="rooms-summary-left">
+                    <span class="rooms-eyebrow">
+                        HẠNG PHÒNG DNK HOTEL
+                    </span>
+
+                    <h2 id="typeName"></h2>
+
+                    <p id="typeDescription"></p>
+                </div>
+
+                <div class="rooms-summary-right"
+                     id="typePriceBox">
+                    <span>Giá phòng từ</span>
+                    <strong id="typePrice"></strong>
+                    <small>VNĐ / đêm</small>
+                </div>
+            </section>
+
+            <section class="rooms-list-section">
+                <div class="rooms-list-heading">
+                    <div>
+                        <span class="rooms-eyebrow">
+                            DANH SÁCH PHÒNG
+                        </span>
+
+                        <h2 id="listTitle">
+                            Danh sách phòng nghỉ
+                        </h2>
+                    </div>
+
+                    <span class="rooms-count"
+                          id="roomCount"></span>
+                </div>
+
+                <div class="rooms-grid" id="roomsGrid"></div>
+            </section>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+</body>
+</html>

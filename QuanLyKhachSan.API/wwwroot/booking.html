@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt phòng | DNK Hotel</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/booking.css">
+
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/booking.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main class="booking-page">
+        <div class="booking-container">
+            <a href="/rooms.html">← Quay lại danh sách phòng</a>
+
+            <div class="booking-heading">
+                <span>DNK HOTEL</span>
+                <h1>Thông tin đặt phòng</h1>
+                <p>Hoàn tất thông tin để gửi yêu cầu đặt phòng.</p>
+            </div>
+
+            <div class="booking-layout">
+                <form id="bookingForm" class="booking-card">
+                    <h2>Chi tiết lưu trú</h2>
+
+                    <label for="checkIn">Ngày nhận phòng</label>
+                    <input type="date" id="checkIn" required>
+
+                    <label for="checkOut">Ngày trả phòng</label>
+                    <input type="date" id="checkOut" required>
+
+                    <div class="booking-two-columns">
+                        <div>
+                            <label for="adults">Người lớn</label>
+                            <select id="adults">
+                                <option value="1">1 người</option>
+                                <option value="2" selected>2 người</option>
+                                <option value="3">3 người</option>
+                                <option value="4">4 người</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="children">Trẻ em</label>
+                            <select id="children">
+                                <option value="0">Không có</option>
+                                <option value="1">1 trẻ</option>
+                                <option value="2">2 trẻ</option>
+                                <option value="3">3 trẻ</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label for="note">Ghi chú</label>
+                    <textarea
+                        id="note"
+                        maxlength="1000"
+                        rows="4"
+                        placeholder="Yêu cầu thêm (nếu có)"
+                    ></textarea>
+
+                    <p id="bookingMessage" role="status"></p>
+
+                    <button id="bookingButton" type="submit">
+                        Xác nhận đặt phòng →
+                    </button>
+                </form>
+
+                <aside class="booking-card booking-summary">
+                    <span>THÔNG TIN PHÒNG</span>
+                    <h2 id="selectedRoom">Đang tải phòng...</h2>
+
+                    <p>Giá cơ bản mỗi đêm</p>
+                    <strong id="nightlyPrice">—</strong>
+
+                    <hr>
+
+                    <p>Thời gian lưu trú</p>
+                    <strong id="numberOfNights">1 đêm</strong>
+
+                    <hr>
+
+                    <p>Tạm tính tiền phòng</p>
+                    <div id="bookingTotal">—</div>
+
+                    <small>
+                        Tổng tiền được máy chủ tính lại khi xác nhận.
+                        Chưa bao gồm các dịch vụ phát sinh.
+                    </small>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+</body>
+</html>

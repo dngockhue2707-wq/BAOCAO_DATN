@@ -1,0 +1,79 @@
+
+.profile-page {
+    min-height: 75vh;
+    padding: 65px 20px 100px;
+    background: #FAF8F5;
+}
+
+.profile-container {
+    max-width: 700px;
+    margin: auto;
+}
+
+.profile-container > span {
+    color: #926024;
+    letter-spacing: 2px;
+    font-size: 11px;
+}
+
+.profile-container h1 {
+    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+    font-size: 43px;
+    font-weight: 400;
+    color: #27272A;
+    margin: 16px 0;
+}
+
+.profile-container > p {
+    color: #817569;
+    font-size: 14px;
+}
+
+.profile-card {
+    margin-top: 35px;
+    padding: 38px;
+    border: 1px solid #E5DBCF;
+    background: white;
+}
+
+.profile-card label {
+    display: block;
+    margin: 20px 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.profile-card input,
+.profile-card textarea {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #E4DBCF;
+    border-radius: 3px;
+    font: inherit;
+}
+
+.profile-card input:read-only {
+    background: #F4F1ED;
+    color: #82786D;
+}
+
+#saveProfile {
+    margin-top: 20px;
+    padding: 14px 25px;
+    border: 0;
+    background: #926024;
+    color: white;
+    cursor: pointer;
+}
+
+#profileMessage {
+    font-size: 13px;
+    color: #926024;
+}
+
+@media (max-width: 550px) {
+    .profile-card {
+        padding: 23px;
+    }
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn đặt phòng của tôi | DNK Hotel</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/my-bookings.css">
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/my-bookings.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main class="my-bookings-page">
+        <div class="my-bookings-container">
+            <span class="section-label">DNK HOTEL</span>
+            <h1>Đơn đặt phòng của tôi</h1>
+            <p>Theo dõi lịch sử lưu trú và trạng thái đặt phòng.</p>
+
+            <div class="booking-filter">
+                <label for="statusFilter">Lọc trạng thái</label>
+                <select id="statusFilter">
+                    <option value="all">Tất cả</option>
+                    <option value="Chờ xác nhận">Chờ xác nhận</option>
+                    <option value="Đã xác nhận">Đã xác nhận</option>
+                    <option value="Đã đặt cọc">Đã đặt cọc</option>
+                    <option value="Đã nhận phòng">Đã nhận phòng</option>
+                    <option value="Đã trả phòng">Đã trả phòng</option>
+                    <option value="Đã hủy">Đã hủy</option>
+                </select>
+            </div>
+
+            <p id="bookingsMessage" role="status"></p>
+            <div id="myBookingsList"></div>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+</body>
+</html>

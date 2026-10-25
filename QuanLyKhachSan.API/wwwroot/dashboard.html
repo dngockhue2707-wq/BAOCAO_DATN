@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý khách sạn | DNK Hotel</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/dashboard.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main class="dashboard-page">
+        <div class="dashboard-container">
+            <div class="dashboard-heading">
+                <div>
+                    <span>DNK HOTEL · QUẢN LÝ</span>
+                    <h1>Tổng quan khách sạn</h1>
+                    <p>Theo dõi phòng nghỉ và yêu cầu đặt phòng.</p>
+                </div>
+                <button id="refreshDashboard" type="button">
+                    Làm mới dữ liệu
+                </button>
+            </div>
+
+            <p id="dashboardMessage" role="status"></p>
+
+            <section class="dashboard-stats">
+                <article>
+                    <span>Tổng số phòng</span>
+                    <strong id="totalRooms">—</strong>
+                </article>
+                <article>
+                    <span>Phòng trạng thái trống</span>
+                    <strong id="availableRooms">—</strong>
+                </article>
+                <article>
+                    <span>Đơn chờ xác nhận</span>
+                    <strong id="pendingBookings">—</strong>
+                </article>
+                <article>
+                    <span>Tổng khách hàng</span>
+                    <strong id="totalCustomers">—</strong>
+                </article>
+            </section>
+
+            <section class="dashboard-panel">
+                <div class="dashboard-panel-heading">
+                    <h2>Quản lý phòng</h2>
+                    <span>Danh sách phòng theo tầng</span>
+                </div>
+
+                <div class="dashboard-table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Số phòng</th>
+                                <th>Tầng</th>
+                                <th>Loại phòng</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardRooms"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="dashboard-panel">
+                <div class="dashboard-panel-heading">
+                    <h2>Quản lý đặt phòng</h2>
+                    <span>Yêu cầu từ khách hàng</span>
+                </div>
+
+                <div class="dashboard-table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Phòng</th>
+                                <th>Ngày lưu trú</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardBookings"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+</body>
+</html>

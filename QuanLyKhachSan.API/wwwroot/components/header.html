@@ -1,0 +1,80 @@
+
+<header class="site-header">
+    <a href="/" class="site-logo">
+        <span class="site-logo-icon">✦</span>
+        DNK HOTEL
+    </a>
+
+    <nav class="site-nav" aria-label="Điều hướng chính">
+        <a href="/">Trang chủ</a>
+
+        <div class="site-dropdown">
+            <div class="site-dropdown-heading">
+                <a href="/rooms.html" class="site-dropdown-link">
+                    Phòng nghỉ
+                </a>
+
+                <button
+                    type="button"
+                    class="site-dropdown-toggle"
+                    aria-label="Mở danh mục phòng nghỉ"
+                    aria-expanded="false"
+                    aria-controls="roomDropdownMenu"
+                >
+                </button>
+            </div>
+                        
+            <div class="site-dropdown-menu" id="roomDropdownMenu">
+                <a href="/rooms.html?type=1">
+                    Phòng Tiêu Chuẩn
+                </a>
+
+                <a href="/rooms.html?type=2">
+                    Phòng Cao Cấp
+                </a>
+
+                <a href="/rooms.html?type=3">
+                    Phòng Sang Trọng
+                </a>
+
+                <a href="/rooms.html?type=4">
+                    Phòng Thượng Hạng
+                </a>
+            </div>
+
+        </div>
+
+        <a href="/my-bookings.html" data-auth="customer" hidden>
+            Đặt phòng của tôi
+        </a>
+
+        <a href="/profile.html" data-auth="customer" hidden>
+            Tài khoản
+        </a>
+
+        <a href="/admin/dashboard.html" data-auth="admin" hidden>
+            Quản trị
+        </a>
+
+        <a href="/staff/dashboard.html" data-auth="staff" hidden>
+            Nhân viên
+        </a>
+
+        <a href="/login.html" data-auth="guest" hidden>
+            Đăng nhập
+        </a>
+
+        <a href="/register.html" data-auth="guest" hidden>
+            Đăng ký
+        </a>
+
+        <button
+            class="header-logout"
+            type="button"
+            data-auth="logged-in"
+            hidden
+        >
+            Đăng xuất
+        </button>
+    </nav>
+</header>

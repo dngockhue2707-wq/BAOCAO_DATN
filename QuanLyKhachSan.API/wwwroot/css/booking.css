@@ -1,0 +1,149 @@
+
+.booking-page {
+    padding: 50px 20px 90px;
+    min-height: 75vh;
+    background: #FAF8F5;
+    color: #27272A;
+}
+
+.booking-container {
+    max-width: 1080px;
+    margin: auto;
+}
+
+.booking-container > a {
+    color: #926024;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.booking-heading {
+    margin: 40px 0;
+}
+
+.booking-heading span,
+.booking-summary > span {
+    color: #926024;
+    letter-spacing: 2px;
+    font-size: 11px;
+}
+
+.booking-heading h1 {
+    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+    font-size: 44px;
+    font-weight: 400;
+    margin: 12px 0;
+}
+
+.booking-heading p {
+    color: #817569;
+    font-size: 14px;
+}
+
+.booking-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+    align-items: start;
+    gap: 26px;
+}
+
+.booking-card {
+    padding: 35px;
+    background: white;
+    border: 1px solid #EAE0D6;
+}
+
+.booking-card h2 {
+    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+    font-size: 26px;
+    font-weight: 400;
+    margin: 10px 0 28px;
+}
+
+.booking-card label {
+    display: block;
+    margin: 19px 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.booking-card input,
+.booking-card select,
+.booking-card textarea {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #E2D8CC;
+    border-radius: 4px;
+    background: white;
+    color: #27272A;
+    font: inherit;
+    font-size: 13px;
+}
+
+.booking-two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+#bookingButton {
+    margin-top: 22px;
+    padding: 15px 20px;
+    width: 100%;
+    border: 0;
+    background: #926024;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#bookingButton:disabled {
+    opacity: 0.6;
+}
+
+#bookingMessage {
+    color: #A1372D;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.booking-summary p {
+    color: #817569;
+    font-size: 13px;
+}
+
+.booking-summary strong {
+    display: block;
+    color: #926024;
+    font-size: 21px;
+}
+
+.booking-summary hr {
+    margin: 24px 0;
+    border: 0;
+    border-top: 1px solid #EAE0D6;
+}
+
+#bookingTotal {
+    color: #926024;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.booking-summary small {
+    display: block;
+    margin-top: 20px;
+    color: #817569;
+    line-height: 1.7;
+}
+
+@media (max-width: 750px) {
+    .booking-layout,
+    .booking-two-columns {
+        grid-template-columns: 1fr;
+    }
+    .booking-card {
+        padding: 24px;
+    }
+}

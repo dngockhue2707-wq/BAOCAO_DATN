@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết phòng | DNK Hotel</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/room-detail.css">
+
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/room-detail.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main class="detail-page">
+        <div class="detail-container">
+            <a class="back-link" href="/rooms.html">← Danh sách phòng</a>
+
+            <p class="detail-eyebrow">DNK HOTEL · HẠNG PHÒNG</p>
+            <h1 id="roomName">Đang tải thông tin phòng...</h1>
+
+            <div class="detail-layout">
+                <section>
+                    <div id="roomImages" class="detail-gallery"></div>
+
+                    <div class="detail-section">
+                        <h2>Giới thiệu phòng</h2>
+                        <p id="roomDescription"></p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h2>Thông tin phòng</h2>
+                        <div id="roomSpecs" class="detail-specs"></div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h2>Tiện nghi</h2>
+                        <div id="roomAmenities" class="detail-amenities"></div>
+                    </div>
+                </section>
+
+                <aside class="detail-booking-card">
+                    <span>GIÁ PHÒNG TỪ</span>
+                    <h2 id="roomPrice">Đang tải...</h2>
+                    <p>Giá cơ bản cho một đêm lưu trú</p>
+
+                    <a id="bookRoomButton" href="/login.html">
+                        Đặt phòng ngay →
+                    </a>
+
+                    <small>
+                        Giá chính thức và tình trạng phòng
+                        được kiểm tra khi đặt phòng.
+                    </small>
+                </aside>
+            </div>
+
+            <p id="roomMessage" role="status"></p>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+</body>
+</html>

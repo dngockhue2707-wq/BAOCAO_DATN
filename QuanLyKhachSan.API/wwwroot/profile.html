@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ cá nhân | DNK Hotel</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/profile.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main class="profile-page">
+        <div class="profile-container">
+            <span>DNK HOTEL · TÀI KHOẢN</span>
+            <h1>Thông tin cá nhân</h1>
+            <p>Quản lý thông tin của bạn tại DNK Hotel.</p>
+
+            <form id="profileForm" class="profile-card">
+                <label for="username">Tên đăng nhập</label>
+                <input id="username" readonly>
+
+                <label for="email">Email</label>
+                <input id="email" readonly>
+
+                <label for="fullName">Họ và tên</label>
+                <input id="fullName" maxlength="100" required>
+
+                <label for="phone">Số điện thoại</label>
+                <input id="phone" type="tel" maxlength="20">
+
+                <label for="address">Địa chỉ</label>
+                <textarea id="address" maxlength="255" rows="3"></textarea>
+
+                <p id="profileMessage" role="status"></p>
+
+                <button id="saveProfile" type="submit">
+                    Lưu thay đổi
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+</body>
+</html>

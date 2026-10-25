@@ -1,0 +1,398 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quản lý dịch vụ | DNK Hotel</title>
+
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/admin-services.css">
+
+    <script src="/js/admin-services.js" defer></script>
+</head>
+
+<body data-page="services">
+    <div class="admin-shell">
+
+        <aside class="admin-sidebar">
+            <div class="admin-brand">DNK HOTEL</div>
+
+            <nav>
+                <a href="/admin/dashboard.html">Tổng quan</a>
+                <a href="/admin/rooms.html">Quản lý phòng</a>
+                <a href="/admin/bookings.html">Quản lý đặt phòng</a>
+                <a href="/admin/customers.html">Khách hàng</a>
+                <a href="/admin/employees.html">Nhân viên</a>
+                <a href="/admin/services.html" class="active">Dịch vụ</a>
+                <a href="/admin/invoices.html">Hóa đơn</a>
+                <a href="/admin/reports.html">Báo cáo</a>
+            </nav>
+
+            <button
+                id="logoutButton"
+                type="button"
+                class="admin-button secondary">
+                Đăng xuất
+            </button>
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-topbar">
+                <div>
+                    <span class="admin-label">
+                        DNK HOTEL · QUẢN TRỊ
+                    </span>
+                    <h1>Quản lý dịch vụ</h1>
+                </div>
+
+                <div class="admin-user" id="adminUsername">
+                    Quản trị viên
+                </div>
+            </header>
+
+            <p id="serviceMessage"
+               class="service-message"
+               role="status"></p>
+
+            <section class="service-stats">
+
+                <article class="service-stat-card">
+                    <span>Tổng dịch vụ</span>
+                    <strong id="totalServices">0</strong>
+                    <small>Danh mục dịch vụ khách sạn</small>
+                </article>
+
+                <article class="service-stat-card">
+                    <span>Đang hoạt động</span>
+                    <strong id="activeServices">0</strong>
+                    <small>Dịch vụ đang kinh doanh</small>
+                </article>
+
+                <article class="service-stat-card">
+                    <span>Ngừng hoạt động</span>
+                    <strong id="inactiveServices">0</strong>
+                    <small>Dịch vụ tạm ngừng kinh doanh</small>
+                </article>
+
+            </section>
+
+            <section class="service-panel">
+
+                <div class="service-panel-header">
+                    <div>
+                        <h2>Danh sách dịch vụ</h2>
+                        <p>
+                            Quản lý các dịch vụ và đơn giá
+                            cung cấp tại DNK Hotel.
+                        </p>
+                    </div>
+
+                    <div class="service-header-actions">
+                        <button
+                            id="addServiceButton"
+                            type="button"
+                            class="service-primary-button">
+                            + Thêm dịch vụ
+                        </button>
+
+                        <button
+                            id="refreshServices"
+                            type="button"
+                            class="service-outline-button">
+                            Làm mới
+                        </button>
+                    </div>
+                </div>
+
+                <div class="service-toolbar">
+
+                    <div class="service-field service-search">
+                        <label for="serviceSearch">
+                            Tìm kiếm dịch vụ
+                        </label>
+
+                        <input
+                            id="serviceSearch"
+                            type="search"
+                            placeholder="Tên, mã dịch vụ, đơn vị tính...">
+                    </div>
+
+                    <div class="service-field">
+                        <label for="serviceStatusFilter">
+                            Trạng thái
+                        </label>
+
+                        <select id="serviceStatusFilter">
+                            <option value="all">
+                                Tất cả trạng thái
+                            </option>
+                            <option value="active">
+                                Đang hoạt động
+                            </option>
+                            <option value="inactive">
+                                Ngừng hoạt động
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="service-field">
+                        <label for="serviceSort">
+                            Sắp xếp
+                        </label>
+
+                        <select id="serviceSort">
+                            <option value="newest">
+                                Mã dịch vụ mới nhất
+                            </option>
+                            <option value="oldest">
+                                Mã dịch vụ cũ nhất
+                            </option>
+                            <option value="name">
+                                Tên A – Z
+                            </option>
+                            <option value="priceAsc">
+                                Giá thấp đến cao
+                            </option>
+                            <option value="priceDesc">
+                                Giá cao đến thấp
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="service-table-wrapper">
+                    <table class="service-table">
+                        <thead>
+                            <tr>
+                                <th>Mã DV</th>
+                                <th>Tên dịch vụ</th>
+                                <th>Đơn vị tính</th>
+                                <th>Đơn giá</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="servicesTableBody">
+                            <tr>
+                                <td colspan="6" class="service-empty">
+                                    Đang tải dữ liệu...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="service-table-footer">
+                    <span id="serviceResultCount">
+                        Đang tải...
+                    </span>
+
+                    <div class="service-pagination">
+                        <button
+                            id="previousServices"
+                            type="button"
+                            class="service-outline-button">
+                            Trước
+                        </button>
+
+                        <span id="servicePageInfo">Trang 1/1</span>
+
+                        <button
+                            id="nextServices"
+                            type="button"
+                            class="service-outline-button">
+                            Sau
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <dialog id="serviceFormDialog" class="service-dialog">
+        <form id="serviceForm">
+
+            <div class="service-dialog-header">
+                <div>
+                    <span class="service-eyebrow">
+                        DNK HOTEL · DANH MỤC DỊCH VỤ
+                    </span>
+
+                    <h2 id="serviceFormTitle">
+                        Thêm dịch vụ
+                    </h2>
+                </div>
+
+                <button
+                    id="closeServiceFormTop"
+                    type="button"
+                    class="service-close-button"
+                    aria-label="Đóng">
+                    ×
+                </button>
+            </div>
+
+            <input id="serviceId" type="hidden">
+
+            <div class="service-form-grid">
+
+                <div class="service-field service-full">
+                    <label for="serviceName">
+                        Tên dịch vụ <span class="service-required">*</span>
+                    </label>
+
+                    <input
+                        id="serviceName"
+                        type="text"
+                        maxlength="150"
+                        placeholder="Ví dụ: Giặt ủi quần áo"
+                        required>
+                </div>
+
+                <div class="service-field">
+                    <label for="serviceUnit">
+                        Đơn vị tính
+                    </label>
+
+                    <input
+                        id="serviceUnit"
+                        type="text"
+                        maxlength="50"
+                        placeholder="Lần, suất, chai, giờ...">
+                </div>
+
+                <div class="service-field">
+                    <label for="servicePrice">
+                        Đơn giá (VNĐ) <span class="service-required">*</span>
+                    </label>
+
+                    <input
+                        id="servicePrice"
+                        type="number"
+                        min="0"
+                        max="1000000000"
+                        step="1"
+                        placeholder="Nhập đơn giá"
+                        required>
+                </div>
+
+                <div class="service-field service-full">
+                    <label for="serviceDescription">
+                        Mô tả dịch vụ
+                    </label>
+
+                    <textarea
+                        id="serviceDescription"
+                        rows="4"
+                        maxlength="1000"
+                        placeholder="Nhập mô tả về dịch vụ..."></textarea>
+                </div>
+
+                <div class="service-field service-full">
+                    <label for="serviceActive">
+                        Trạng thái
+                    </label>
+
+                    <select id="serviceActive">
+                        <option value="true">
+                            Đang hoạt động
+                        </option>
+                        <option value="false">
+                            Ngừng hoạt động
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="service-form-note">
+                Các thông tin có dấu * là bắt buộc.
+            </div>
+
+            <div class="service-dialog-actions">
+                <button
+                    id="cancelServiceForm"
+                    type="button"
+                    class="service-outline-button">
+                    Hủy
+                </button>
+
+                <button
+                    id="saveServiceButton"
+                    type="submit"
+                    class="service-primary-button">
+                    Lưu dịch vụ
+                </button>
+            </div>
+
+        </form>
+    </dialog>
+
+    <dialog id="serviceDetailDialog" class="service-dialog">
+        <div class="service-dialog-header">
+            <div>
+                <span class="service-eyebrow">
+                    DNK HOTEL · CHI TIẾT DỊCH VỤ
+                </span>
+
+                <h2 id="detailServiceName">
+                    Thông tin dịch vụ
+                </h2>
+            </div>
+
+            <button
+                id="closeServiceDetailTop"
+                type="button"
+                class="service-close-button"
+                aria-label="Đóng">
+                ×
+            </button>
+        </div>
+
+        <div class="service-detail-grid">
+
+            <div class="service-detail-item">
+                <span>Mã dịch vụ</span>
+                <strong id="detailServiceId">—</strong>
+            </div>
+
+            <div class="service-detail-item">
+                <span>Đơn vị tính</span>
+                <strong id="detailServiceUnit">—</strong>
+            </div>
+
+            <div class="service-detail-item">
+                <span>Đơn giá</span>
+                <strong id="detailServicePrice">—</strong>
+            </div>
+
+            <div class="service-detail-item">
+                <span>Trạng thái</span>
+                <strong id="detailServiceStatus">—</strong>
+            </div>
+
+            <div class="service-detail-item service-full">
+                <span>Mô tả dịch vụ</span>
+                <p id="detailServiceDescription">—</p>
+            </div>
+
+        </div>
+
+        <div class="service-dialog-actions">
+            <button
+                id="closeServiceDetail"
+                type="button"
+                class="service-primary-button">
+                Đóng
+            </button>
+        </div>
+    </dialog>
+
+</body>
+</html>

@@ -1,0 +1,548 @@
+.home-eyebrow {
+    display: inline-block;
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.8px;
+    line-height: 1.7;
+}
+
+.home-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 49px;
+    padding: 14px 23px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.home-btn-primary {
+    background: var(--primary);
+    border: 1px solid var(--primary);
+    color: white;
+}
+
+.home-btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.home-btn-outline {
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+}
+
+.home-btn-outline:hover {
+    background: var(--primary-light);
+}
+
+.hero {
+    min-height: 620px;
+    padding: 80px 8%;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+    gap: 50px;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            circle at 85% 35%,
+            #F0DFC7 0%,
+            transparent 38%
+        ),
+        linear-gradient(
+            115deg,
+            #FAF8F5,
+            #F3E9DC
+        );
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero h1 {
+    margin: 23px 0;
+    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+    font-size: clamp(45px, 5.4vw, 78px);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -1px;
+}
+
+.hero h1 em {
+    color: var(--primary);
+    font-weight: 400;
+}
+
+.hero-content > p {
+    max-width: 490px;
+    margin: 22px 0 30px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 2;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.hero-caption {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-top: 58px;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 1.3px;
+}
+
+.caption-line {
+    width: 32px;
+    height: 1px;
+    background: var(--primary);
+}
+
+.hero-art {
+    position: relative;
+    min-height: 430px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.art-circle {
+    position: absolute;
+    width: 390px;
+    height: 390px;
+    max-width: 100%;
+    border-radius: 50%;
+    background: #E9D6B9;
+}
+
+.art-frame {
+    position: relative;
+    width: 285px;
+    height: 375px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(146, 96, 36, 0.25);
+    background: linear-gradient(145deg, #CBA97D, #8C6138);
+    box-shadow: 25px 25px 0 rgba(146, 96, 36, 0.10);
+}
+
+.art-icon {
+    color: #FFF4DD;
+    font-size: 75px;
+}
+
+.art-label {
+    margin-top: 12px;
+    color: white;
+    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+    font-size: 57px;
+    letter-spacing: 7px;
+}
+
+.art-subtitle {
+    margin-top: 6px;
+    color: #FAEBD5;
+    font-size: 10px;
+    letter-spacing: 4px;
+}
+
+.art-decoration {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+    width: 110px;
+    height: 110px;
+    border: 1px solid var(--primary);
+    border-radius: 50%;
+    opacity: 0.3;
+}
+
+.search-section {
+    position: relative;
+    z-index: 2;
+    width: min(1120px, 90%);
+    margin: -32px auto 0;
+}
+
+.search-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 0.8fr auto;
+    align-items: end;
+    gap: 20px;
+    padding: 25px 30px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: white;
+    box-shadow: 0 15px 45px rgba(65, 45, 20, 0.08);
+}
+
+.search-field label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.search-field input,
+.search-field select {
+    width: 100%;
+    min-height: 43px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    outline: none;
+    background: #FFFEFC;
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+}
+
+.search-field input:focus,
+.search-field select:focus {
+    border-color: var(--primary);
+}
+
+.search-button {
+    min-height: 43px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 3px;
+    background: var(--primary);
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background: var(--primary-dark);
+}
+
+.search-message {
+    min-height: 16px;
+    margin: 9px 0 0;
+    color: #B54747;
+    font-size: 12px;
+}
+
+.intro-section {
+    width: min(1120px, 86%);
+    margin: 0 auto;
+    padding: 110px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 90px;
+}
+
+.intro-heading h2,
+.section-heading h2,
+.recommend-content h2,
+.account-section h2 {
+    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+    font-weight: 400;
+}
+
+.intro-heading h2 {
+    margin: 22px 0;
+    font-size: clamp(38px, 4.5vw, 55px);
+    line-height: 1.2;
+}
+
+.intro-heading h2 em,
+.recommend-content h2 em {
+    color: var(--primary);
+    font-weight: 400;
+}
+
+.intro-description p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 2;
+}
+
+.rooms-section {
+    padding: 90px 8%;
+    background: #F4F0EA;
+}
+
+.section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 38px;
+}
+
+.section-heading h2 {
+    margin: 15px 0 0;
+    font-size: clamp(36px, 4vw, 48px);
+}
+
+.text-link {
+    padding-bottom: 5px;
+    color: var(--primary);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}
+
+.room-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px;
+}
+
+.room-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: white;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.room-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(60, 40, 20, 0.08);
+}
+
+.room-image {
+    position: relative;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.room-image-one {
+    background: linear-gradient(140deg, #D8C2A3, #A78663);
+}
+
+.room-image-two {
+    background: linear-gradient(140deg, #CCBAA0, #816E5D);
+}
+
+.room-image-three {
+    background: linear-gradient(140deg, #C8AF8C, #785837);
+}
+
+.room-tag {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.90);
+    color: var(--primary);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.room-symbol {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 80px;
+}
+
+.room-info {
+    padding: 25px;
+}
+
+.room-category {
+    color: var(--primary);
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.room-info h3 {
+    margin: 12px 0;
+    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
+    font-size: 29px;
+    font-weight: 400;
+}
+
+.room-info p {
+    min-height: 76px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.room-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--primary);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.room-disclaimer {
+    margin-top: 25px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.recommend-section {
+    position: relative;
+    min-height: 490px;
+    padding: 85px 10%;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: #EEE4D6;
+}
+
+.recommend-decoration {
+    position: absolute;
+    right: 12%;
+    color: rgba(146, 96, 36, 0.12);
+    font-size: 350px;
+    line-height: 1;
+}
+
+.recommend-content {
+    position: relative;
+    z-index: 1;
+    max-width: 630px;
+}
+
+.recommend-content h2 {
+    margin: 22px 0;
+    font-size: clamp(44px, 5vw, 65px);
+    line-height: 1.1;
+}
+
+.recommend-content p {
+    max-width: 520px;
+    margin: 25px 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 2;
+}
+
+.account-section {
+    padding: 100px 8%;
+    text-align: center;
+    background: var(--background);
+}
+
+.account-section h2 {
+    margin: 18px 0;
+    font-size: clamp(38px, 4vw, 50px);
+}
+
+.account-section p {
+    max-width: 490px;
+    margin: 0 auto 20px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+@media (max-width: 950px) {
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 65px 7%;
+    }
+
+    .hero-art {
+        min-height: 330px;
+    }
+
+    .art-frame {
+        height: 270px;
+        width: 230px;
+    }
+
+    .art-circle {
+        height: 290px;
+        width: 290px;
+    }
+
+    .search-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .intro-section {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .room-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .hero {
+        padding: 55px 6%;
+    }
+
+    .hero-caption {
+        margin-top: 35px;
+    }
+
+    .search-section {
+        width: 92%;
+        margin: 20px auto 0;
+    }
+
+    .search-bar {
+        grid-template-columns: 1fr;
+        padding: 22px;
+    }
+
+    .intro-section {
+        width: 88%;
+        padding: 65px 0;
+    }
+
+    .rooms-section {
+        padding: 65px 6%;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .room-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recommend-section {
+        padding: 70px 7%;
+    }
+
+    .recommend-decoration {
+        right: -25px;
+        font-size: 220px;
+    }
+
+    .account-section {
+        padding: 75px 6%;
+    }
+}

@@ -1,0 +1,339 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap");
+
+:root {
+    --staff-primary: #926024;
+    --staff-primary-dark: #785324;
+    --staff-dark: #35291F;
+    --staff-bg: #FAF8F5;
+    --staff-text: #27272A;
+    --staff-muted: #817569;
+    --staff-border: #E7DED2;
+
+    --font-heading: "Playfair Display", Georgia, serif;
+    --font-body: "Times New Roman", Times, serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    background: var(--staff-bg);
+    color: var(--staff-text);
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    letter-spacing: 0;
+    word-spacing: normal;
+}
+
+.staff-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+}
+
+.staff-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    background: var(--staff-dark);
+    padding: 30px 17px;
+    color: #FFFFFF;
+    overflow-y: auto;
+}
+
+.staff-brand {
+    margin-bottom: 40px;
+    color: #EAC394;
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+}
+
+.staff-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.staff-nav a {
+    display: block;
+    padding: 13px 15px;
+    border-radius: 4px;
+    color: #EEE3D8;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.staff-nav a.active,
+.staff-nav a:hover {
+    background: var(--staff-primary);
+    color: #FFFFFF;
+}
+
+.staff-main {
+    min-width: 0;
+    padding: 40px;
+}
+
+.staff-heading span {
+    color: var(--staff-primary);
+    letter-spacing: 1px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.staff-heading h1 {
+    margin: 12px 0 15px;
+    color: var(--staff-text);
+    font-family: var(--font-heading);
+    font-size: 39px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0;
+    word-spacing: normal;
+}
+
+.staff-heading p {
+    color: var(--staff-muted);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.staff-cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin: 32px 0;
+}
+
+.staff-card,
+.staff-panel {
+    padding: 25px;
+    background: #FFFFFF;
+    border: 1px solid var(--staff-border);
+    border-radius: 5px;
+}
+
+.staff-card span {
+    color: var(--staff-muted);
+    font-family: var(--font-body);
+    font-size: 15px;
+}
+
+.staff-card strong {
+    display: block;
+    margin-top: 15px;
+    color: var(--staff-primary);
+    font-family: var(--font-body);
+    font-size: 35px;
+    font-weight: 600;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+
+.staff-panel {
+    margin: 24px 0;
+}
+
+.staff-panel h2 {
+    margin: 0 0 22px;
+    color: var(--staff-text);
+    font-family: var(--font-heading);
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0;
+    word-spacing: normal;
+}
+
+.staff-panel p {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.staff-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.staff-table {
+    width: 100%;
+    min-width: 660px;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+}
+
+.staff-table th,
+.staff-table td {
+    padding: 14px;
+    border-bottom: 1px solid #EDE6DE;
+    font-family: var(--font-body);
+    font-size: 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.staff-table th {
+    background: #F6F0E9;
+    color: #61554B;
+    font-weight: 600;
+}
+
+.staff-action {
+    display: inline-block;
+    padding: 10px 13px;
+    background: var(--staff-primary);
+    border: none;
+    border-radius: 3px;
+    color: #FFFFFF;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: normal;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.staff-action:hover {
+    background: var(--staff-primary-dark);
+}
+
+.staff-action:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+.staff-actions {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.staff-message {
+    min-height: 22px;
+    margin: 15px 0;
+    color: #97601D;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.staff-logout {
+    margin-top: 25px;
+    padding: 12px 16px;
+    background: transparent;
+    border: 1px solid #E0B581;
+    border-radius: 4px;
+    color: #FFFFFF;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.staff-logout:hover {
+    background: var(--staff-primary);
+}
+
+@media (max-width: 1000px) {
+    .staff-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .staff-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .staff-sidebar {
+        position: static;
+        height: auto;
+    }
+
+    .staff-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .staff-nav a {
+        padding: 10px 12px;
+    }
+
+    .staff-main {
+        padding: 24px;
+    }
+
+    .staff-heading h1 {
+        font-size: 33px;
+    }
+}
+
+@media (max-width: 480px) {
+    .staff-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .staff-main {
+        padding: 18px;
+    }
+
+    .staff-card,
+    .staff-panel {
+        padding: 20px;
+    }
+
+    .staff-heading h1 {
+        font-size: 29px;
+    }
+
+    .staff-panel h2 {
+        font-size: 23px;
+    }
+
+    .staff-card strong {
+        font-size: 32px;
+    }
+}

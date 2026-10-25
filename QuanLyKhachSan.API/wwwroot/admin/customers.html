@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý khách hàng | DNK Hotel</title>
+
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/admin-customers.css">
+
+    <script src="/js/admin-customers.js" defer></script>
+</head>
+<body data-page="customers">
+
+<div class="admin-shell">
+
+    <aside class="admin-sidebar">
+        <div class="admin-brand">DNK HOTEL</div>
+
+        <nav>
+            <a href="/admin/dashboard.html">Tổng quan</a>
+            <a href="/admin/rooms.html">Quản lý phòng</a>
+            <a href="/admin/bookings.html">Quản lý đặt phòng</a>
+            <a href="/admin/customers.html" class="active">Khách hàng</a>
+            <a href="/admin/employees.html">Nhân viên</a>
+            <a href="/admin/services.html">Dịch vụ</a>
+            <a href="/admin/invoices.html">Hóa đơn</a>
+            <a href="/admin/reports.html">Báo cáo</a>
+        </nav>
+
+        <button
+            id="logoutButton"
+            class="admin-button secondary"
+            type="button">
+            Đăng xuất
+        </button>
+    </aside>
+
+    <main class="admin-main">
+
+        <header class="admin-topbar">
+            <div>
+                <span class="admin-label">
+                    DNK HOTEL · QUẢN TRỊ
+                </span>
+                <h1>Quản lý khách hàng</h1>
+            </div>
+
+            <div id="adminUsername" class="admin-user">
+                Quản trị viên
+            </div>
+        </header>
+
+        <p
+            id="customerMessage"
+            class="customer-message"
+            role="status">
+        </p>
+
+        <section class="customer-stats">
+            <article class="customer-stat-card">
+                <span>Tổng khách hàng</span>
+                <strong id="totalCustomers">0</strong>
+                <small>Tài khoản khách hàng</small>
+            </article>
+
+            <article class="customer-stat-card">
+                <span>Có số điện thoại</span>
+                <strong id="customersWithPhone">0</strong>
+                <small>Khách có thông tin liên hệ</small>
+            </article>
+
+            <article class="customer-stat-card">
+                <span>Có email</span>
+                <strong id="customersWithEmail">0</strong>
+                <small>Khách có địa chỉ email</small>
+            </article>
+        </section>
+
+        <section class="customer-panel">
+
+            <div class="customer-panel-heading">
+                <div>
+                    <h2>Danh sách khách hàng</h2>
+                    <p>
+                        Tra cứu và xem thông tin khách hàng
+                        của DNK Hotel.
+                    </p>
+                </div>
+
+                <button
+                    id="refreshCustomers"
+                    type="button"
+                    class="customer-outline-button">
+                    Làm mới
+                </button>
+            </div>
+
+            <div class="customer-toolbar">
+                <div class="customer-search">
+                    <label for="customerSearch">
+                        Tìm kiếm khách hàng
+                    </label>
+
+                    <input
+                        type="search"
+                        id="customerSearch"
+                        placeholder="Tên, tài khoản, email, số điện thoại...">
+                </div>
+
+                <div class="customer-filter">
+                    <label for="customerContactFilter">
+                        Thông tin liên hệ
+                    </label>
+
+                    <select id="customerContactFilter">
+                        <option value="all">Tất cả khách hàng</option>
+                        <option value="email">Có email</option>
+                        <option value="phone">Có số điện thoại</option>
+                        <option value="missing">Thiếu số điện thoại hoặc email</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+                <table class="admin-table customer-table">
+                    <thead>
+                        <tr>
+                            <th>Mã KH</th>
+                            <th>Khách hàng</th>
+                            <th>Tài khoản</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="customersTableBody">
+                        <tr>
+                            <td colspan="6" class="customer-empty">
+                                Đang tải dữ liệu...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="customer-table-footer">
+                <span id="customerResultCount">
+                    Đang tải...
+                </span>
+
+                <div class="customer-pagination">
+                    <button
+                        id="previousCustomers"
+                        type="button"
+                        class="customer-outline-button">
+                        Trước
+                    </button>
+
+                    <span id="customerPageInfo">Trang 1/1</span>
+
+                    <button
+                        id="nextCustomers"
+                        type="button"
+                        class="customer-outline-button">
+                        Sau
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<dialog id="customerDetailDialog" class="customer-dialog">
+    <div class="customer-dialog-header">
+        <div>
+            <span class="customer-eyebrow">
+                DNK HOTEL · THÔNG TIN KHÁCH HÀNG
+            </span>
+            <h2 id="detailCustomerName">Chi tiết khách hàng</h2>
+        </div>
+
+        <button
+            id="closeCustomerDetailTop"
+            type="button"
+            class="customer-close-icon"
+            aria-label="Đóng">
+            ×
+        </button>
+    </div>
+    
+    <div class="customer-detail-grid">
+        <div class="customer-detail-item">
+            <span>Mã khách hàng</span>
+            <strong id="detailCustomerId">—</strong>
+        </div>
+
+        <div class="customer-detail-item">
+            <span>Mã tài khoản</span>
+            <strong id="detailAccountId">—</strong>
+        </div>
+
+        <div class="customer-detail-item">
+            <span>Họ và tên</span>
+            <strong id="detailCustomerFullName">—</strong>
+        </div>
+
+        <div class="customer-detail-item">
+            <span>Tên đăng nhập</span>
+            <strong id="detailCustomerUsername">—</strong>
+        </div>
+
+        <div class="customer-detail-item">
+            <span>Số điện thoại</span>
+            <strong id="detailCustomerPhone">—</strong>
+        </div>
+
+        <div class="customer-detail-item">
+            <span>Email</span>
+            <strong id="detailCustomerEmail">—</strong>
+        </div>
+
+        <div class="customer-detail-item">
+            <span>CCCD</span>
+            <strong id="detailCustomerIdentity">—</strong>
+        </div>
+
+        <div class="customer-detail-item">
+            <span>Ngày sinh</span>
+            <strong id="detailCustomerBirthday">—</strong>
+        </div>
+
+        <div class="customer-detail-item">
+            <span>Giới tính</span>
+            <strong id="detailCustomerGender">—</strong>
+        </div>
+
+        <div class="customer-detail-item">
+            <span>Ngày tạo hồ sơ</span>
+            <strong id="detailCustomerCreated">—</strong>
+        </div>
+
+        <div class="customer-detail-item customer-detail-full">
+            <span>Địa chỉ</span>
+            <strong id="detailCustomerAddress">—</strong>
+        </div>
+    </div>
+
+    <div class="customer-dialog-actions">
+        <button
+            id="closeCustomerDetail"
+            type="button"
+            class="admin-button">
+            Đóng
+        </button>
+    </div>
+</dialog>
+
+</body>
+</html>
