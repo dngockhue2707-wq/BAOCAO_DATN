@@ -338,3 +338,20 @@
         grid-template-columns: 1fr;
     }
 }
+
+.rooms-card-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.rooms-card-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform .35s ease;
+}
+
+.rooms-card:hover .rooms-card-image img {
+    transform: scale(1.04);
+}

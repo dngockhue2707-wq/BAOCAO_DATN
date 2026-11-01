@@ -1,9 +1,11 @@
-using System.Data;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
+using Microsoft.AspNetCore.Identity;
+using System.Text.RegularExpressions;
 
 namespace QuanLyKhachSan.API.Controllers;
 
@@ -15,6 +17,15 @@ public class AdminRoomStatusDto
 public class AdminBookingStatusDto
 {
     public string Status { get; set; } = "";
+}
+
+public class AdminEmployeeCreateDto
+{
+    public string Name { get; set; } = "";
+    public string Position { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Username { get; set; } = "";
 }
 
 public class AdminEmployeeUpdateDto
@@ -40,15 +51,21 @@ public class AdminServiceDto
 [Authorize(Roles = "Admin")]
 public class AdminController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
     private readonly IAntiforgery _antiforgery;
+    private readonly IPasswordHasher<object> _hasher;
+    private readonly IConfiguration _configuration;
 
     public AdminController(
-        SqlConnection db,
-        IAntiforgery antiforgery)
+        HotelDbContext db,
+        IAntiforgery antiforgery,
+        IPasswordHasher<object> hasher,
+        IConfiguration configuration)
     {
         _db = db;
         _antiforgery = antiforgery;
+        _hasher = hasher;
+        _configuration = configuration;
     }
 
     private async Task<bool> ValidCsrf()
@@ -64,324 +81,471 @@ public class AdminController : ControllerBase
         }
     }
 
-    // TỔNG QUAN
     [HttpGet("dashboard")]
     public async Task<IActionResult> Dashboard()
     {
-        const string sql = """
-            SELECT
-                (SELECT COUNT(*) FROM dbo.Phong),
-                (SELECT COUNT(*) FROM dbo.Phong
-                 WHERE TrangThai = N'Trống'),
-                (SELECT COUNT(*) FROM dbo.DatPhong
-                 WHERE TrangThai = N'Chờ xác nhận'),
-                (SELECT COUNT(*) FROM dbo.KhachHang),
-                (SELECT COUNT(*) FROM dbo.NhanVien),
-                (SELECT COUNT(*) FROM dbo.DichVu
-                 WHERE TrangThai = 1)
-            """;
+        var totalRooms = await _db.Set<Phong>().CountAsync();
 
-        await _db.OpenAsync();
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
-        await r.ReadAsync();
+        var availableRooms = await _db.Set<Phong>()
+            .CountAsync(x => x.TrangThai == "Trống");
+
+        var pendingBookings = await _db.Set<DatPhong>()
+            .CountAsync(x => x.TrangThai == "Chờ xác nhận");
+
+        var totalCustomers = await _db.Set<KhachHang>()
+            .CountAsync();
+
+        var totalEmployees = await _db.Set<NhanVien>()
+            .CountAsync();
+
+        var activeServices = await _db.Set<DichVu>()
+            .CountAsync(x => x.TrangThai);
 
         return Ok(new
         {
-            totalRooms = r.GetInt32(0),
-            availableRooms = r.GetInt32(1),
-            pendingBookings = r.GetInt32(2),
-            totalCustomers = r.GetInt32(3),
-            totalEmployees = r.GetInt32(4),
-            activeServices = r.GetInt32(5)
+            totalRooms,
+            availableRooms,
+            pendingBookings,
+            totalCustomers,
+            totalEmployees,
+            activeServices
         });
     }
 
-    // DANH SÁCH PHÒNG
     [HttpGet("rooms")]
     public async Task<IActionResult> Rooms()
     {
-        const string sql = """
-            SELECT p.MaPhong, p.SoPhong, p.Tang,
-                   p.TrangThai, lp.TenLoaiPhong
-            FROM dbo.Phong p
-            JOIN dbo.LoaiPhong lp
-              ON p.MaLoaiPhong = lp.MaLoaiPhong
-            ORDER BY p.Tang, p.SoPhong
-            """;
-
-        var items = new List<object>();
-        await _db.OpenAsync();
-
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
-
-        while (await r.ReadAsync())
-        {
-            items.Add(new
+        var items = await (
+            from room in _db.Set<Phong>()
+            join type in _db.Set<LoaiPhong>()
+                on room.MaLoaiPhong equals type.MaLoaiPhong
+            orderby room.Tang, room.SoPhong
+            select new
             {
-                id = r.GetInt32(0),
-                number = r.GetString(1),
-                floor = r.IsDBNull(2) ? 0 :
-                    Convert.ToInt32(r.GetValue(2)),
-                status = r.GetString(3),
-                type = r.GetString(4)
-            });
-        }
+                id = room.MaPhong,
+                number = room.SoPhong,
+                floor = room.Tang ?? 0,
+                status = room.TrangThai,
+                type = type.TenLoaiPhong
+            }
+        ).AsNoTracking().ToListAsync();
 
         return Ok(new { items });
     }
 
-    // CẬP NHẬT TRẠNG THÁI PHÒNG
     [HttpPut("rooms/{id:int}/status")]
     public async Task<IActionResult> UpdateRoomStatus(
         int id,
         [FromBody] AdminRoomStatusDto dto)
     {
         if (!await ValidCsrf())
+        {
             return BadRequest(new
             {
                 message = "Mã bảo vệ không hợp lệ."
             });
+        }
 
-        var allowed = new[]
+        string status = dto.Status?.Trim() ?? "";
+
+        string[] allowed =
         {
-            "Trống", "Đang sử dụng", "Đang dọn",
-            "Bảo trì", "Ngừng hoạt động"
+            "Trống",
+            "Đang sử dụng",
+            "Đang dọn",
+            "Bảo trì",
+            "Ngừng hoạt động"
         };
 
-        if (!allowed.Contains(dto.Status))
+        if (!allowed.Contains(status))
+        {
             return BadRequest(new
             {
                 message = "Trạng thái không hợp lệ."
             });
+        }
 
-        const string sql = """
-            UPDATE p
-            SET TrangThai = @Status
-            FROM dbo.Phong p
-            WHERE p.MaPhong = @Id
-              AND NOT EXISTS
-              (
-                  SELECT 1
-                  FROM dbo.ChiTietDatPhong ct
-                  JOIN dbo.DatPhong dp
-                    ON dp.MaDatPhong = ct.MaDatPhong
-                  WHERE ct.MaPhong = p.MaPhong
-                    AND dp.TrangThai IN
-                    (
-                        N'Chờ xác nhận',
-                        N'Đã xác nhận',
-                        N'Đã đặt cọc',
-                        N'Đã nhận phòng'
-                    )
-                    AND dp.NgayTraPhong > CAST(GETDATE() AS date)
-                    AND @Status IN
-                    (
-                        N'Bảo trì', N'Ngừng hoạt động'
-                    )
-              )
-            """;
+        var today = DateOnly.FromDateTime(DateTime.Today);
 
-        await _db.OpenAsync();
+        var blockingRoomIds =
+            from detail in _db.Set<ChiTietDatPhong>()
+            join booking in _db.Set<DatPhong>()
+                on detail.MaDatPhong equals booking.MaDatPhong
+            where booking.TrangThai == "Chờ xác nhận" ||
+                  booking.TrangThai == "Đã xác nhận" ||
+                  booking.TrangThai == "Đã đặt cọc" ||
+                  booking.TrangThai == "Đã nhận phòng"
+            where booking.NgayTraPhong > today
+            select detail.MaPhong;
 
-        using var cmd = new SqlCommand(sql, _db);
-        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-        cmd.Parameters.Add("@Status", SqlDbType.NVarChar, 50)
-            .Value = dto.Status;
+        var query = _db.Set<Phong>()
+            .Where(x => x.MaPhong == id);
 
-        int count = await cmd.ExecuteNonQueryAsync();
+        if (status == "Bảo trì" ||
+            status == "Ngừng hoạt động")
+        {
+            query = query.Where(x =>
+                !blockingRoomIds.Contains(x.MaPhong));
+        }
 
-        return count == 0
-            ? BadRequest(new
+        int affected = await query.ExecuteUpdateAsync(
+            setters => setters.SetProperty(
+                x => x.TrangThai,
+                status));
+
+        if (affected == 0)
+        {
+            return BadRequest(new
             {
                 message = "Không thể sửa trạng thái phòng này."
-            })
-            : Ok(new
-            {
-                success = true,
-                message = "Đã cập nhật phòng."
             });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Đã cập nhật phòng."
+        });
     }
 
-    // DANH SÁCH ĐẶT PHÒNG
     [HttpGet("bookings")]
     public async Task<IActionResult> Bookings()
     {
-        const string sql = """
-            SELECT dp.MaDatPhong, kh.HoTen,
-                   p.SoPhong, lp.TenLoaiPhong,
-                   dp.NgayNhanPhong, dp.NgayTraPhong,
-                   dp.TrangThai, ct.ThanhTien
-            FROM dbo.DatPhong dp
-            JOIN dbo.KhachHang kh
-              ON dp.MaKhachHang = kh.MaKhachHang
-            JOIN dbo.ChiTietDatPhong ct
-              ON dp.MaDatPhong = ct.MaDatPhong
-            JOIN dbo.Phong p
-              ON ct.MaPhong = p.MaPhong
-            JOIN dbo.LoaiPhong lp
-              ON p.MaLoaiPhong = lp.MaLoaiPhong
-            ORDER BY dp.MaDatPhong DESC
-            """;
-
-        var items = new List<object>();
-        await _db.OpenAsync();
-
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
-
-        while (await r.ReadAsync())
-        {
-            items.Add(new
+        var items = await (
+            from booking in _db.Set<DatPhong>()
+            join customer in _db.Set<KhachHang>()
+                on booking.MaKhachHang equals customer.MaKhachHang
+            join detail in _db.Set<ChiTietDatPhong>()
+                on booking.MaDatPhong equals detail.MaDatPhong
+            join room in _db.Set<Phong>()
+                on detail.MaPhong equals room.MaPhong
+            join type in _db.Set<LoaiPhong>()
+                on room.MaLoaiPhong equals type.MaLoaiPhong
+            orderby booking.MaDatPhong descending
+            select new
             {
-                id = r.GetInt32(0),
-                customer = r.GetString(1),
-                roomNumber = r.GetString(2),
-                roomType = r.GetString(3),
-                checkIn = r.GetDateTime(4),
-                checkOut = r.GetDateTime(5),
-                status = r.GetString(6),
-                total = Convert.ToDecimal(r.GetValue(7))
-            });
-        }
+                id = booking.MaDatPhong,
+                customer = customer.HoTen,
+                roomNumber = room.SoPhong,
+                roomType = type.TenLoaiPhong,
+                checkIn = booking.NgayNhanPhong,
+                checkOut = booking.NgayTraPhong,
+                status = booking.TrangThai,
+                total = detail.ThanhTien
+            }
+        ).AsNoTracking().ToListAsync();
 
         return Ok(new { items });
     }
 
-    // DUYỆT HOẶC HỦY ĐƠN CHỜ XÁC NHẬN
     [HttpPut("bookings/{id:int}/status")]
     public async Task<IActionResult> UpdateBookingStatus(
         int id,
         [FromBody] AdminBookingStatusDto dto)
     {
         if (!await ValidCsrf())
+        {
             return BadRequest(new
             {
                 message = "Mã bảo vệ không hợp lệ."
             });
+        }
 
         if (dto.Status != "Đã xác nhận" &&
             dto.Status != "Đã hủy")
+        {
             return BadRequest(new
             {
                 message = "Chỉ hỗ trợ xác nhận hoặc hủy đơn."
             });
+        }
 
-        const string sql = """
-            UPDATE dbo.DatPhong
-            SET TrangThai = @Status,
-                NgayXacNhan = CASE
-                    WHEN @Status = N'Đã xác nhận'
-                    THEN SYSDATETIME()
-                    ELSE NgayXacNhan END,
-                LyDoHuy = CASE
-                    WHEN @Status = N'Đã hủy'
-                    THEN N'Quản trị viên hủy'
-                    ELSE LyDoHuy END
-            WHERE MaDatPhong = @Id
-              AND TrangThai = N'Chờ xác nhận'
-              AND NgayNhanPhong >= CAST(GETDATE() AS date)
-            """;
+        var today = DateOnly.FromDateTime(DateTime.Today);
 
-        await _db.OpenAsync();
-        using var cmd = new SqlCommand(sql, _db);
-        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-        cmd.Parameters.Add("@Status", SqlDbType.NVarChar, 50)
-            .Value = dto.Status;
+        var query = _db.Set<DatPhong>()
+            .Where(x =>
+                x.MaDatPhong == id &&
+                x.TrangThai == "Chờ xác nhận" &&
+                x.NgayNhanPhong >= today);
 
-        int count = await cmd.ExecuteNonQueryAsync();
+        int affected;
 
-        return count == 0
-            ? BadRequest(new
+        if (dto.Status == "Đã xác nhận")
+        {
+            affected = await query.ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(
+                        x => x.TrangThai,
+                        "Đã xác nhận")
+                    .SetProperty(
+                        x => x.NgayXacNhan,
+                        DateTime.Now));
+        }
+        else
+        {
+            affected = await query.ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(
+                        x => x.TrangThai,
+                        "Đã hủy")
+                    .SetProperty(
+                        x => x.LyDoHuy,
+                        "Quản trị viên hủy"));
+        }
+
+        if (affected == 0)
+        {
+            return BadRequest(new
             {
                 message = "Đơn không còn chờ xác nhận."
-            })
-            : Ok(new
-            {
-                success = true,
-                message = "Đã cập nhật đặt phòng."
             });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Đã cập nhật đặt phòng."
+        });
     }
 
-    // KHÁCH HÀNG
+    [HttpGet("customers/{id:int}/bookings")]
+    public async Task<IActionResult> CustomerBookings(int id)
+    {
+        var exists = await _db.Set<KhachHang>()
+            .AnyAsync(x => x.MaKhachHang == id);
+
+        if (!exists)
+        {
+            return NotFound(new
+            {
+                message = "Không tìm thấy khách hàng."
+            });
+        }
+
+        var items = await (
+            from booking in _db.Set<DatPhong>()
+            join detail in _db.Set<ChiTietDatPhong>()
+                on booking.MaDatPhong equals detail.MaDatPhong
+            join room in _db.Set<Phong>()
+                on detail.MaPhong equals room.MaPhong
+            join type in _db.Set<LoaiPhong>()
+                on room.MaLoaiPhong equals type.MaLoaiPhong
+            where booking.MaKhachHang == id
+            group new { booking, detail, room, type } by new
+            {
+                booking.MaDatPhong,
+                booking.NgayNhanPhong,
+                booking.NgayTraPhong,
+                booking.TrangThai
+            }
+            into g
+            orderby g.Key.MaDatPhong descending
+            select new
+            {
+                id = g.Key.MaDatPhong,
+                checkIn = g.Key.NgayNhanPhong,
+                checkOut = g.Key.NgayTraPhong,
+                status = g.Key.TrangThai,
+                total = g.Sum(x => x.detail.ThanhTien),
+                rooms = string.Join(", ", g.Select(x =>
+                    x.type.TenLoaiPhong + " - " + x.room.SoPhong))
+            }
+        ).AsNoTracking().ToListAsync();
+
+        return Ok(new
+        {
+            success = true,
+            items
+        });
+    }
+
     [HttpGet("customers")]
     public async Task<IActionResult> Customers()
     {
-        const string sql = """
-            SELECT kh.MaKhachHang, kh.HoTen,
-                   kh.SoDienThoai, kh.Email,
-                   kh.DiaChi, kh.NgayTao,
-                   ISNULL(tk.TenDangNhap, N'')
-            FROM dbo.KhachHang kh
-            LEFT JOIN dbo.TaiKhoan tk
-              ON kh.MaTaiKhoan = tk.MaTaiKhoan
-            ORDER BY kh.MaKhachHang DESC
-            """;
-
-        var items = new List<object>();
-        await _db.OpenAsync();
-
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
-
-        while (await r.ReadAsync())
-        {
-            items.Add(new
+        var items = await (
+            from customer in _db.Set<KhachHang>()
+            join account in _db.Set<TaiKhoan>()
+                on customer.MaTaiKhoan equals
+                   (int?)account.MaTaiKhoan into accounts
+            from account in accounts.DefaultIfEmpty()
+            orderby customer.MaKhachHang descending
+            select new
             {
-                id = r.GetInt32(0),
-                name = r.IsDBNull(1) ? "" : r.GetString(1),
-                phone = r.IsDBNull(2) ? "" : r.GetString(2),
-                email = r.IsDBNull(3) ? "" : r.GetString(3),
-                address = r.IsDBNull(4) ? "" : r.GetString(4),
-                createdAt = r.GetDateTime(5),
-                username = r.GetString(6)
-            });
-        }
+                id = customer.MaKhachHang,
+                accountId = customer.MaTaiKhoan,
+                name = customer.HoTen,
+                phone = customer.SoDienThoai ?? "",
+                email = customer.Email ?? "",
+                address = customer.DiaChi ?? "",
+                createdAt = customer.NgayTao,
+                username = account != null
+                    ? account.TenDangNhap
+                    : ""
+            }
+        ).AsNoTracking().ToListAsync();
 
         return Ok(new { items });
     }
 
-    // NHÂN VIÊN
+    [HttpPost("employees")]
+    public async Task<IActionResult> CreateEmployee(
+        [FromBody] AdminEmployeeCreateDto dto)
+    {
+        if (!await ValidCsrf())
+        {
+            return BadRequest(new
+            {
+                message = "Mã bảo vệ không hợp lệ."
+            });
+        }
+
+        string name = dto.Name?.Trim() ?? "";
+        string position = dto.Position?.Trim() ?? "";
+        string phone = dto.Phone?.Trim() ?? "";
+        string email = dto.Email?.Trim() ?? "";
+        string username = dto.Username?.Trim() ?? "";
+
+        if (name.Length < 2 || name.Length > 100 ||
+            position.Length < 1 || position.Length > 100 ||
+            phone.Length > 20 ||
+            email.Length > 150 ||
+            username.Length < 4 || username.Length > 100 ||
+            !Regex.IsMatch(username, @"^[a-zA-Z0-9_]+$"))
+        {
+            return BadRequest(new
+            {
+                message = "Thông tin không hợp lệ. Tên đăng nhập phải có từ 4 ký tự và chỉ chứa chữ, số hoặc dấu gạch dưới."
+            });
+        }
+
+        if (!string.IsNullOrEmpty(email) &&
+            (!System.Net.Mail.MailAddress.TryCreate(email, out var address) ||
+            address.Address != email))
+        {
+            return BadRequest(new
+            {
+                message = "Email không hợp lệ."
+            });
+        }
+
+        string password =
+            _configuration["EmployeeInitialPassword"] ?? "";
+
+        if (password.Length < 12 || password.Length > 128)
+        {
+            return StatusCode(500, new
+            {
+                message = "Chưa cấu hình mật khẩu ban đầu cho nhân viên."
+            });
+        }
+
+        var role = await _db.Set<VaiTro>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x =>
+                x.TenVaiTro == "NhanVien" ||
+                x.TenVaiTro == "Nhân viên");
+
+        if (role == null)
+        {
+            return BadRequest(new
+            {
+                message = "Chưa thiết lập vai trò nhân viên."
+            });
+        }
+
+        bool exists = await _db.Set<TaiKhoan>()
+            .AnyAsync(x => x.TenDangNhap == username);
+
+        if (exists)
+        {
+            return Conflict(new
+            {
+                message = "Tên đăng nhập đã tồn tại."
+            });
+        }
+
+        await using var transaction =
+            await _db.Database.BeginTransactionAsync();
+
+        try
+        {
+            var account = new TaiKhoan
+            {
+                TenDangNhap = username,
+                MatKhau = _hasher.HashPassword(new object(), password),
+                Email = string.IsNullOrWhiteSpace(email) ? null : email,
+                MaVaiTro = role.MaVaiTro,
+                TrangThai = true,
+                NgayTao = DateTime.Now
+            };
+
+            _db.Set<TaiKhoan>().Add(account);
+            await _db.SaveChangesAsync();
+
+            var employee = new NhanVien
+            {
+                MaTaiKhoan = account.MaTaiKhoan,
+                HoTen = name,
+                ChucVu = position,
+                SoDienThoai = string.IsNullOrWhiteSpace(phone) ? null : phone,
+                Email = string.IsNullOrWhiteSpace(email) ? null : email,
+                TrangThai = true
+            };
+
+            _db.Set<NhanVien>().Add(employee);
+            await _db.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+
+            return Ok(new
+            {
+                success = true,
+                id = employee.MaNhanVien,
+                message = "Đã thêm nhân viên và tạo tài khoản đăng nhập thành công."
+            });
+        }
+        catch (DbUpdateException ex)
+            when (ex.InnerException is Microsoft.Data.SqlClient.SqlException
+                { Number: 2601 or 2627 })
+        {
+            await transaction.RollbackAsync();
+
+            return Conflict(new
+            {
+                message = "Tên đăng nhập hoặc dữ liệu đã tồn tại."
+            });
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
     [HttpGet("employees")]
     public async Task<IActionResult> Employees()
     {
-        const string sql = """
-            SELECT nv.MaNhanVien, nv.HoTen,
-                nv.SoDienThoai, nv.Email,
-                nv.ChucVu, nv.TrangThai,
-                tk.TenDangNhap,
-                CASE
-                    WHEN tk.TenDangNhap = N'admin_dnk'
-                    THEN N'Admin'
-                    ELSE N'NhanVien'
-                END AS Role
-            FROM dbo.NhanVien nv
-            JOIN dbo.TaiKhoan tk
-            ON nv.MaTaiKhoan = tk.MaTaiKhoan
-            ORDER BY nv.MaNhanVien DESC
-            """;
-
-        var items = new List<object>();
-        await _db.OpenAsync();
-
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
-
-        while (await r.ReadAsync())
-        {
-            items.Add(new
+        var items = await (
+            from employee in _db.Set<NhanVien>()
+            join account in _db.Set<TaiKhoan>()
+                on employee.MaTaiKhoan equals account.MaTaiKhoan
+            join role in _db.Set<VaiTro>()
+                on account.MaVaiTro equals role.MaVaiTro
+            orderby employee.MaNhanVien descending
+            select new
             {
-                id = r.GetInt32(0),
-                name = r.IsDBNull(1) ? "" : r.GetString(1),
-                phone = r.IsDBNull(2) ? "" : r.GetString(2),
-                email = r.IsDBNull(3) ? "" : r.GetString(3),
-                position = r.IsDBNull(4) ? "" : r.GetString(4),
-                active = r.GetBoolean(5),
-                username = r.GetString(6),
-                role = r.GetString(7)
-            });
-        }
+                id = employee.MaNhanVien,
+                name = employee.HoTen,
+                phone = employee.SoDienThoai ?? "",
+                email = employee.Email ?? "",
+                position = employee.ChucVu ?? "",
+                active = employee.TrangThai,
+                username = account.TenDangNhap,
+                role = account.TenDangNhap == "admin_dnk"
+                    ? "Admin"
+                    : "NhanVien"
+            }
+        ).AsNoTracking().ToListAsync();
 
         return Ok(new { items });
     }
@@ -392,18 +556,24 @@ public class AdminController : ControllerBase
         [FromBody] AdminEmployeeUpdateDto dto)
     {
         if (!await ValidCsrf())
+        {
             return BadRequest(new
             {
                 message = "Mã bảo vệ không hợp lệ."
             });
+        }
 
-        if (dto == null ||
-            string.IsNullOrWhiteSpace(dto.Name) ||
-            string.IsNullOrWhiteSpace(dto.Position) ||
-            dto.Name.Length > 100 ||
-            dto.Position.Length > 100 ||
-            (dto.Phone?.Length ?? 0) > 20 ||
-            (dto.Email?.Length ?? 0) > 150)
+        string name = dto.Name?.Trim() ?? "";
+        string position = dto.Position?.Trim() ?? "";
+        string phone = dto.Phone?.Trim() ?? "";
+        string email = dto.Email?.Trim() ?? "";
+
+        if (name.Length < 1 ||
+            name.Length > 100 ||
+            position.Length < 1 ||
+            position.Length > 100 ||
+            phone.Length > 20 ||
+            email.Length > 150)
         {
             return BadRequest(new
             {
@@ -411,278 +581,239 @@ public class AdminController : ControllerBase
             });
         }
 
-        const string sql = """
-            UPDATE nv
-            SET
-                nv.HoTen = @Name,
-                nv.ChucVu = @Position,
-                nv.SoDienThoai = @Phone,
-                nv.Email = @Email,
-                nv.TrangThai = @Active
-            FROM dbo.NhanVien nv
-            INNER JOIN dbo.TaiKhoan tk
-                ON nv.MaTaiKhoan = tk.MaTaiKhoan
-            INNER JOIN dbo.VaiTro vt
-                ON tk.MaVaiTro = vt.MaVaiTro
-            WHERE nv.MaNhanVien = @Id
-            AND vt.TenVaiTro = 'NhanVien'
-            """;
 
-        await _db.OpenAsync();
-
-        using var cmd = new SqlCommand(sql, _db);
-
-        cmd.Parameters.Add("@Id", SqlDbType.Int)
-            .Value = id;
-
-        cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 100)
-            .Value = dto.Name.Trim();
-
-        cmd.Parameters.Add("@Position", SqlDbType.NVarChar, 100)
-            .Value = dto.Position.Trim();
-
-        cmd.Parameters.Add("@Phone", SqlDbType.VarChar, 20)
-            .Value = string.IsNullOrWhiteSpace(dto.Phone)
-                ? DBNull.Value
-                : dto.Phone.Trim();
-
-        cmd.Parameters.Add("@Email", SqlDbType.VarChar, 150)
-            .Value = string.IsNullOrWhiteSpace(dto.Email)
-                ? DBNull.Value
-                : dto.Email.Trim();
-
-        cmd.Parameters.Add("@Active", SqlDbType.Bit)
-            .Value = dto.Active;
-
-        int affected = await cmd.ExecuteNonQueryAsync();
-
-        if (affected == 0)
+        var data = await (
+            from nv in _db.Set<NhanVien>()
+            join tk in _db.Set<TaiKhoan>()
+                on nv.MaTaiKhoan equals tk.MaTaiKhoan
+            join role in _db.Set<VaiTro>()
+                on tk.MaVaiTro equals role.MaVaiTro
+            where nv.MaNhanVien == id
+            && (role.TenVaiTro == "NhanVien" ||
+                role.TenVaiTro == "Nhân viên")
+            select new
+            {
+                Employee = nv,
+                Account = tk
+            }
+        ).FirstOrDefaultAsync();
+        
+        if (data == null)
         {
             return NotFound(new
             {
-                message = "Không tìm thấy nhân viên NhanVien được phép sửa."
+                message = "Không tìm thấy nhân viên được phép sửa."
             });
         }
+
+        var employee = data.Employee;
+        var account = data.Account;
+
+        employee.HoTen = name;
+        employee.ChucVu = position;
+        employee.SoDienThoai =
+            string.IsNullOrWhiteSpace(phone) ? null : phone;
+        employee.Email =
+            string.IsNullOrWhiteSpace(email) ? null : email;
+        employee.TrangThai = dto.Active;
+
+        account.TrangThai = dto.Active;
+
+        await _db.SaveChangesAsync();
 
         return Ok(new
         {
             success = true,
-            message = "Đã cập nhật thông tin và trạng thái nhân viên."
+            message = dto.Active
+                ? "Đã cập nhật nhân viên và kích hoạt tài khoản."
+                : "Đã ngừng hoạt động và khóa tài khoản nhân viên."
         });
+
     }
 
-    // DỊCH VỤ
     [HttpGet("services")]
     public async Task<IActionResult> Services()
     {
-        const string sql = """
-            SELECT MaDichVu, TenDichVu, DonViTinh,
-                   DonGia, MoTa, TrangThai
-            FROM dbo.DichVu
-            ORDER BY MaDichVu DESC
-            """;
-
-        var items = new List<object>();
-        await _db.OpenAsync();
-
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
-
-        while (await r.ReadAsync())
-        {
-            items.Add(new
+        var items = await _db.Set<DichVu>()
+            .AsNoTracking()
+            .OrderByDescending(x => x.MaDichVu)
+            .Select(x => new
             {
-                id = r.GetInt32(0),
-                name = r.GetString(1),
-                unit = r.IsDBNull(2) ? "" : r.GetString(2),
-                price = Convert.ToDecimal(r.GetValue(3)),
-                description = r.IsDBNull(4) ? "" : r.GetString(4),
-                active = r.GetBoolean(5)
-            });
-        }
+                id = x.MaDichVu,
+                name = x.TenDichVu,
+                unit = x.DonViTinh ?? "",
+                price = x.DonGia,
+                description = x.MoTa ?? "",
+                active = x.TrangThai,
+                image = x.HinhAnh
+            })
+            .ToListAsync();
 
         return Ok(new { items });
     }
 
-    // THÊM DỊCH VỤ
+    private static string? ValidateService(
+        AdminServiceDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Name) ||
+            dto.Name.Trim().Length > 100)
+            return "Tên dịch vụ không hợp lệ.";
+
+        if ((dto.Unit?.Length ?? 0) > 50)
+            return "Đơn vị tính không hợp lệ.";
+
+        if ((dto.Description?.Length ?? 0) > 500)
+            return "Mô tả không được vượt quá 500 ký tự.";
+
+        if (dto.Price < 0 ||
+            dto.Price > 1000000000)
+            return "Giá dịch vụ không hợp lệ.";
+
+        return null;
+    }
+
     [HttpPost("services")]
     public async Task<IActionResult> CreateService(
         [FromBody] AdminServiceDto dto)
     {
         if (!await ValidCsrf())
-            return BadRequest(new { message = "Mã bảo vệ không hợp lệ." });
-
-        if (string.IsNullOrWhiteSpace(dto.Name) ||
-            dto.Name.Length > 150 ||
-            dto.Unit.Length > 50 ||
-            dto.Description.Length > 1000 ||
-            dto.Price < 0 || dto.Price > 1000000000)
+        {
             return BadRequest(new
             {
-                message = "Thông tin dịch vụ không hợp lệ."
+                message = "Mã bảo vệ không hợp lệ."
             });
+        }
 
-        const string sql = """
-            INSERT INTO dbo.DichVu
-                (TenDichVu, DonViTinh, DonGia, MoTa, TrangThai)
-            VALUES
-                (@Name, @Unit, @Price, @Description, @Active)
-            """;
+        var error = ValidateService(dto);
 
-        await _db.OpenAsync();
+        if (error != null)
+        {
+            return BadRequest(new { message = error });
+        }
 
-        using var cmd = new SqlCommand(sql, _db);
-        AddServiceParameters(cmd, dto);
-        await cmd.ExecuteNonQueryAsync();
+        var service = new DichVu
+        {
+            TenDichVu = dto.Name.Trim(),
+            DonViTinh = dto.Unit?.Trim(),
+            DonGia = dto.Price,
+            MoTa = dto.Description?.Trim(),
+            TrangThai = dto.Active
+        };
+
+        _db.Set<DichVu>().Add(service);
+        await _db.SaveChangesAsync();
 
         return Ok(new
         {
             success = true,
+            id = service.MaDichVu,
             message = "Đã thêm dịch vụ."
         });
     }
 
-    // SỬA DỊCH VỤ
     [HttpPut("services/{id:int}")]
     public async Task<IActionResult> UpdateService(
         int id,
         [FromBody] AdminServiceDto dto)
     {
         if (!await ValidCsrf())
-            return BadRequest(new { message = "Mã bảo vệ không hợp lệ." });
-
-        if (string.IsNullOrWhiteSpace(dto.Name) ||
-            dto.Name.Length > 150 ||
-            dto.Unit.Length > 50 ||
-            dto.Description.Length > 1000 ||
-            dto.Price < 0 || dto.Price > 1000000000)
+        {
             return BadRequest(new
             {
-                message = "Thông tin dịch vụ không hợp lệ."
+                message = "Mã bảo vệ không hợp lệ."
             });
+        }
 
-        const string sql = """
-            UPDATE dbo.DichVu
-            SET TenDichVu = @Name,
-                DonViTinh = @Unit,
-                DonGia = @Price,
-                MoTa = @Description,
-                TrangThai = @Active
-            WHERE MaDichVu = @Id
-            """;
+        var error = ValidateService(dto);
 
-        await _db.OpenAsync();
+        if (error != null)
+        {
+            return BadRequest(new { message = error });
+        }
 
-        using var cmd = new SqlCommand(sql, _db);
-        AddServiceParameters(cmd, dto);
-        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        var service = await _db.Set<DichVu>()
+            .FirstOrDefaultAsync(x => x.MaDichVu == id);
 
-        int count = await cmd.ExecuteNonQueryAsync();
+        if (service == null)
+        {
+            return NotFound(new
+            {
+                message = "Không tìm thấy dịch vụ."
+            });
+        }
 
-        return count == 0
-            ? NotFound(new { message = "Không tìm thấy dịch vụ." })
-            : Ok(new { success = true, message = "Đã cập nhật dịch vụ." });
+        service.TenDichVu = dto.Name.Trim();
+        service.DonViTinh = dto.Unit?.Trim();
+        service.DonGia = dto.Price;
+        service.MoTa = dto.Description?.Trim();
+        service.TrangThai = dto.Active;
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            success = true,
+            message = "Đã cập nhật dịch vụ."
+        });
     }
 
-    private static void AddServiceParameters(
-        SqlCommand cmd, AdminServiceDto dto)
-    {
-        cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 150)
-            .Value = dto.Name.Trim();
-        cmd.Parameters.Add("@Unit", SqlDbType.NVarChar, 50)
-            .Value = dto.Unit.Trim();
-
-        var price = cmd.Parameters.Add(
-            "@Price", SqlDbType.Decimal);
-        price.Precision = 18;
-        price.Scale = 2;
-        price.Value = dto.Price;
-
-        cmd.Parameters.Add("@Description", SqlDbType.NVarChar, 1000)
-            .Value = dto.Description.Trim();
-        cmd.Parameters.Add("@Active", SqlDbType.Bit)
-            .Value = dto.Active;
-    }
-
-    // HÓA ĐƠN
     [HttpGet("invoices")]
     public async Task<IActionResult> Invoices()
     {
-        const string sql = """
-            SELECT hd.MaHoaDon, hd.MaDatPhong,
-                   kh.HoTen, hd.NgayLap,
-                   hd.TienPhong, hd.TienDichVu,
-                   hd.TienDatCoc, hd.GiamGia,
-                   hd.TongTien, hd.SoTienConLai,
-                   hd.TrangThai
-            FROM dbo.HoaDon hd
-            JOIN dbo.DatPhong dp
-              ON hd.MaDatPhong = dp.MaDatPhong
-            JOIN dbo.KhachHang kh
-              ON dp.MaKhachHang = kh.MaKhachHang
-            ORDER BY hd.MaHoaDon DESC
-            """;
-
-        var items = new List<object>();
-        await _db.OpenAsync();
-
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
-
-        while (await r.ReadAsync())
-        {
-            items.Add(new
+        var items = await (
+            from invoice in _db.Set<HoaDon>()
+            join booking in _db.Set<DatPhong>()
+                on invoice.MaDatPhong equals booking.MaDatPhong
+            join customer in _db.Set<KhachHang>()
+                on booking.MaKhachHang equals customer.MaKhachHang
+            orderby invoice.MaHoaDon descending
+            select new
             {
-                id = r.GetInt32(0),
-                bookingId = r.GetInt32(1),
-                customer = r.GetString(2),
-                date = r.GetDateTime(3),
-                roomAmount = Convert.ToDecimal(r.GetValue(4)),
-                serviceAmount = Convert.ToDecimal(r.GetValue(5)),
-                deposit = Convert.ToDecimal(r.GetValue(6)),
-                discount = Convert.ToDecimal(r.GetValue(7)),
-                total = Convert.ToDecimal(r.GetValue(8)),
-                remaining = Convert.ToDecimal(r.GetValue(9)),
-                status = r.IsDBNull(10) ? "" : r.GetString(10)
-            });
-        }
+                id = invoice.MaHoaDon,
+                bookingId = invoice.MaDatPhong,
+                customer = customer.HoTen,
+                date = invoice.NgayLap,
+                roomAmount = invoice.TienPhong,
+                serviceAmount = invoice.TienDichVu,
+                deposit = invoice.TienDatCoc,
+                discount = invoice.GiamGia,
+                total = invoice.TongTien,
+                remaining = invoice.SoTienConLai,
+                status = invoice.TrangThai
+            }
+        ).AsNoTracking().ToListAsync();
 
         return Ok(new { items });
     }
 
-    // BÁO CÁO
     [HttpGet("reports")]
     public async Task<IActionResult> Reports()
     {
-        const string sql = """
-            SELECT
-                (SELECT COUNT(*) FROM dbo.DatPhong),
-                (SELECT COUNT(*) FROM dbo.DatPhong
-                 WHERE TrangThai = N'Đã trả phòng'),
-                (SELECT COUNT(*) FROM dbo.DatPhong
-                 WHERE TrangThai = N'Đã hủy'),
-                (SELECT ISNULL(SUM(TongTien), 0)
-                 FROM dbo.HoaDon),
-                (SELECT ISNULL(SUM(SoTien), 0)
-                 FROM dbo.ThanhToan
-                 WHERE TrangThai IN
-                    (N'Thành công', N'Đã thanh toán'))
-            """;
+        var totalBookings = await _db.Set<DatPhong>()
+            .CountAsync();
 
-        await _db.OpenAsync();
+        var completedBookings = await _db.Set<DatPhong>()
+            .CountAsync(x => x.TrangThai == "Đã trả phòng");
 
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
+        var cancelledBookings = await _db.Set<DatPhong>()
+            .CountAsync(x => x.TrangThai == "Đã hủy");
 
-        await r.ReadAsync();
+        var invoicedAmount = await _db.Set<HoaDon>()
+            .SumAsync(x => (decimal?)x.TongTien) ?? 0m;
+
+        var receivedAmount = await _db.Set<ThanhToan>()
+            .Where(x =>
+                x.TrangThai == "Thành công" ||
+                x.TrangThai == "Đã thanh toán")
+            .SumAsync(x => (decimal?)x.SoTien) ?? 0m;
 
         return Ok(new
         {
-            totalBookings = r.GetInt32(0),
-            completedBookings = r.GetInt32(1),
-            cancelledBookings = r.GetInt32(2),
-            invoicedAmount = Convert.ToDecimal(r.GetValue(3)),
-            receivedAmount = Convert.ToDecimal(r.GetValue(4))
+            totalBookings,
+            completedBookings,
+            cancelledBookings,
+            invoicedAmount,
+            receivedAmount
         });
     }
 }

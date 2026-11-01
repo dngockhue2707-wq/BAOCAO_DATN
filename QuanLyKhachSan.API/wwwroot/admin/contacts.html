@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý yêu cầu hỗ trợ | DNK Admin</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/admin-contacts.css">
+    <script src="/js/admin-contacts.js" defer></script>
+    <script src="/js/admin-layout.js" defer></script>
+</head>
+<body>
+    <div class="admin-shell">
+
+        <div id="adminSidebar"></div>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div>
+                    <span class="admin-label">DNK HOTEL · QUẢN TRỊ</span>
+                    <h1>Quản lý liên hệ</h1>
+                </div>
+                <span class="admin-user">Hỗ trợ khách hàng</span>
+            </header>
+
+            <section class="contacts-stats">
+                <article class="contacts-stat">
+                    <span>Tổng liên hệ</span>
+                    <strong id="contactsTotal">0</strong>
+                </article>
+                <article class="contacts-stat">
+                    <span>Chờ xử lý</span>
+                    <strong id="contactsPending">0</strong>
+                </article>
+                <article class="contacts-stat">
+                    <span>Đang xử lý</span>
+                    <strong id="contactsProcessing">0</strong>
+                </article>
+                <article class="contacts-stat">
+                    <span>Đã phản hồi</span>
+                    <strong id="contactsReplied">0</strong>
+                </article>
+            </section>
+
+            <section class="admin-panel">
+                <h2>Danh sách liên hệ</h2>
+
+                <form id="contactsFilterForm" class="contacts-filters">
+                    <input
+                        id="contactsKeyword"
+                        type="search"
+                        placeholder="Tìm họ tên, email hoặc chủ đề"
+                        maxlength="100"
+                    >
+                    <select id="contactsStatus">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="Chờ xử lý">Chờ xử lý</option>
+                        <option value="Đang xử lý">Đang xử lý</option>
+                        <option value="Đã phản hồi">Đã phản hồi</option>
+                        <option value="Đã đóng">Đã đóng</option>
+                    </select>
+                    <button class="admin-button" type="submit">Tìm kiếm</button>
+                    <button class="contacts-clear" id="contactsClear" type="button">
+                        Làm mới
+                    </button>
+                </form>
+
+                <p id="contactsMessage" class="contacts-message" role="status"></p>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table contacts-table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Khách hàng</th>
+                                <th>Chủ đề</th>
+                                <th>Ngày gửi</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactsTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <dialog id="contactDialog" class="contacts-dialog">
+        <div class="contacts-dialog-header">
+            <h2>Chi tiết liên hệ</h2>
+            <button type="button" id="contactDialogClose" aria-label="Đóng">×</button>
+        </div>
+
+        <div class="contacts-dialog-content">
+            <div class="contacts-detail-row">
+                <strong>Khách hàng</strong>
+                <span id="contactDetailName"></span>
+            </div>
+            <div class="contacts-detail-row">
+                <strong>Email</strong>
+                <span id="contactDetailEmail"></span>
+            </div>
+            <div class="contacts-detail-row">
+                <strong>Số điện thoại</strong>
+                <span id="contactDetailPhone"></span>
+            </div>
+            <div class="contacts-detail-row">
+                <strong>Ngày gửi</strong>
+                <span id="contactDetailDate"></span>
+            </div>
+            <div class="contacts-detail-row">
+                <strong>Chủ đề</strong>
+                <span id="contactDetailSubject"></span>
+            </div>
+
+            <div class="contacts-detail-content">
+                <strong>Nội dung khách gửi</strong>
+                <p id="contactDetailContent"></p>
+            </div>
+
+            <form id="contactReplyForm">
+                <label for="contactReplyStatus">Trạng thái xử lý</label>
+                <select id="contactReplyStatus" required>
+                    <option value="Chờ xử lý">Chờ xử lý</option>
+                    <option value="Đang xử lý">Đang xử lý</option>
+                    <option value="Đã phản hồi">Đã phản hồi</option>
+                    <option value="Đã đóng">Đã đóng</option>
+                </select>
+
+                <label for="contactReplyContent">Nội dung phản hồi</label>
+                <textarea
+                    id="contactReplyContent"
+                    rows="5"
+                    maxlength="3000"
+                    placeholder="Nhập nội dung phản hồi cho khách hàng"
+                ></textarea>
+
+                <p class="contacts-help">
+                    Nội dung phản hồi được lưu vào hệ thống,
+                    chưa tự động gửi email cho khách.
+                </p>
+
+                <p id="contactReplyMessage" class="contacts-message" role="status"></p>
+
+                <div class="contacts-dialog-actions">
+                    <button type="button" id="contactReplyCancel" class="contacts-clear">
+                        Đóng
+                    </button>
+                    <button type="submit" id="contactReplySubmit" class="admin-button">
+                        Lưu phản hồi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+</body>
+</html>

@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thanh toán đặt cọc | DNK Hotel</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/deposit.css">
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/deposit.js" defer></script>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main class="deposit-page">
+        <div class="deposit-container">
+            <span class="deposit-eyebrow">DNK HOTEL · THANH TOÁN TRỰC TUYẾN</span>
+            <h1>Thanh toán đặt cọc</h1>
+            <p class="deposit-intro">
+                Thanh toán trước 30% tiền phòng bằng VNPay Sandbox.
+                Bạn có thể xem trạng thái thanh toán ngay tại đây.
+            </p>
+
+            <div class="deposit-notice">
+                <strong>Chế độ thử nghiệm</strong>
+                <p>
+                    Đây là VNPay Sandbox. Không sử dụng thẻ hoặc
+                    tài khoản ngân hàng thật để thử nghiệm.
+                </p>
+            </div>
+
+            <div class="deposit-heading">
+                <h2>Đơn đặt phòng của tôi</h2>
+                <button id="reloadDeposits" type="button">
+                    Làm mới
+                </button>
+            </div>
+
+            <p id="depositMessage" role="status"></p>
+            <div id="depositList" class="deposit-list"></div>
+
+            <a href="/my-bookings.html" class="deposit-back">
+                Quay lại Đặt phòng của tôi
+            </a>
+        </div>
+    </main>
+
+    <div id="site-footer"></div>
+</body>
+</html>

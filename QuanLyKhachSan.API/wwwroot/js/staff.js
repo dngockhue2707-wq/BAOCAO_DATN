@@ -122,49 +122,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // KHUNG GIAO DIỆN STAFF
     const shell = el("div", "", "staff-shell");
-    const sidebar = el("aside", "", "staff-sidebar");
-    sidebar.appendChild(el("div", "DNK HOTEL", "staff-brand"));
 
-    const nav = el("nav", "", "staff-nav");
-
-    Object.entries(pages).forEach(([key, title]) => {
-        const link = el("a", title);
-        link.href = `/staff/${key}.html`;
-
-        if (key === page) {
-            link.classList.add("active");
-        }
-
-        nav.appendChild(link);
-    });
-
-    sidebar.appendChild(nav);
-
-    const logout = el("button", "Đăng xuất", "staff-logout");
-
-    logout.addEventListener("click", async () => {
-        try {
-            const token = await getToken();
-
-            const response = await fetch("/api/account/logout", {
-                method: "POST",
-                headers: { "X-CSRF-TOKEN": token },
-                credentials: "same-origin"
-            });
-
-            if (!response.ok) {
-                throw new Error("Đăng xuất thất bại.");
-            }
-
-            location.href = "/login.html";
-        } catch (error) {
-            alert(error.message);
-        }
-    });
-
-    sidebar.appendChild(logout);
+    const sidebar = document.createElement("div");
+    sidebar.id = "staffSidebar";
 
     const main = el("main", "", "staff-main");
     const heading = el("div", "", "staff-heading");
@@ -183,6 +144,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     main.append(heading, message, content);
     shell.append(sidebar, main);
     root.appendChild(shell);
+
+    document.dispatchEvent(new CustomEvent("staff-shell-ready"));
+
+    function notify(value) {
+        message.textContent = value;
+    }
 
     function notify(value) {
         message.textContent = value;

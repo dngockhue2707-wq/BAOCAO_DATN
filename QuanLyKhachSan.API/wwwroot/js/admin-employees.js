@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         $("employeeActive").value =
             employee?.active === false ? "false" : "true";
-
+        
         $("employeeFormDialog").showModal();
     }
 
@@ -400,36 +400,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("cancelEmployeeForm").addEventListener("click", () => {
         $("employeeFormDialog").close();
     });
-
+ 
     $("employeeForm").addEventListener("submit", async event => {
         event.preventDefault();
 
         const id = $("employeeId").value.trim();
+        const isCreating = !id;
 
-        if (!id) {
-            showMessage(
-                "Chức năng thêm nhân viên cần tạo tài khoản NhanVien riêng.",
-                true
+        if (!isCreating) {
+            const employee = state.employees.find(
+                item => String(item.id) === id
             );
-            return;
-        }
 
-        const employee = state.employees.find(
-            item => String(item.id) === id
-        );
-
-        if (!employee || employee.role !== "NhanVien") {
-            showMessage("Không được chỉnh sửa tài khoản Admin.", true);
-            return;
+            if (!employee || employee.role !== "NhanVien") {
+                showMessage("Không được chỉnh sửa tài khoản Admin.", true);
+                return;
+            }
         }
 
         const data = {
             name: $("employeeFullName").value.trim(),
             position: $("employeePosition").value.trim(),
             phone: $("employeePhone").value.trim(),
-            email: $("employeeEmail").value.trim(),
-            active: $("employeeActive").value === "true"
+            email: $("employeeEmail").value.trim()
         };
+
+        if (isCreating) {
+            data.username = $("employeeUsername").value.trim();
+        } else {
+            data.active = $("employeeActive").value === "true";
+        }
 
         const submitButton = $("employeeForm").querySelector(
             'button[type="submit"]'
@@ -443,9 +443,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
             const result = await api(
-                `/api/admin/employees/${id}`,
+                isCreating
+                    ? "/api/admin/employees"
+                    : `/api/admin/employees/${id}`,
                 {
-                    method: "PUT",
+                    method: isCreating ? "POST" : "PUT",
                     headers: {
                         "Content-Type": "application/json",
                         "X-CSRF-TOKEN": state.csrfToken
@@ -459,7 +461,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             await loadEmployees();
 
             showMessage(
-                result.message || "Đã cập nhật nhân viên thành công."
+                result.message ||
+                (isCreating
+                    ? "Đã thêm nhân viên thành công."
+                    : "Đã cập nhật nhân viên thành công.")
             );
         } catch (error) {
             showMessage(error.message, true);
@@ -468,7 +473,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    $("logoutButton").addEventListener("click", logout);
 
     try {
         await verifyAdmin();

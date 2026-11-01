@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("19fa17ce-c36e-491f-95c4-14e0c149f298")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuanLyKhachSan.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aaede20623af26da87591b647958b523e0398b97")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuanLyKhachSan.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuanLyKhachSan.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

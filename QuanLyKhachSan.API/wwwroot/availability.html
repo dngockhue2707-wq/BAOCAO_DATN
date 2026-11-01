@@ -4,9 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiểm tra phòng trống | DNK Hotel</title>
+    <title>Tìm phòng trống | DNK Hotel</title>
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/availability.css">
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+    <script src="/js/availability.js" defer></script>
 </head>
 <body>
     <div id="site-header"></div>
@@ -17,8 +20,8 @@
                 <span>DNK HOTEL</span>
                 <h1>Tìm phòng còn trống</h1>
                 <p>
-                    Chọn ngày nhận và ngày trả phòng để xem
-                    những phòng có thể đặt trong khoảng thời gian đó.
+                    Lựa chọn thời gian lưu trú và số lượng khách
+                    để tìm loại phòng phù hợp với nhu cầu của bạn.
                 </p>
             </div>
 
@@ -33,15 +36,38 @@
                     <input id="checkOut" type="date" required>
                 </div>
 
+                <div class="availability-field">
+                    <label for="adults">Người lớn</label>
+                    <select id="adults" required>
+                        <option value="1">1 người</option>
+                        <option value="2" selected>2 người</option>
+                        <option value="3">3 người</option>
+                        <option value="4">4 người</option>
+                        <option value="5">5 người</option>
+                        <option value="6">6 người</option>
+                    </select>
+                </div>
+
+                <div class="availability-field">
+                    <label for="children">Trẻ em</label>
+                    <select id="children">
+                        <option value="0" selected>Không có</option>
+                        <option value="1">1 trẻ em</option>
+                        <option value="2">2 trẻ em</option>
+                        <option value="3">3 trẻ em</option>
+                        <option value="4">4 trẻ em</option>
+                    </select>
+                </div>
+
                 <button type="submit" id="searchAvailability">
                     Tìm phòng trống
                 </button>
             </form>
 
-            <p id="availabilityMessage" role="status"></p>
+            <p id="availabilityMessage" role="status" aria-live="polite"></p>
 
             <div class="availability-results-heading">
-                <h2>Phòng phù hợp</h2>
+                <h2>Loại phòng phù hợp</h2>
                 <span id="availabilityCount"></span>
             </div>
 
@@ -50,9 +76,5 @@
     </main>
 
     <div id="site-footer"></div>
-
-    <script src="/js/layout.js" defer></script>
-    <script src="/js/account-nav.js" defer></script>
-    <script src="/js/availability.js" defer></script>
 </body>
 </html>

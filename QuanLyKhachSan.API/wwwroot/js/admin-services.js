@@ -11,7 +11,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         pageSize: 10,
         csrfToken: "",
         loading: false,
-        saving: false
+        saving: false,
+        image: "",
+        previewUrl: ""
     };
 
     const text = value => {
@@ -161,6 +163,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         $("saveServiceButton").textContent = service
             ? "Lưu thay đổi"
             : "Thêm dịch vụ";
+
+        $("serviceImage").value = "";
+
+        $("serviceImagePreview").hidden = !service?.image;
+
+        if (service?.image) {
+            $("serviceImagePreview").src = service.image;
+            $("serviceImageMessage").textContent = "Ảnh hiện tại của dịch vụ.";
+        } else {
+            $("serviceImagePreview").removeAttribute("src");
+            $("serviceImageMessage").textContent = "Chưa có hình ảnh.";
+        }
+
+        $("deleteServiceImage").hidden = !service?.image;
 
         $("serviceFormDialog").showModal();
         $("serviceName").focus();
@@ -386,7 +402,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 unit: service.unit,
                 price: service.price,
                 description: service.description,
-                active: service.active === true
+                active: service.active === true,
+                image: service.image || null
             }));
 
             renderStatistics();
@@ -440,21 +457,84 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
         }
 
-        if (data.description.length > 1000) {
+        if (data.description.length > 500) {
             throw new Error(
-                "Mô tả không được quá 1000 ký tự."
+                "Mô tả không được quá 500 ký tự."
             );
         }
 
         return data;
     }
 
+    function previewServiceImage() {
+        const file = $("serviceImage").files[0];
+
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert("Ảnh không được vượt quá 5 MB.");
+            $("serviceImage").value = "";
+            return;
+        }
+
+        const allowed = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (!allowed.includes(file.type)) {
+            alert("Chỉ chấp nhận ảnh JPG, PNG hoặc WebP.");
+            $("serviceImage").value = "";
+            return;
+        }
+
+        const preview = $("serviceImagePreview");
+
+        preview.src = URL.createObjectURL(file);
+        preview.hidden = false;
+
+        $("serviceImageMessage").textContent = file.name;
+        $("deleteServiceImage").hidden = true;
+    }
+
+    async function uploadServiceImage(id) {
+        const file = $("serviceImage").files[0];
+
+        if (!file) return;
+
+        if (!state.csrfToken) {
+            await getCsrfToken();
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch(
+            `/api/admin/service-photos/${id}`,
+            {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "X-CSRF-TOKEN": state.csrfToken
+                },
+                body: formData
+            }
+        );
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                result.message || "Không tải được ảnh dịch vụ."
+            );
+        }
+    }
+
     async function saveService(event) {
         event.preventDefault();
 
-        if (state.saving) {
-            return;
-        }
+        if (state.saving) return;
 
         let data;
 
@@ -480,23 +560,30 @@ document.addEventListener("DOMContentLoaded", async () => {
                 data
             );
 
-            $("serviceFormDialog").close();
+            let serviceId = editing ? Number(id) : result.id;
 
-            if (editing) {
-                const index = state.services.findIndex(
-                    service => String(service.id) === id
+            if (!editing && !serviceId) {
+                await loadServices();
+
+                const created = state.services.find(service =>
+                    service.name === data.name &&
+                    Number(service.price) === data.price
                 );
 
-                if (index !== -1) {
-                    state.services[index] = {
-                        ...state.services[index],
-                        ...data
-                    };
-                }
-
-                renderStatistics();
-                applyFilters(false);
+                serviceId = created?.id;
             }
+
+            if (!serviceId && $("serviceImage").files.length > 0) {
+                throw new Error(
+                    "Dịch vụ đã được lưu nhưng không xác định được mã dịch vụ để tải ảnh. Hãy nhấn Làm mới và sửa dịch vụ để tải ảnh."
+                );
+            }
+
+            if ($("serviceImage").files.length > 0) {
+                await uploadServiceImage(serviceId);
+            }
+
+            $("serviceFormDialog").close();
 
             const refreshed = await loadServices();
 
@@ -506,12 +593,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     (editing
                         ? "Đã cập nhật dịch vụ."
                         : "Đã thêm dịch vụ.")
-                );
-            } else {
-                showMessage(
-                    "Đã lưu dịch vụ nhưng chưa tải lại được danh sách. " +
-                    "Nhấn Làm mới để cập nhật dữ liệu.",
-                    true
                 );
             }
         } catch (error) {
@@ -654,7 +735,55 @@ document.addEventListener("DOMContentLoaded", async () => {
         $("serviceDetailDialog").close();
     });
 
-    $("logoutButton").addEventListener("click", logout);
+    $("serviceImage").addEventListener(
+        "change",
+        previewServiceImage
+    );
+
+    $("deleteServiceImage").addEventListener("click", async () => {
+        const id = $("serviceId").value;
+
+        if (!id) return;
+
+        if (!confirm("Bạn có chắc muốn xóa ảnh dịch vụ này?")) {
+            return;
+        }
+
+        try {
+            if (!state.csrfToken) {
+                await getCsrfToken();
+            }
+
+            const response = await fetch(
+                `/api/admin/service-photos/${id}`,
+                {
+                    method: "DELETE",
+                    credentials: "same-origin",
+                    headers: {
+                        "X-CSRF-TOKEN": state.csrfToken
+                    }
+                }
+            );
+
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(
+                    result.message || "Không thể xóa ảnh."
+                );
+            }
+
+            $("serviceImagePreview").hidden = true;
+            $("serviceImagePreview").removeAttribute("src");
+            $("serviceImageMessage").textContent = "Chưa có hình ảnh.";
+            $("deleteServiceImage").hidden = true;
+
+            await loadServices();
+            showMessage(result.message);
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    });
 
     try {
         await verifyAdmin();

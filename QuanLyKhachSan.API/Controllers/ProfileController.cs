@@ -1,10 +1,11 @@
 
-using System.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
 namespace QuanLyKhachSan.API.Controllers;
 
@@ -20,11 +21,11 @@ public class UpdateProfileDto
 [Authorize(Roles = "Customer")]
 public class ProfileController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
     private readonly IAntiforgery _antiforgery;
 
     public ProfileController(
-        SqlConnection db,
+        HotelDbContext db,
         IAntiforgery antiforgery)
     {
         _db = db;
@@ -43,42 +44,34 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> GetProfile()
     {
         int? id = AccountId();
-        if (id == null) return Unauthorized();
 
-        const string sql = """
-            SELECT
-                kh.HoTen,
-                kh.SoDienThoai,
-                kh.Email,
-                kh.DiaChi,
-                tk.TenDangNhap
-            FROM dbo.KhachHang kh
-            JOIN dbo.TaiKhoan tk
-              ON tk.MaTaiKhoan = kh.MaTaiKhoan
-            WHERE kh.MaTaiKhoan = @Id
-            """;
+        if (!id.HasValue)
+            return Unauthorized();
 
-        await _db.OpenAsync();
+        var profile = await _db.Set<KhachHang>()
+            .AsNoTracking()
+            .Where(x => x.MaTaiKhoan == id.Value)
+            .Select(x => new
+            {
+                fullName = x.HoTen,
+                phone = x.SoDienThoai ?? "",
+                email = x.Email ?? "",
+                address = x.DiaChi ?? "",
+                username = x.MaTaiKhoanNavigation != null
+                    ? x.MaTaiKhoanNavigation.TenDangNhap
+                    : ""
+            })
+            .FirstOrDefaultAsync();
 
-        using var cmd = new SqlCommand(sql, _db);
-        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id.Value;
-
-        using var reader = await cmd.ExecuteReaderAsync();
-
-        if (!await reader.ReadAsync())
+        if (profile == null)
+        {
             return NotFound(new
             {
                 message = "Chưa có hồ sơ khách hàng."
             });
+        }
 
-        return Ok(new
-        {
-            fullName = reader.IsDBNull(0) ? "" : reader.GetString(0),
-            phone = reader.IsDBNull(1) ? "" : reader.GetString(1),
-            email = reader.IsDBNull(2) ? "" : reader.GetString(2),
-            address = reader.IsDBNull(3) ? "" : reader.GetString(3),
-            username = reader.GetString(4)
-        });
+        return Ok(profile);
     }
 
     [HttpPut]
@@ -98,13 +91,16 @@ public class ProfileController : ControllerBase
         }
 
         int? id = AccountId();
-        if (id == null) return Unauthorized();
+
+        if (!id.HasValue)
+            return Unauthorized();
 
         string name = dto.FullName?.Trim() ?? "";
         string phone = dto.Phone?.Trim() ?? "";
         string address = dto.Address?.Trim() ?? "";
 
-        if (name.Length < 2 || name.Length > 100 ||
+        if (name.Length < 2 ||
+            name.Length > 100 ||
             phone.Length > 20 ||
             address.Length > 255)
         {
@@ -114,31 +110,23 @@ public class ProfileController : ControllerBase
             });
         }
 
-        const string sql = """
-            UPDATE dbo.KhachHang
-            SET HoTen = @FullName,
-                SoDienThoai = @Phone,
-                DiaChi = @Address
-            WHERE MaTaiKhoan = @Id
-            """;
+        var customer = await _db.Set<KhachHang>()
+            .FirstOrDefaultAsync(x =>
+                x.MaTaiKhoan == id.Value);
 
-        await _db.OpenAsync();
+        if (customer == null)
+        {
+            return NotFound(new
+            {
+                message = "Không tìm thấy hồ sơ."
+            });
+        }
 
-        using var cmd = new SqlCommand(sql, _db);
+        customer.HoTen = name;
+        customer.SoDienThoai = phone;
+        customer.DiaChi = address;
 
-        cmd.Parameters.Add("@FullName", SqlDbType.NVarChar, 100)
-            .Value = name;
-        cmd.Parameters.Add("@Phone", SqlDbType.VarChar, 20)
-            .Value = phone;
-        cmd.Parameters.Add("@Address", SqlDbType.NVarChar, 255)
-            .Value = address;
-        cmd.Parameters.Add("@Id", SqlDbType.Int)
-            .Value = id.Value;
-
-        int affected = await cmd.ExecuteNonQueryAsync();
-
-        if (affected == 0)
-            return NotFound(new { message = "Không tìm thấy hồ sơ." });
+        await _db.SaveChangesAsync();
 
         return Ok(new
         {

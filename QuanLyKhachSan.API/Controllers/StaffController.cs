@@ -1,9 +1,12 @@
+
 using System.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
 namespace QuanLyKhachSan.API.Controllers;
 
@@ -12,11 +15,11 @@ namespace QuanLyKhachSan.API.Controllers;
 [Authorize(Roles = "Staff")]
 public class StaffController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
     private readonly IAntiforgery _antiforgery;
 
     public StaffController(
-        SqlConnection db,
+        HotelDbContext db,
         IAntiforgery antiforgery)
     {
         _db = db;
@@ -47,73 +50,57 @@ public class StaffController : ControllerBase
     [HttpGet("dashboard")]
     public async Task<IActionResult> Dashboard()
     {
-        const string sql = """
-            SELECT
-                (SELECT COUNT(*) FROM dbo.DatPhong
-                 WHERE TrangThai = N'Chờ xác nhận'),
-                (SELECT COUNT(*) FROM dbo.DatPhong
-                 WHERE NgayNhanPhong = CAST(GETDATE() AS date)
-                   AND TrangThai IN
-                   (N'Đã xác nhận', N'Đã đặt cọc')),
-                (SELECT COUNT(*) FROM dbo.DatPhong
-                 WHERE TrangThai = N'Đã nhận phòng'),
-                (SELECT COUNT(*) FROM dbo.Phong
-                 WHERE TrangThai = N'Đang dọn')
-            """;
+        var today = DateOnly.FromDateTime(DateTime.Today);
 
-        await _db.OpenAsync();
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
-        await r.ReadAsync();
+        var pending = await _db.Set<DatPhong>()
+            .CountAsync(x => x.TrangThai == "Chờ xác nhận");
+
+        var arrivalsToday = await _db.Set<DatPhong>()
+            .CountAsync(x =>
+                x.NgayNhanPhong == today &&
+                (x.TrangThai == "Đã xác nhận" ||
+                 x.TrangThai == "Đã đặt cọc"));
+
+        var checkedIn = await _db.Set<DatPhong>()
+            .CountAsync(x => x.TrangThai == "Đã nhận phòng");
+
+        var cleaning = await _db.Set<Phong>()
+            .CountAsync(x => x.TrangThai == "Đang dọn");
 
         return Ok(new
         {
-            pending = r.GetInt32(0),
-            arrivalsToday = r.GetInt32(1),
-            checkedIn = r.GetInt32(2),
-            cleaning = r.GetInt32(3)
+            pending,
+            arrivalsToday,
+            checkedIn,
+            cleaning
         });
     }
 
     [HttpGet("bookings")]
     public async Task<IActionResult> Bookings()
     {
-        const string sql = """
-            SELECT dp.MaDatPhong, kh.HoTen,
-                   p.SoPhong, lp.TenLoaiPhong,
-                   dp.NgayNhanPhong, dp.NgayTraPhong,
-                   dp.TrangThai
-            FROM dbo.DatPhong dp
-            JOIN dbo.KhachHang kh
-              ON dp.MaKhachHang = kh.MaKhachHang
-            JOIN dbo.ChiTietDatPhong ct
-              ON dp.MaDatPhong = ct.MaDatPhong
-            JOIN dbo.Phong p
-              ON ct.MaPhong = p.MaPhong
-            JOIN dbo.LoaiPhong lp
-              ON p.MaLoaiPhong = lp.MaLoaiPhong
-            ORDER BY dp.MaDatPhong DESC
-            """;
-
-        var items = new List<object>();
-        await _db.OpenAsync();
-
-        using var cmd = new SqlCommand(sql, _db);
-        using var r = await cmd.ExecuteReaderAsync();
-
-        while (await r.ReadAsync())
-        {
-            items.Add(new
+        var items = await (
+            from booking in _db.Set<DatPhong>()
+            join customer in _db.Set<KhachHang>()
+                on booking.MaKhachHang equals customer.MaKhachHang
+            join detail in _db.Set<ChiTietDatPhong>()
+                on booking.MaDatPhong equals detail.MaDatPhong
+            join room in _db.Set<Phong>()
+                on detail.MaPhong equals room.MaPhong
+            join type in _db.Set<LoaiPhong>()
+                on room.MaLoaiPhong equals type.MaLoaiPhong
+            orderby booking.MaDatPhong descending
+            select new
             {
-                id = r.GetInt32(0),
-                customer = r.GetString(1),
-                roomNumber = r.GetString(2),
-                roomType = r.GetString(3),
-                checkIn = r.GetDateTime(4),
-                checkOut = r.GetDateTime(5),
-                status = r.GetString(6)
-            });
-        }
+                id = booking.MaDatPhong,
+                customer = customer.HoTen,
+                roomNumber = room.SoPhong,
+                roomType = type.TenLoaiPhong,
+                checkIn = booking.NgayNhanPhong,
+                checkOut = booking.NgayTraPhong,
+                status = booking.TrangThai
+            }
+        ).AsNoTracking().ToListAsync();
 
         return Ok(new { items });
     }
@@ -122,99 +109,155 @@ public class StaffController : ControllerBase
     public async Task<IActionResult> Confirm(int id)
     {
         if (!await ValidCsrf())
-            return BadRequest(new { message = "Mã bảo vệ không hợp lệ." });
-
-        const string sql = """
-            UPDATE dbo.DatPhong
-            SET TrangThai = N'Đã xác nhận',
-                NgayXacNhan = SYSDATETIME(),
-                MaNhanVienXacNhan = (
-                    SELECT TOP 1 nv.MaNhanVien
-                    FROM dbo.NhanVien nv
-                    WHERE nv.MaTaiKhoan = @AccountId
-                )
-            WHERE MaDatPhong = @Id
-              AND TrangThai = N'Chờ xác nhận'
-              AND NgayNhanPhong >= CAST(GETDATE() AS date)
-            """;
+        {
+            return BadRequest(new
+            {
+                message = "Mã bảo vệ không hợp lệ."
+            });
+        }
 
         int? accountId = AccountId();
-        if (accountId == null) return Unauthorized();
 
-        await _db.OpenAsync();
+        if (!accountId.HasValue)
+            return Unauthorized();
 
-        using var cmd = new SqlCommand(sql, _db);
-        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-        cmd.Parameters.Add("@AccountId", SqlDbType.Int)
-            .Value = accountId.Value;
+        var employeeId = await _db.Set<NhanVien>()
+            .AsNoTracking()
+            .Where(x => x.MaTaiKhoan == accountId.Value)
+            .Select(x => (int?)x.MaNhanVien)
+            .FirstOrDefaultAsync();
 
-        int count = await cmd.ExecuteNonQueryAsync();
+        if (!employeeId.HasValue)
+        {
+            return BadRequest(new
+            {
+                message = "Không tìm thấy hồ sơ nhân viên."
+            });
+        }
 
-        return count == 0
-            ? BadRequest(new { message = "Không thể xác nhận đơn này." })
-            : Ok(new { success = true, message = "Đã xác nhận đơn." });
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
+        int affected = await _db.Set<DatPhong>()
+            .Where(x =>
+                x.MaDatPhong == id &&
+                x.TrangThai == "Chờ xác nhận" &&
+                x.NgayNhanPhong >= today)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(
+                    x => x.TrangThai,
+                    "Đã xác nhận")
+                .SetProperty(
+                    x => x.NgayXacNhan,
+                    DateTime.Now)
+                .SetProperty(
+                    x => x.MaNhanVienXacNhan,
+                    employeeId.Value));
+
+        if (affected == 0)
+        {
+            return BadRequest(new
+            {
+                message = "Không thể xác nhận đơn này."
+            });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Đã xác nhận đơn."
+        });
     }
 
     [HttpPost("bookings/{id:int}/check-in")]
     public async Task<IActionResult> CheckIn(int id)
     {
         if (!await ValidCsrf())
-            return BadRequest(new { message = "Mã bảo vệ không hợp lệ." });
+        {
+            return BadRequest(new
+            {
+                message = "Mã bảo vệ không hợp lệ."
+            });
+        }
 
-        await _db.OpenAsync();
-        using var tx = (SqlTransaction)await _db.BeginTransactionAsync(
-            IsolationLevel.Serializable);
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
+        await using var transaction =
+            await _db.Database.BeginTransactionAsync(
+                IsolationLevel.Serializable);
 
         try
         {
-            const string sql = """
-                UPDATE dp
-                SET dp.TrangThai = N'Đã nhận phòng'
-                OUTPUT INSERTED.MaDatPhong
-                FROM dbo.DatPhong dp
-                WHERE dp.MaDatPhong = @Id
-                  AND dp.TrangThai IN
-                    (N'Đã xác nhận', N'Đã đặt cọc')
-                  AND dp.NgayNhanPhong <= CAST(GETDATE() AS date)
-                  AND dp.NgayTraPhong > CAST(GETDATE() AS date)
-                  AND NOT EXISTS
-                  (
-                      SELECT 1
-                      FROM dbo.ChiTietDatPhong ct
-                      JOIN dbo.Phong p
-                        ON p.MaPhong = ct.MaPhong
-                      WHERE ct.MaDatPhong = dp.MaDatPhong
-                        AND p.TrangThai <> N'Trống'
-                  )
-                """;
+            var booking = await _db.Set<DatPhong>()
+                .FirstOrDefaultAsync(x =>
+                    x.MaDatPhong == id &&
+                    (x.TrangThai == "Đã xác nhận" ||
+                     x.TrangThai == "Đã đặt cọc") &&
+                    x.NgayNhanPhong <= today &&
+                    x.NgayTraPhong > today);
 
-            using var cmd = new SqlCommand(sql, _db, tx);
-            cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-
-            object? updated = await cmd.ExecuteScalarAsync();
-
-            if (updated == null)
+            if (booking == null)
             {
-                await tx.RollbackAsync();
+                await transaction.RollbackAsync();
+
+                return BadRequest(new
+                {
+                    message = "Đơn chưa đủ điều kiện nhận phòng."
+                });
+            }
+
+            var roomIds = await _db.Set<ChiTietDatPhong>()
+                .Where(x => x.MaDatPhong == id)
+                .Select(x => x.MaPhong)
+                .ToListAsync();
+
+            if (roomIds.Count == 0)
+            {
+                await transaction.RollbackAsync();
+
+                return BadRequest(new
+                {
+                    message = "Đơn chưa có phòng được phân bổ."
+                });
+            }
+
+            int occupied = await _db.Set<Phong>()
+                .CountAsync(x =>
+                    roomIds.Contains(x.MaPhong) &&
+                    x.TrangThai != "Trống");
+
+            if (occupied > 0)
+            {
+                await transaction.RollbackAsync();
+
                 return BadRequest(new
                 {
                     message = "Chưa thể nhận phòng. Kiểm tra lịch và trạng thái phòng."
                 });
             }
 
-            using var roomCmd = new SqlCommand("""
-                UPDATE p
-                SET p.TrangThai = N'Đang sử dụng'
-                FROM dbo.Phong p
-                JOIN dbo.ChiTietDatPhong ct
-                  ON ct.MaPhong = p.MaPhong
-                WHERE ct.MaDatPhong = @Id
-                """, _db, tx);
+            booking.TrangThai = "Đã nhận phòng";
 
-            roomCmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-            await roomCmd.ExecuteNonQueryAsync();
+            int updatedRooms = await _db.Set<Phong>()
+                .Where(x =>
+                    roomIds.Contains(x.MaPhong) &&
+                    x.TrangThai == "Trống")
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(
+                        x => x.TrangThai,
+                        "Đang sử dụng"));
 
-            await tx.CommitAsync();
+            if (updatedRooms != roomIds.Distinct().Count())
+            {
+                await transaction.RollbackAsync();
+
+                return Conflict(new
+                {
+                    message = "Trạng thái phòng đã thay đổi. Vui lòng thử lại."
+                });
+            }
+
+            await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             return Ok(new
             {
@@ -224,7 +267,7 @@ public class StaffController : ControllerBase
         }
         catch
         {
-            await SafeRollback(tx);
+            await transaction.RollbackAsync();
             throw;
         }
     }
@@ -233,48 +276,60 @@ public class StaffController : ControllerBase
     public async Task<IActionResult> CheckOut(int id)
     {
         if (!await ValidCsrf())
-            return BadRequest(new { message = "Mã bảo vệ không hợp lệ." });
+        {
+            return BadRequest(new
+            {
+                message = "Mã bảo vệ không hợp lệ."
+            });
+        }
 
-        await _db.OpenAsync();
-        using var tx = (SqlTransaction)await _db.BeginTransactionAsync(
-            IsolationLevel.Serializable);
+        await using var transaction =
+            await _db.Database.BeginTransactionAsync(
+                IsolationLevel.Serializable);
 
         try
         {
-            using var cmd = new SqlCommand("""
-                UPDATE dbo.DatPhong
-                SET TrangThai = N'Đã trả phòng'
-                OUTPUT INSERTED.MaDatPhong
-                WHERE MaDatPhong = @Id
-                  AND TrangThai = N'Đã nhận phòng'
-                """, _db, tx);
+            var booking = await _db.Set<DatPhong>()
+                .FirstOrDefaultAsync(x =>
+                    x.MaDatPhong == id &&
+                    x.TrangThai == "Đã nhận phòng");
 
-            cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-
-            object? updated = await cmd.ExecuteScalarAsync();
-
-            if (updated == null)
+            if (booking == null)
             {
-                await tx.RollbackAsync();
+                await transaction.RollbackAsync();
+
                 return BadRequest(new
                 {
                     message = "Đơn không ở trạng thái đã nhận phòng."
                 });
             }
 
-            using var roomCmd = new SqlCommand("""
-                UPDATE p
-                SET p.TrangThai = N'Đang dọn'
-                FROM dbo.Phong p
-                JOIN dbo.ChiTietDatPhong ct
-                  ON ct.MaPhong = p.MaPhong
-                WHERE ct.MaDatPhong = @Id
-                """, _db, tx);
+            var roomIds = await _db.Set<ChiTietDatPhong>()
+                .Where(x => x.MaDatPhong == id)
+                .Select(x => x.MaPhong)
+                .ToListAsync();
 
-            roomCmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-            await roomCmd.ExecuteNonQueryAsync();
+            if (roomIds.Count == 0)
+            {
+                await transaction.RollbackAsync();
 
-            await tx.CommitAsync();
+                return BadRequest(new
+                {
+                    message = "Không tìm thấy phòng của đơn đặt."
+                });
+            }
+
+            booking.TrangThai = "Đã trả phòng";
+
+            await _db.Set<Phong>()
+                .Where(x => roomIds.Contains(x.MaPhong))
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(
+                        x => x.TrangThai,
+                        "Đang dọn"));
+
+            await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             return Ok(new
             {
@@ -284,18 +339,173 @@ public class StaffController : ControllerBase
         }
         catch
         {
-            await SafeRollback(tx);
+            await transaction.RollbackAsync();
             throw;
         }
     }
-
-    private static async Task SafeRollback(SqlTransaction tx)
+    
+    [HttpGet("operations/rooms")]
+    private async Task<bool> HasActiveBooking(int roomId)
     {
-        try
-        {
-            await tx.RollbackAsync();
-        }
-        catch (InvalidOperationException) { }
-        catch (SqlException) { }
+        return await (
+            from detail in _db.Set<ChiTietDatPhong>()
+            join booking in _db.Set<DatPhong>()
+                on detail.MaDatPhong equals booking.MaDatPhong
+            where detail.MaPhong == roomId
+                && booking.TrangThai == "Đã nhận phòng"
+            select booking.MaDatPhong
+        ).AnyAsync();
     }
+
+    private async Task<bool> HasUpcomingBooking(int roomId)
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
+        return await (
+            from detail in _db.Set<ChiTietDatPhong>()
+            join booking in _db.Set<DatPhong>()
+                on detail.MaDatPhong equals booking.MaDatPhong
+            where detail.MaPhong == roomId
+                && (booking.TrangThai == "Chờ xác nhận"
+                    || booking.TrangThai == "Đã xác nhận"
+                    || booking.TrangThai == "Đã đặt cọc"
+                    || booking.TrangThai == "Đã nhận phòng")
+                && booking.NgayTraPhong > today
+            select booking.MaDatPhong
+        ).AnyAsync();
+    }
+
+    [HttpPost("operations/rooms/{id:int}/cleaned")]
+    public async Task<IActionResult> MarkRoomCleaned(int id)
+    {
+        if (!await ValidCsrf())
+        {
+            return BadRequest(new
+            {
+                message = "Mã bảo vệ không hợp lệ."
+            });
+        }
+
+        if (await HasActiveBooking(id))
+        {
+            return BadRequest(new
+            {
+                message = "Không thể hoàn tất dọn phòng khi phòng vẫn có khách."
+            });
+        }
+
+        if (await HasUpcomingBooking(id))
+        {
+            return BadRequest(new
+            {
+                message = "Phòng đang có đơn đặt chưa hoàn tất. Vui lòng kiểm tra lịch đặt phòng trước khi đưa phòng về trạng thái trống."
+            });
+        }
+
+        int affected = await _db.Set<Phong>()
+            .Where(x => x.MaPhong == id && x.TrangThai == "Đang dọn")
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.TrangThai, "Trống"));
+
+        if (affected == 0)
+        {
+            return BadRequest(new
+            {
+                message = "Phòng không ở trạng thái đang dọn hoặc không tồn tại."
+            });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Đã hoàn tất vệ sinh. Phòng hiện đã sẵn sàng."
+        });
+    }
+
+    [HttpPost("operations/rooms/{id:int}/maintenance")]
+    public async Task<IActionResult> StartRoomMaintenance(int id)
+    {
+        if (!await ValidCsrf())
+        {
+            return BadRequest(new
+            {
+                message = "Mã bảo vệ không hợp lệ."
+            });
+        }
+
+        if (await HasActiveBooking(id))
+        {
+            return BadRequest(new
+            {
+                message = "Không thể bảo trì phòng đang có khách."
+            });
+        }
+
+        if (await HasUpcomingBooking(id))
+        {
+            return BadRequest(new
+            {
+                message = "Phòng đã có lịch đặt trong tương lai. Không thể chuyển sang bảo trì."
+            });
+        }
+
+        int affected = await _db.Set<Phong>()
+            .Where(x => x.MaPhong == id && x.TrangThai == "Trống")
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.TrangThai, "Bảo trì"));
+
+        if (affected == 0)
+        {
+            return BadRequest(new
+            {
+                message = "Chỉ có thể đưa phòng đang trống vào bảo trì."
+            });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Đã chuyển phòng sang trạng thái bảo trì."
+        });
+    }
+
+    [HttpPost("operations/rooms/{id:int}/maintenance-complete")]
+    public async Task<IActionResult> CompleteRoomMaintenance(int id)
+    {
+        if (!await ValidCsrf())
+        {
+            return BadRequest(new
+            {
+                message = "Mã bảo vệ không hợp lệ."
+            });
+        }
+
+        if (await HasUpcomingBooking(id))
+        {
+            return BadRequest(new
+            {
+                message = "Phòng đang có lịch đặt chưa hoàn tất. Không thể đưa về trạng thái trống."
+            });
+        }
+
+        int affected = await _db.Set<Phong>()
+            .Where(x => x.MaPhong == id && x.TrangThai == "Bảo trì")
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.TrangThai, "Trống"));
+
+        if (affected == 0)
+        {
+            return BadRequest(new
+            {
+                message = "Phòng không ở trạng thái bảo trì hoặc không tồn tại."
+            });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Đã hoàn tất bảo trì. Phòng hiện đã sẵn sàng."
+        });
+    }
+
 }

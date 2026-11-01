@@ -1,6 +1,8 @@
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
 namespace QuanLyKhachSan.API.Controllers;
 
@@ -8,9 +10,9 @@ namespace QuanLyKhachSan.API.Controllers;
 [Route("api/room-availability")]
 public class RoomAvailabilityController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
 
-    public RoomAvailabilityController(SqlConnection db)
+    public RoomAvailabilityController(HotelDbContext db)
     {
         _db = db;
     }
@@ -63,101 +65,46 @@ public class RoomAvailabilityController : ControllerBase
             });
         }
 
-        if (_db.State != ConnectionState.Open)
-        {
-            await _db.OpenAsync();
-        }
+        var busyRoomIds = _db.Set<ChiTietDatPhong>()
+            .AsNoTracking()
+            .Where(x =>
+                x.MaDatPhongNavigation.TrangThai == "Chờ xác nhận" ||
+                x.MaDatPhongNavigation.TrangThai == "Đã xác nhận" ||
+                x.MaDatPhongNavigation.TrangThai == "Đã đặt cọc" ||
+                x.MaDatPhongNavigation.TrangThai == "Đã nhận phòng")
+            .Where(x =>
+                x.MaDatPhongNavigation.NgayNhanPhong < checkOut &&
+                x.MaDatPhongNavigation.NgayTraPhong > checkIn)
+            .Select(x => x.MaPhong);
 
-        const string sql = """
-            SELECT
-                p.MaPhong,
-                p.SoPhong,
-                p.Tang,
-                p.MaLoaiPhong,
-                lp.TenLoaiPhong,
-                lp.GiaCoBan,
-                lp.SucChuaNguoiLon,
-                lp.SucChuaTreEm,
-                lp.DienTich,
-                p.MoTa
-            FROM dbo.Phong p
-            INNER JOIN dbo.LoaiPhong lp
-                ON lp.MaLoaiPhong = p.MaLoaiPhong
-            WHERE p.TrangThai = N'Trống'
-              AND lp.TrangThai = 1
-              AND (@RoomTypeId IS NULL OR p.MaLoaiPhong = @RoomTypeId)
-              AND NOT EXISTS
-              (
-                  SELECT 1
-                  FROM dbo.ChiTietDatPhong ct
-                  INNER JOIN dbo.DatPhong dp
-                      ON dp.MaDatPhong = ct.MaDatPhong
-                  WHERE ct.MaPhong = p.MaPhong
-                    AND dp.TrangThai IN
-                    (
-                        N'Chờ xác nhận',
-                        N'Đã xác nhận',
-                        N'Đã đặt cọc',
-                        N'Đã nhận phòng'
-                    )
-                    AND dp.NgayNhanPhong < @CheckOut
-                    AND dp.NgayTraPhong > @CheckIn
-              )
-            ORDER BY
-                lp.GiaCoBan,
-                p.Tang,
-                p.SoPhong
-            """;
-
-        using var command = new SqlCommand(sql, _db);
-
-        command.Parameters.Add(
-            "@CheckIn",
-            SqlDbType.Date
-        ).Value = checkIn.ToDateTime(TimeOnly.MinValue);
-
-        command.Parameters.Add(
-            "@CheckOut",
-            SqlDbType.Date
-        ).Value = checkOut.ToDateTime(TimeOnly.MinValue);
-
-        command.Parameters.Add(
-            "@RoomTypeId",
-            SqlDbType.Int
-        ).Value = roomTypeId.HasValue
-            ? roomTypeId.Value
-            : DBNull.Value;
-
-        var rooms = new List<object>();
-
-        using var reader = await command.ExecuteReaderAsync();
-
-        while (await reader.ReadAsync())
-        {
-            decimal price = reader.GetDecimal(5);
-
-            rooms.Add(new
+        var rooms = await _db.Set<Phong>()
+            .AsNoTracking()
+            .Where(x => x.TrangThai == "Trống")
+            .Where(x => x.MaLoaiPhongNavigation.TrangThai)
+            .Where(x =>
+                !roomTypeId.HasValue ||
+                x.MaLoaiPhong == roomTypeId.Value)
+            .Where(x => !busyRoomIds.Contains(x.MaPhong))
+            .OrderBy(x => x.MaLoaiPhongNavigation.GiaCoBan)
+            .ThenBy(x => x.Tang)
+            .ThenBy(x => x.SoPhong)
+            .Select(x => new
             {
-                id = reader.GetInt32(0),
-                roomNumber = reader.GetString(1),
-                floor = reader.IsDBNull(2)
-                    ? (int?)null
-                    : reader.GetInt32(2),
-                roomTypeId = reader.GetInt32(3),
-                roomTypeName = reader.GetString(4),
-                pricePerNight = price,
-                adultCapacity = reader.GetInt32(6),
-                childCapacity = reader.GetInt32(7),
-                area = reader.IsDBNull(8)
-                    ? (decimal?)null
-                    : reader.GetDecimal(8),
-                description = reader.IsDBNull(9)
-                    ? ""
-                    : reader.GetString(9),
+                id = x.MaPhong,
+                roomNumber = x.SoPhong,
+                floor = x.Tang,
+                roomTypeId = x.MaLoaiPhong,
+                roomTypeName = x.MaLoaiPhongNavigation.TenLoaiPhong,
+                pricePerNight = x.MaLoaiPhongNavigation.GiaCoBan,
+                adultCapacity = x.MaLoaiPhongNavigation.SucChuaNguoiLon,
+                childCapacity = x.MaLoaiPhongNavigation.SucChuaTreEm,
+                area = x.MaLoaiPhongNavigation.DienTich,
+                description = x.MoTa ?? "",
                 nights,
-                estimatedTotal = price * nights
-            });
-        }
+                estimatedTotal =
+                    x.MaLoaiPhongNavigation.GiaCoBan * nights
+            })
+            .ToListAsync();
 
         return Ok(new
         {

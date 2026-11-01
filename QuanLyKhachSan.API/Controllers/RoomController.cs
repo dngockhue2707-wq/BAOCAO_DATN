@@ -1,7 +1,8 @@
 
-using System.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
 namespace QuanLyKhachSan.API.Controllers;
 
@@ -9,9 +10,9 @@ namespace QuanLyKhachSan.API.Controllers;
 [Route("api/rooms")]
 public class RoomController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
 
-    public RoomController(SqlConnection db)
+    public RoomController(HotelDbContext db)
     {
         _db = db;
     }
@@ -38,139 +39,174 @@ public class RoomController : ControllerBase
             });
         }
 
-        const string sql = """
-            SELECT
-                lp.MaLoaiPhong,
-                lp.TenLoaiPhong,
-                lp.MoTa,
-                lp.SucChuaNguoiLon,
-                lp.SucChuaTreEm,
-                lp.DienTich,
-                lp.SoGiuong,
-                lp.LoaiGiuong,
-                lp.GiaCoBan,
-                h.DuongDan,
-                ISNULL(s.TongPhong, 0) AS TongPhong,
-                ISNULL(s.PhongConTrong, 0) AS PhongConTrong
-            FROM dbo.LoaiPhong lp
+        var startDate = DateOnly.FromDateTime(start);
+        var endDate = DateOnly.FromDateTime(end);
 
-            OUTER APPLY
-            (
-                SELECT TOP 1 DuongDan
-                FROM dbo.HinhAnhPhong
-                WHERE MaLoaiPhong = lp.MaLoaiPhong
-                ORDER BY AnhDaiDien DESC, MaHinhAnh
-            ) h
-
-            OUTER APPLY
-            (
-                SELECT
-                    COUNT(*) AS TongPhong,
-                    COALESCE(
-                        SUM(
-                            CASE
-                                WHEN p.TrangThai = N'Trống'
-                                     AND booking.MaPhong IS NULL
-                                THEN 1
-                                ELSE 0
-                            END
-                        ),
-                        0
-                    ) AS PhongConTrong
-                FROM dbo.Phong p
-
-                OUTER APPLY
-                (
-                    SELECT TOP 1 ct.MaPhong
-                    FROM dbo.ChiTietDatPhong ct
-                    INNER JOIN dbo.DatPhong dp
-                        ON dp.MaDatPhong = ct.MaDatPhong
-                    WHERE ct.MaPhong = p.MaPhong
-                      AND dp.TrangThai IN
-                      (
-                          N'Chờ xác nhận',
-                          N'Đã xác nhận',
-                          N'Đã đặt cọc',
-                          N'Đã nhận phòng'
-                      )
-                      AND dp.NgayNhanPhong < @CheckOut
-                      AND dp.NgayTraPhong > @CheckIn
-                ) booking
-
-                WHERE p.MaLoaiPhong = lp.MaLoaiPhong
-            ) s
-
-            WHERE lp.TrangThai = 1
-              AND lp.SucChuaNguoiLon >= @Adults
-              AND lp.SucChuaTreEm >= @Children
-
-            ORDER BY lp.GiaCoBan
-            """;
-
-        var rooms = new List<object>();
-
-        if (_db.State != ConnectionState.Open)
+        string[] blockingStatuses =
         {
-            await _db.OpenAsync();
-        }
+            "Chờ xác nhận",
+            "Đã xác nhận",
+            "Đã đặt cọc",
+            "Đã nhận phòng"
+        };
 
-        using var cmd = new SqlCommand(sql, _db);
+        var busyRoomIds =
+            from detail in _db.Set<ChiTietDatPhong>()
+            join booking in _db.Set<DatPhong>()
+                on detail.MaDatPhong equals booking.MaDatPhong
+            where blockingStatuses.Contains(booking.TrangThai)
+               && booking.NgayNhanPhong < endDate
+               && booking.NgayTraPhong > startDate
+            select detail.MaPhong;
 
-        cmd.Parameters.Add(
-            "@CheckIn",
-            SqlDbType.Date
-        ).Value = start;
-
-        cmd.Parameters.Add(
-            "@CheckOut",
-            SqlDbType.Date
-        ).Value = end;
-
-        cmd.Parameters.Add(
-            "@Adults",
-            SqlDbType.Int
-        ).Value = adults;
-
-        cmd.Parameters.Add(
-            "@Children",
-            SqlDbType.Int
-        ).Value = children;
-
-        using var reader = await cmd.ExecuteReaderAsync();
-
-        while (await reader.ReadAsync())
-        {
-            rooms.Add(new
+        var roomTypes = await _db.Set<LoaiPhong>()
+            .AsNoTracking()
+            .Where(x =>
+                x.TrangThai &&
+                x.SucChuaNguoiLon >= adults &&
+                x.SucChuaTreEm >= children)
+            .OrderBy(x => x.GiaCoBan)
+            .Select(x => new
             {
-                maLoaiPhong = reader.GetInt32(0),
-                tenLoaiPhong = reader.GetString(1),
-                moTa = reader.IsDBNull(2)
-                    ? ""
-                    : reader.GetString(2),
-                sucChuaNguoiLon = reader.GetInt32(3),
-                sucChuaTreEm = reader.GetInt32(4),
-                dienTich = reader.IsDBNull(5)
-                    ? (decimal?)null
-                    : Convert.ToDecimal(reader.GetValue(5)),
-                soGiuong = reader.IsDBNull(6)
-                    ? 0
-                    : Convert.ToInt32(reader.GetValue(6)),
-                loaiGiuong = reader.IsDBNull(7)
-                    ? ""
-                    : reader.GetString(7),
-                giaCoBan = Convert.ToDecimal(reader.GetValue(8)),
-                hinhAnh = reader.IsDBNull(9)
-                    ? ""
-                    : reader.GetString(9),
-                tongPhong = reader.GetInt32(10),
-                phongConTrong = reader.GetInt32(11)
-            });
-        }
+                x.MaLoaiPhong,
+                x.TenLoaiPhong,
+                x.MoTa,
+                x.SucChuaNguoiLon,
+                x.SucChuaTreEm,
+                x.DienTich,
+                x.SoGiuong,
+                x.LoaiGiuong,
+                x.GiaCoBan
+            })
+            .ToListAsync();
+
+        var rooms = await _db.Set<Phong>()
+            .AsNoTracking()
+            .Select(x => new
+            {
+                x.MaLoaiPhong,
+                x.MaPhong,
+                x.TrangThai,
+                IsBusy = busyRoomIds.Contains(x.MaPhong)
+            })
+            .ToListAsync();
+
+        var images = await _db.Set<HinhAnhPhong>()
+            .AsNoTracking()
+            .OrderByDescending(x => x.AnhDaiDien)
+            .ThenBy(x => x.MaHinhAnh)
+            .Select(x => new
+            {
+                x.MaLoaiPhong,
+                x.DuongDan
+            })
+            .ToListAsync();
+
+        var imageLookup = images
+            .GroupBy(x => x.MaLoaiPhong)
+            .ToDictionary(
+                x => x.Key,
+                x => x.First().DuongDan
+            );
+
+        var roomLookup = rooms
+            .GroupBy(x => x.MaLoaiPhong)
+            .ToDictionary(
+                x => x.Key,
+                x => new
+                {
+                    Total = x.Count(),
+                    Available = x.Count(r =>
+                        r.TrangThai == "Trống" && !r.IsBusy)
+                }
+            );
+
+        var result = roomTypes.Select(type =>
+        {
+            roomLookup.TryGetValue(
+                type.MaLoaiPhong,
+                out var roomSummary);
+
+            imageLookup.TryGetValue(
+                type.MaLoaiPhong,
+                out var image);
+
+            return new
+            {
+                maLoaiPhong = type.MaLoaiPhong,
+                tenLoaiPhong = type.TenLoaiPhong,
+                moTa = type.MoTa ?? "",
+                sucChuaNguoiLon = type.SucChuaNguoiLon,
+                sucChuaTreEm = type.SucChuaTreEm,
+                dienTich = type.DienTich,
+                soGiuong = type.SoGiuong ?? 0,
+                loaiGiuong = type.LoaiGiuong ?? "",
+                giaCoBan = type.GiaCoBan,
+                hinhAnh = image ?? "",
+                tongPhong = roomSummary?.Total ?? 0,
+                phongConTrong = roomSummary?.Available ?? 0
+            };
+        }).ToList();
 
         return Ok(new
         {
             success = true,
-            danhSach = rooms
+            danhSach = result
+        });
+    }
+
+    [HttpGet("by-room/{roomId:int}")]
+    public async Task<IActionResult> GetRoomByRoomId(int roomId)
+    {
+        var room = await (
+            from p in _db.Set<Phong>().AsNoTracking()
+            join t in _db.Set<LoaiPhong>().AsNoTracking()
+                on p.MaLoaiPhong equals t.MaLoaiPhong
+            where p.MaPhong == roomId && t.TrangThai
+            select new
+            {
+                maPhong = p.MaPhong,
+                soPhong = p.SoPhong,
+                tang = p.Tang,
+                trangThai = p.TrangThai,
+                maLoaiPhong = t.MaLoaiPhong,
+                tenLoaiPhong = t.TenLoaiPhong,
+                moTa = t.MoTa ?? "",
+                sucChuaNguoiLon = t.SucChuaNguoiLon,
+                sucChuaTreEm = t.SucChuaTreEm,
+                dienTich = t.DienTich,
+                soGiuong = t.SoGiuong ?? 0,
+                loaiGiuong = t.LoaiGiuong ?? "",
+                giaCoBan = t.GiaCoBan
+            }
+        ).FirstOrDefaultAsync();
+
+        if (room == null)
+            return NotFound(new { message = "Không tìm thấy phòng." });
+
+        var images = await _db.Set<HinhAnhChiTietPhong>()
+            .AsNoTracking()
+            .Where(x => x.MaPhong == roomId)
+            .OrderByDescending(x => x.AnhDaiDien)
+            .ThenBy(x => x.ThuTuHienThi)
+            .Select(x => x.DuongDan)
+            .ToListAsync();
+
+        var amenities = await _db.Set<LoaiPhong>()
+            .AsNoTracking()
+            .Where(x => x.MaLoaiPhong == room.maLoaiPhong)
+            .SelectMany(x => x.MaTienNghis)
+            .Where(x => x.TrangThai)
+            .OrderBy(x => x.TenTienNghi)
+            .Select(x => x.TenTienNghi)
+            .ToListAsync();
+
+        return Ok(new
+        {
+            success = true,
+            room,
+            images,
+            amenities
         });
     }
 
@@ -185,126 +221,52 @@ public class RoomController : ControllerBase
             });
         }
 
-        if (_db.State != ConnectionState.Open)
+        var type = await _db.Set<LoaiPhong>()
+            .AsNoTracking()
+            .Where(x => x.MaLoaiPhong == id && x.TrangThai)
+            .Select(x => new
+            {
+                maLoaiPhong = x.MaLoaiPhong,
+                tenLoaiPhong = x.TenLoaiPhong,
+                moTa = x.MoTa ?? "",
+                sucChuaNguoiLon = x.SucChuaNguoiLon,
+                sucChuaTreEm = x.SucChuaTreEm,
+                dienTich = x.DienTich,
+                soGiuong = x.SoGiuong ?? 0,
+                loaiGiuong = x.LoaiGiuong ?? "",
+                giaCoBan = x.GiaCoBan
+            })
+            .FirstOrDefaultAsync();
+
+        if (type == null)
         {
-            await _db.OpenAsync();
+            return NotFound(new
+            {
+                message = "Không tìm thấy loại phòng."
+            });
         }
 
-        const string sql = """
-            SELECT
-                MaLoaiPhong,
-                TenLoaiPhong,
-                MoTa,
-                SucChuaNguoiLon,
-                SucChuaTreEm,
-                DienTich,
-                SoGiuong,
-                LoaiGiuong,
-                GiaCoBan
-            FROM dbo.LoaiPhong
-            WHERE MaLoaiPhong = @Id
-              AND TrangThai = 1
-            """;
-
-        object? room = null;
-
-        using (var cmd = new SqlCommand(sql, _db))
-        {
-            cmd.Parameters.Add(
-                "@Id",
-                SqlDbType.Int
-            ).Value = id;
-
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            if (!await reader.ReadAsync())
-            {
-                return NotFound(new
-                {
-                    message = "Không tìm thấy loại phòng."
-                });
-            }
-
-            room = new
-            {
-                maLoaiPhong = reader.GetInt32(0),
-                tenLoaiPhong = reader.GetString(1),
-                moTa = reader.IsDBNull(2)
-                    ? ""
-                    : reader.GetString(2),
-                sucChuaNguoiLon = reader.GetInt32(3),
-                sucChuaTreEm = reader.GetInt32(4),
-                dienTich = reader.IsDBNull(5)
-                    ? (decimal?)null
-                    : Convert.ToDecimal(reader.GetValue(5)),
-                soGiuong = reader.IsDBNull(6)
-                    ? 0
-                    : Convert.ToInt32(reader.GetValue(6)),
-                loaiGiuong = reader.IsDBNull(7)
-                    ? ""
-                    : reader.GetString(7),
-                giaCoBan = Convert.ToDecimal(reader.GetValue(8))
-            };
-        }
-
-        var images = new List<string>();
-
-        const string imageSql = """
-            SELECT DuongDan
-            FROM dbo.HinhAnhPhong
-            WHERE MaLoaiPhong = @Id
-            ORDER BY AnhDaiDien DESC, MaHinhAnh
-            """;
-
-        using (var cmd = new SqlCommand(imageSql, _db))
-        {
-            cmd.Parameters.Add(
-                "@Id",
-                SqlDbType.Int
-            ).Value = id;
-
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                if (!reader.IsDBNull(0))
-                {
-                    images.Add(reader.GetString(0));
-                }
-            }
-        }
-
-        var amenities = new List<string>();
-
-        const string amenitySql = """
-            SELECT tn.TenTienNghi
-            FROM dbo.PhongTienNghi pt
-            INNER JOIN dbo.TienNghi tn
-                ON tn.MaTienNghi = pt.MaTienNghi
-            WHERE pt.MaLoaiPhong = @Id
-              AND tn.TrangThai = 1
-            ORDER BY tn.TenTienNghi
-            """;
-
-        using (var cmd = new SqlCommand(amenitySql, _db))
-        {
-            cmd.Parameters.Add(
-                "@Id",
-                SqlDbType.Int
-            ).Value = id;
-
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                amenities.Add(reader.GetString(0));
-            }
-        }
+        var images = await _db.Set<HinhAnhPhong>()
+            .AsNoTracking()
+            .Where(x => x.MaLoaiPhong == id)
+            .OrderByDescending(x => x.AnhDaiDien)
+            .ThenBy(x => x.MaHinhAnh)
+            .Select(x => x.DuongDan)
+            .ToListAsync();
+       
+        var amenities = await _db.Set<LoaiPhong>()
+            .AsNoTracking()
+            .Where(x => x.MaLoaiPhong == id)
+            .SelectMany(x => x.MaTienNghis)
+            .Where(x => x.TrangThai)
+            .OrderBy(x => x.TenTienNghi)
+            .Select(x => x.TenTienNghi)
+            .ToListAsync();
 
         return Ok(new
         {
             success = true,
-            room,
+            room = type,
             images,
             amenities
         });

@@ -295,3 +295,60 @@
         flex-wrap: wrap;
     }
 }
+
+
+.customer-booking-history {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid #E8E0D7;
+}
+
+.customer-booking-history h3 {
+    margin: 0 0 8px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 23px;
+    color: #30251E;
+}
+
+.customer-booking-history p {
+    margin: 0 0 15px;
+    font-size: 14px;
+    color: #817569;
+}
+
+.customer-booking-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #E8E0D7;
+    border-radius: 8px;
+}
+
+.customer-booking-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    background: #FFFFFF;
+    font-size: 14px;
+}
+
+.customer-booking-table th,
+.customer-booking-table td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #E8E0D7;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.customer-booking-table th {
+    background: #F5F0EA;
+    color: #5A3C22;
+    font-weight: 600;
+}
+
+.customer-booking-table td {
+    color: #30251E;
+}
+
+.customer-booking-table tr:last-child td {
+    border-bottom: none;
+}

@@ -546,3 +546,9 @@
         padding: 75px 6%;
     }
 }
+
+.room-image {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}

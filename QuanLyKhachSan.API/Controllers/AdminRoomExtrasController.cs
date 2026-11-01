@@ -1,8 +1,10 @@
 
+using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
 namespace QuanLyKhachSan.API.Controllers;
 
@@ -11,11 +13,11 @@ namespace QuanLyKhachSan.API.Controllers;
 [Route("api/admin/room-extras")]
 public class AdminRoomExtrasController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
     private readonly IWebHostEnvironment _env;
 
     public AdminRoomExtrasController(
-        SqlConnection db,
+        HotelDbContext db,
         IWebHostEnvironment env)
     {
         _db = db;
@@ -28,68 +30,40 @@ public class AdminRoomExtrasController : ControllerBase
         public bool Active { get; set; } = true;
     }
 
-    private async Task OpenAsync()
-    {
-        if (_db.State != ConnectionState.Open)
-            await _db.OpenAsync();
-    }
-
     [HttpPost("amenities")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddAmenity(
-        AmenityInput request)
+    public async Task<IActionResult> AddAmenity(AmenityInput request)
     {
-        var name = request.Name?.Trim() ?? "";
+        string name = request.Name?.Trim() ?? "";
 
         if (name.Length is < 1 or > 100)
-        {
             return BadRequest(new
             {
                 message = "Tên tiện nghi phải từ 1 đến 100 ký tự."
             });
-        }
 
-        await OpenAsync();
+        if (await _db.Set<TienNghi>()
+            .AnyAsync(x => x.TenTienNghi == name))
+            return Conflict(new { message = "Tên tiện nghi đã tồn tại." });
 
-        using var cmd = new SqlCommand("""
-            IF EXISTS (
-                SELECT 1
-                FROM dbo.TienNghi
-                WHERE TenTienNghi = @name
-            )
-                THROW 51001, N'Tiện nghi này đã tồn tại.', 1;
-
-            INSERT INTO dbo.TienNghi
-                (TenTienNghi, TrangThai)
-            VALUES
-                (@name, @active);
-            """, _db);
-
-        cmd.Parameters.Add(
-            "@name", SqlDbType.NVarChar, 100
-        ).Value = name;
-
-        cmd.Parameters.Add(
-            "@active", SqlDbType.Bit
-        ).Value = request.Active;
+        _db.Set<TienNghi>().Add(new TienNghi
+        {
+            TenTienNghi = name,
+            TrangThai = request.Active
+        });
 
         try
         {
-            await cmd.ExecuteNonQueryAsync();
-
-            return Ok(new
-            {
-                message = "Đã thêm tiện nghi."
-            });
+            await _db.SaveChangesAsync();
         }
-        catch (SqlException ex)
-            when (ex.Number is 51001 or 2601 or 2627)
+        catch (DbUpdateException ex)
+            when (ex.InnerException is Microsoft.Data.SqlClient.SqlException
+                { Number: 2601 or 2627 })
         {
-            return Conflict(new
-            {
-                message = "Tên tiện nghi đã tồn tại."
-            });
+            return Conflict(new { message = "Tên tiện nghi đã tồn tại." });
         }
+
+        return Ok(new { message = "Đã thêm tiện nghi." });
     }
 
     [HttpPut("amenities/{id:int}")]
@@ -98,74 +72,39 @@ public class AdminRoomExtrasController : ControllerBase
         int id,
         AmenityInput request)
     {
-        var name = request.Name?.Trim() ?? "";
+        string name = request.Name?.Trim() ?? "";
 
         if (name.Length is < 1 or > 100)
-        {
             return BadRequest(new
             {
                 message = "Tên tiện nghi phải từ 1 đến 100 ký tự."
             });
-        }
 
-        await OpenAsync();
+        var amenity = await _db.Set<TienNghi>()
+            .FirstOrDefaultAsync(x => x.MaTienNghi == id);
 
-        using var cmd = new SqlCommand("""
-            IF EXISTS (
-                SELECT 1
-                FROM dbo.TienNghi
-                WHERE TenTienNghi = @name
-                  AND MaTienNghi <> @id
-            )
-                THROW 51001, N'Tiện nghi này đã tồn tại.', 1;
+        if (amenity == null)
+            return NotFound(new { message = "Không tìm thấy tiện nghi." });
 
-            UPDATE dbo.TienNghi
-            SET TenTienNghi = @name,
-                TrangThai = @active
-            WHERE MaTienNghi = @id;
+        if (await _db.Set<TienNghi>()
+            .AnyAsync(x => x.MaTienNghi != id && x.TenTienNghi == name))
+            return Conflict(new { message = "Tên tiện nghi đã tồn tại." });
 
-            SELECT @@ROWCOUNT;
-            """, _db);
-
-        cmd.Parameters.Add(
-            "@id", SqlDbType.Int
-        ).Value = id;
-
-        cmd.Parameters.Add(
-            "@name", SqlDbType.NVarChar, 100
-        ).Value = name;
-
-        cmd.Parameters.Add(
-            "@active", SqlDbType.Bit
-        ).Value = request.Active;
+        amenity.TenTienNghi = name;
+        amenity.TrangThai = request.Active;
 
         try
         {
-            var changed = Convert.ToInt32(
-                await cmd.ExecuteScalarAsync()
-            );
-
-            if (changed == 0)
-            {
-                return NotFound(new
-                {
-                    message = "Không tìm thấy tiện nghi."
-                });
-            }
-
-            return Ok(new
-            {
-                message = "Đã cập nhật tiện nghi."
-            });
+            await _db.SaveChangesAsync();
         }
-        catch (SqlException ex)
-            when (ex.Number is 51001 or 2601 or 2627)
+        catch (DbUpdateException ex)
+            when (ex.InnerException is Microsoft.Data.SqlClient.SqlException
+                { Number: 2601 or 2627 })
         {
-            return Conflict(new
-            {
-                message = "Tên tiện nghi đã tồn tại."
-            });
+            return Conflict(new { message = "Tên tiện nghi đã tồn tại." });
         }
+
+        return Ok(new { message = "Đã cập nhật tiện nghi." });
     }
 
     [HttpPost("type-images/{typeId:int}")]
@@ -175,147 +114,86 @@ public class AdminRoomExtrasController : ControllerBase
         int typeId,
         [FromForm] List<IFormFile> files)
     {
-        if (files is null || files.Count is < 1 or > 10)
-        {
+        if (files == null || files.Count is < 1 or > 10)
             return BadRequest(new
             {
                 message = "Chọn từ 1 đến 10 ảnh."
             });
-        }
 
         foreach (var file in files)
         {
-            if (
-                file.Length is < 12 or > 5242880 ||
-                !await IsImage(file)
-            )
-            {
+            if (file.Length is < 12 or > 5242880 ||
+                !await IsImage(file))
                 return BadRequest(new
                 {
                     message = "Ảnh phải là JPG, PNG, WebP hợp lệ và không quá 5 MB."
                 });
-            }
         }
 
-        await OpenAsync();
+        bool typeExists = await _db.Set<LoaiPhong>()
+            .AnyAsync(x => x.MaLoaiPhong == typeId);
 
-        using (var check = new SqlCommand("""
-            SELECT COUNT(1)
-            FROM dbo.LoaiPhong
-            WHERE MaLoaiPhong = @id
-            """, _db))
-        {
-            check.Parameters.Add(
-                "@id", SqlDbType.Int
-            ).Value = typeId;
-
-            var count = Convert.ToInt32(
-                await check.ExecuteScalarAsync()
-            );
-
-            if (count == 0)
-            {
-                return NotFound(new
-                {
-                    message = "Không tìm thấy loại phòng."
-                });
-            }
-        }
+        if (!typeExists)
+            return NotFound(new { message = "Không tìm thấy loại phòng." });
 
         var root = _env.WebRootPath
             ?? Path.Combine(_env.ContentRootPath, "wwwroot");
 
-        var folder = Path.Combine(
-            root, "uploads", "room-types"
-        );
-
+        var folder = Path.Combine(root, "uploads", "room-types");
         Directory.CreateDirectory(folder);
 
         var saved = new List<string>();
 
-        using var tx =
-            (SqlTransaction)await _db.BeginTransactionAsync();
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
 
         try
         {
-            bool hasCover;
-
-            using (var check = new SqlCommand("""
-                SELECT COUNT(1)
-                FROM dbo.HinhAnhPhong WITH (UPDLOCK, HOLDLOCK)
-                WHERE MaLoaiPhong = @id
-                  AND AnhDaiDien = 1
-                """, _db, tx))
-            {
-                check.Parameters.Add(
-                    "@id", SqlDbType.Int
-                ).Value = typeId;
-
-                hasCover = Convert.ToInt32(
-                    await check.ExecuteScalarAsync()
-                ) > 0;
-            }
+            bool hasCover = await _db.Set<HinhAnhPhong>()
+                .AnyAsync(x =>
+                    x.MaLoaiPhong == typeId &&
+                    x.AnhDaiDien);
 
             foreach (var file in files)
             {
-                var extension = Path.GetExtension(
-                    file.FileName
-                ).ToLowerInvariant();
+                string extension = Path.GetExtension(file.FileName)
+                    .ToLowerInvariant();
 
-                var filename =
-                    $"{Guid.NewGuid():N}{extension}";
-
-                var destination = Path.Combine(
-                    folder, filename
-                );
-
-                var url =
-                    $"/uploads/room-types/{filename}";
+                string filename = $"{Guid.NewGuid():N}{extension}";
+                string destination = Path.Combine(folder, filename);
+                string path = $"/uploads/room-types/{filename}";
 
                 await using (var stream = new FileStream(
                     destination,
-                    FileMode.CreateNew
-                ))
+                    FileMode.CreateNew))
                 {
                     saved.Add(destination);
                     await file.CopyToAsync(stream);
                 }
 
-                using var cmd = new SqlCommand("""
-                    INSERT INTO dbo.HinhAnhPhong
-                        (MaLoaiPhong, DuongDan, MoTa, AnhDaiDien)
-                    VALUES
-                        (@id, @path, NULL, @cover)
-                    """, _db, tx);
+                var image = new HinhAnhPhong
+                {
+                    MaLoaiPhong = typeId,
+                    DuongDan = path,
+                    MoTa = null,
+                    AnhDaiDien = !hasCover
+                };
 
-                cmd.Parameters.Add(
-                    "@id", SqlDbType.Int
-                ).Value = typeId;
-
-                cmd.Parameters.Add(
-                    "@path", SqlDbType.NVarChar, 500
-                ).Value = url;
-
-                cmd.Parameters.Add(
-                    "@cover", SqlDbType.Bit
-                ).Value = !hasCover;
-
-                await cmd.ExecuteNonQueryAsync();
-
+                _db.Set<HinhAnhPhong>().Add(image);
                 hasCover = true;
             }
 
-            await tx.CommitAsync();
+            await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             return Ok(new
             {
-                message =
-                    $"Đã tải lên {files.Count} hình ảnh loại phòng."
+                message = $"Đã tải lên {files.Count} hình ảnh loại phòng."
             });
         }
         catch
         {
-            await tx.RollbackAsync();
+            await transaction.RollbackAsync();
 
             foreach (var path in saved)
             {
@@ -331,21 +209,17 @@ public class AdminRoomExtrasController : ControllerBase
 
             return StatusCode(500, new
             {
-                message = "Không lưu được ảnh vào máy chủ hoặc cơ sở dữ liệu."
+                message = "Không thể lưu ảnh vào máy chủ hoặc cơ sở dữ liệu."
             });
         }
     }
 
-    private static async Task<bool> IsImage(
-        IFormFile file)
+    private static async Task<bool> IsImage(IFormFile file)
     {
-        var extension = Path.GetExtension(
-            file.FileName
-        ).ToLowerInvariant();
+        string extension = Path.GetExtension(file.FileName)
+            .ToLowerInvariant();
 
-        if (extension is not (
-            ".jpg" or ".jpeg" or ".png" or ".webp"
-        ))
+        if (extension is not (".jpg" or ".jpeg" or ".png" or ".webp"))
             return false;
 
         var bytes = new byte[12];
@@ -355,29 +229,18 @@ public class AdminRoomExtrasController : ControllerBase
         if (await stream.ReadAsync(bytes) < 12)
             return false;
 
-        return extension switch
-        {
-            ".jpg" or ".jpeg" =>
-                bytes[0] == 0xFF &&
-                bytes[1] == 0xD8 &&
-                bytes[2] == 0xFF,
+        if (extension is ".jpg" or ".jpeg")
+            return bytes[0] == 0xFF &&
+                   bytes[1] == 0xD8 &&
+                   bytes[2] == 0xFF;
 
-            ".png" =>
-                bytes.AsSpan(0, 8).SequenceEqual(
-                    new byte[] {
-                        137, 80, 78, 71, 13, 10, 26, 10
-                    }
-                ),
+        if (extension == ".png")
+            return bytes.AsSpan(0, 8).SequenceEqual(
+                new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 });
 
-            ".webp" =>
-                System.Text.Encoding.ASCII.GetString(
-                    bytes, 0, 4
-                ) == "RIFF" &&
-                System.Text.Encoding.ASCII.GetString(
-                    bytes, 8, 4
-                ) == "WEBP",
-
-            _ => false
-        };
+        return System.Text.Encoding.ASCII.GetString(bytes, 0, 4)
+                   == "RIFF" &&
+               System.Text.Encoding.ASCII.GetString(bytes, 8, 4)
+                   == "WEBP";
     }
 }

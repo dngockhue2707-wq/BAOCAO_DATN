@@ -1,8 +1,10 @@
 
+using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
 namespace QuanLyKhachSan.API.Controllers;
 
@@ -11,51 +13,33 @@ namespace QuanLyKhachSan.API.Controllers;
 [Route("api/admin/room-photos")]
 public class AdminRoomPhotosController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
     private readonly IWebHostEnvironment _environment;
 
     public AdminRoomPhotosController(
-        SqlConnection db,
+        HotelDbContext db,
         IWebHostEnvironment environment)
     {
         _db = db;
         _environment = environment;
     }
 
-    private async Task OpenAsync()
-    {
-        if (_db.State != ConnectionState.Open)
-            await _db.OpenAsync();
-    }
-
     [HttpGet("rooms")]
     public async Task<IActionResult> GetRooms()
     {
-        await OpenAsync();
-
-        using var command = new SqlCommand("""
-            SELECT p.MaPhong, p.SoPhong, p.Tang,
-                   l.TenLoaiPhong
-            FROM dbo.Phong p
-            JOIN dbo.LoaiPhong l
-              ON p.MaLoaiPhong = l.MaLoaiPhong
-            ORDER BY p.Tang, p.SoPhong
-            """, _db);
-
-        using var reader = await command.ExecuteReaderAsync();
-        var result = new List<object>();
-
-        while (await reader.ReadAsync())
-        {
-            result.Add(new
+        var result = await (
+            from room in _db.Set<Phong>()
+            join type in _db.Set<LoaiPhong>()
+                on room.MaLoaiPhong equals type.MaLoaiPhong
+            orderby room.Tang, room.SoPhong
+            select new
             {
-                id = reader.GetInt32(0),
-                number = reader.GetString(1),
-                floor = reader.IsDBNull(2)
-                    ? (int?)null : reader.GetInt32(2),
-                type = reader.GetString(3)
-            });
-        }
+                id = room.MaPhong,
+                number = room.SoPhong,
+                floor = room.Tang,
+                type = type.TenLoaiPhong
+            }
+        ).AsNoTracking().ToListAsync();
 
         return Ok(result);
     }
@@ -63,34 +47,21 @@ public class AdminRoomPhotosController : ControllerBase
     [HttpGet("{roomId:int}")]
     public async Task<IActionResult> GetPhotos(int roomId)
     {
-        await OpenAsync();
-
-        using var command = new SqlCommand("""
-            SELECT MaHinhAnh, DuongDan, MoTa,
-                   AnhDaiDien, ThuTuHienThi
-            FROM dbo.HinhAnhChiTietPhong
-            WHERE MaPhong = @roomId
-            ORDER BY AnhDaiDien DESC,
-                     ThuTuHienThi, MaHinhAnh
-            """, _db);
-
-        command.Parameters.Add("@roomId", SqlDbType.Int).Value = roomId;
-
-        using var reader = await command.ExecuteReaderAsync();
-        var result = new List<object>();
-
-        while (await reader.ReadAsync())
-        {
-            result.Add(new
+        var result = await _db.Set<HinhAnhChiTietPhong>()
+            .AsNoTracking()
+            .Where(x => x.MaPhong == roomId)
+            .OrderByDescending(x => x.AnhDaiDien)
+            .ThenBy(x => x.ThuTuHienThi)
+            .ThenBy(x => x.MaHinhAnh)
+            .Select(x => new
             {
-                id = reader.GetInt32(0),
-                path = reader.GetString(1),
-                description = reader.IsDBNull(2)
-                    ? "" : reader.GetString(2),
-                isCover = reader.GetBoolean(3),
-                order = reader.GetInt32(4)
-            });
-        }
+                id = x.MaHinhAnh,
+                path = x.DuongDan,
+                description = x.MoTa ?? "",
+                isCover = x.AnhDaiDien,
+                order = x.ThuTuHienThi
+            })
+            .ToListAsync();
 
         return Ok(result);
     }
@@ -102,7 +73,7 @@ public class AdminRoomPhotosController : ControllerBase
         int roomId,
         [FromForm] List<IFormFile> files)
     {
-        if (files == null || files.Count == 0 || files.Count > 10)
+        if (files == null || files.Count is < 1 or > 10)
             return BadRequest(new
             {
                 message = "Chọn từ 1 đến 10 ảnh."
@@ -110,32 +81,19 @@ public class AdminRoomPhotosController : ControllerBase
 
         foreach (var file in files)
         {
-            if (file.Length == 0 || file.Length > 5 * 1024 * 1024)
+            if (file.Length is < 12 or > 5242880 ||
+                !await IsValidImage(file))
                 return BadRequest(new
                 {
-                    message = "Mỗi ảnh phải nhỏ hơn hoặc bằng 5 MB."
-                });
-
-            if (!await IsValidImage(file))
-                return BadRequest(new
-                {
-                    message = "Chỉ chấp nhận ảnh JPG, PNG hoặc WebP hợp lệ."
+                    message = "Chỉ chấp nhận ảnh JPG, PNG hoặc WebP hợp lệ, tối đa 5 MB."
                 });
         }
 
-        await OpenAsync();
+        bool roomExists = await _db.Set<Phong>()
+            .AnyAsync(x => x.MaPhong == roomId);
 
-        using (var check = new SqlCommand(
-            "SELECT COUNT(1) FROM dbo.Phong WHERE MaPhong = @id", _db))
-        {
-            check.Parameters.Add("@id", SqlDbType.Int).Value = roomId;
-
-            if (Convert.ToInt32(await check.ExecuteScalarAsync()) == 0)
-                return NotFound(new
-                {
-                    message = "Phòng không tồn tại."
-                });
-        }
+        if (!roomExists)
+            return NotFound(new { message = "Phòng không tồn tại." });
 
         var root = _environment.WebRootPath
             ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
@@ -145,84 +103,73 @@ public class AdminRoomPhotosController : ControllerBase
 
         var savedFiles = new List<string>();
 
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
+
         try
         {
-            using var transaction =
-                (SqlTransaction)await _db.BeginTransactionAsync();
+            var existing = await _db.Set<HinhAnhChiTietPhong>()
+                .Where(x => x.MaPhong == roomId)
+                .ToListAsync();
 
-            try
+            bool hasCover = existing.Any(x => x.AnhDaiDien);
+
+            int nextOrder = existing.Count == 0
+                ? 0
+                : existing.Max(x => x.ThuTuHienThi) + 1;
+
+            foreach (var file in files)
             {
-                int count;
+                string extension = Path.GetExtension(file.FileName)
+                    .ToLowerInvariant();
 
-                using (var countCommand = new SqlCommand("""
-                    SELECT COUNT(1)
-                    FROM dbo.HinhAnhChiTietPhong WITH (UPDLOCK, HOLDLOCK)
-                    WHERE MaPhong = @roomId
-                    """, _db, transaction))
+                string filename = $"{Guid.NewGuid():N}{extension}";
+                string fullPath = Path.Combine(folder, filename);
+                string webPath = $"/uploads/rooms/{filename}";
+
+                await using (var stream = new FileStream(
+                    fullPath,
+                    FileMode.CreateNew))
                 {
-                    countCommand.Parameters.Add(
-                        "@roomId", SqlDbType.Int).Value = roomId;
-
-                    count = Convert.ToInt32(
-                        await countCommand.ExecuteScalarAsync());
+                    savedFiles.Add(fullPath);
+                    await file.CopyToAsync(stream);
                 }
 
-                var nextOrder = count;
-
-                foreach (var file in files)
+                var image = new HinhAnhChiTietPhong
                 {
-                    var extension = Path.GetExtension(file.FileName)
-                        .ToLowerInvariant();
+                    MaPhong = roomId,
+                    DuongDan = webPath,
+                    MoTa = null,
+                    AnhDaiDien = !hasCover,
+                    ThuTuHienThi = nextOrder++
+                };
 
-                    var filename = $"{Guid.NewGuid():N}{extension}";
-                    var fullPath = Path.Combine(folder, filename);
-                    var webPath = $"/uploads/rooms/{filename}";
-
-                    using (var stream = new FileStream(
-                        fullPath, FileMode.CreateNew))
-                    {
-                        savedFiles.Add(fullPath);
-                        await file.CopyToAsync(stream);
-                    }
-
-                    using var command = new SqlCommand("""
-                        INSERT INTO dbo.HinhAnhChiTietPhong
-                        (MaPhong, DuongDan, MoTa,
-                         AnhDaiDien, ThuTuHienThi)
-                        VALUES
-                        (@roomId, @path, NULL, @cover, @sort)
-                        """, _db, transaction);
-
-                    command.Parameters.Add(
-                        "@roomId", SqlDbType.Int).Value = roomId;
-
-                    command.Parameters.Add(
-                        "@path", SqlDbType.NVarChar, 500).Value = webPath;
-
-                    command.Parameters.Add(
-                        "@cover", SqlDbType.Bit).Value =
-                        count == 0 && nextOrder == 0;
-
-                    command.Parameters.Add(
-                        "@sort", SqlDbType.Int).Value = nextOrder++;
-
-                    await command.ExecuteNonQueryAsync();
-                }
-
-                await transaction.CommitAsync();
+                _db.Set<HinhAnhChiTietPhong>().Add(image);
+                hasCover = true;
             }
-            catch
+
+            await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return Ok(new
             {
-                await transaction.RollbackAsync();
-                throw;
-            }
+                message = $"Đã tải lên {files.Count} ảnh thành công."
+            });
         }
         catch
         {
+            await transaction.RollbackAsync();
+
             foreach (var path in savedFiles)
             {
-                if (System.IO.File.Exists(path))
-                    System.IO.File.Delete(path);
+                try
+                {
+                    if (System.IO.File.Exists(path))
+                        System.IO.File.Delete(path);
+                }
+                catch (IOException)
+                {
+                }
             }
 
             return StatusCode(500, new
@@ -230,162 +177,94 @@ public class AdminRoomPhotosController : ControllerBase
                 message = "Không thể lưu ảnh. Vui lòng kiểm tra lại."
             });
         }
-
-        return Ok(new
-        {
-            message = $"Đã tải lên {files.Count} ảnh thành công."
-        });
     }
 
     [HttpPut("{roomId:int}/{photoId:int}/cover")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SetCover(int roomId, int photoId)
+    public async Task<IActionResult> SetCover(
+        int roomId,
+        int photoId)
     {
-        await OpenAsync();
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
 
-        using var transaction =
-            (SqlTransaction)await _db.BeginTransactionAsync();
+        bool exists = await _db.Set<HinhAnhChiTietPhong>()
+            .AnyAsync(x =>
+                x.MaPhong == roomId &&
+                x.MaHinhAnh == photoId);
 
-        try
+        if (!exists)
+            return NotFound(new { message = "Không tìm thấy ảnh." });
+
+        await _db.Set<HinhAnhChiTietPhong>()
+            .Where(x => x.MaPhong == roomId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(
+                    x => x.AnhDaiDien,
+                    x => x.MaHinhAnh == photoId));
+
+        await transaction.CommitAsync();
+
+        return Ok(new
         {
-            using var command = new SqlCommand("""
-                SELECT COUNT(1)
-                FROM dbo.HinhAnhChiTietPhong
-                WHERE MaPhong = @roomId
-                  AND MaHinhAnh = @photoId
-                """, _db, transaction);
-
-            command.Parameters.Add("@roomId", SqlDbType.Int).Value = roomId;
-            command.Parameters.Add("@photoId", SqlDbType.Int).Value = photoId;
-
-            if (Convert.ToInt32(await command.ExecuteScalarAsync()) == 0)
-            {
-                await transaction.RollbackAsync();
-
-                return NotFound(new
-                {
-                    message = "Không tìm thấy ảnh."
-                });
-            }
-
-            using var reset = new SqlCommand("""
-                UPDATE dbo.HinhAnhChiTietPhong
-                SET AnhDaiDien = 0
-                WHERE MaPhong = @roomId
-                  AND AnhDaiDien = 1
-                """, _db, transaction);
-
-            reset.Parameters.Add("@roomId", SqlDbType.Int).Value = roomId;
-            await reset.ExecuteNonQueryAsync();
-
-            using var update = new SqlCommand("""
-                UPDATE dbo.HinhAnhChiTietPhong
-                SET AnhDaiDien = 1
-                WHERE MaPhong = @roomId
-                  AND MaHinhAnh = @photoId
-                """, _db, transaction);
-
-            update.Parameters.Add("@roomId", SqlDbType.Int).Value = roomId;
-            update.Parameters.Add("@photoId", SqlDbType.Int).Value = photoId;
-
-            await update.ExecuteNonQueryAsync();
-            await transaction.CommitAsync();
-
-            return Ok(new
-            {
-                message = "Đã thay đổi ảnh đại diện."
-            });
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+            message = "Đã thay đổi ảnh đại diện."
+        });
     }
 
     [HttpDelete("{roomId:int}/{photoId:int}")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int roomId, int photoId)
+    public async Task<IActionResult> Delete(
+        int roomId,
+        int photoId)
     {
-        await OpenAsync();
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
 
-        string? path;
-        bool wasCover;
+        var image = await _db.Set<HinhAnhChiTietPhong>()
+            .FirstOrDefaultAsync(x =>
+                x.MaPhong == roomId &&
+                x.MaHinhAnh == photoId);
 
-        using (var command = new SqlCommand("""
-            SELECT DuongDan, AnhDaiDien
-            FROM dbo.HinhAnhChiTietPhong
-            WHERE MaPhong = @roomId AND MaHinhAnh = @photoId
-            """, _db))
+        if (image == null)
+            return NotFound(new { message = "Ảnh không tồn tại." });
+
+        string path = image.DuongDan;
+        bool wasCover = image.AnhDaiDien;
+
+        _db.Set<HinhAnhChiTietPhong>().Remove(image);
+        await _db.SaveChangesAsync();
+
+        if (wasCover)
         {
-            command.Parameters.Add("@roomId", SqlDbType.Int).Value = roomId;
-            command.Parameters.Add("@photoId", SqlDbType.Int).Value = photoId;
+            var nextImage = await _db.Set<HinhAnhChiTietPhong>()
+                .Where(x => x.MaPhong == roomId)
+                .OrderBy(x => x.ThuTuHienThi)
+                .ThenBy(x => x.MaHinhAnh)
+                .FirstOrDefaultAsync();
 
-            using var reader = await command.ExecuteReaderAsync();
-
-            if (!await reader.ReadAsync())
-                return NotFound(new { message = "Ảnh không tồn tại." });
-
-            path = reader.GetString(0);
-            wasCover = reader.GetBoolean(1);
-        }
-
-        using var transaction =
-            (SqlTransaction)await _db.BeginTransactionAsync();
-
-        try
-        {
-            using var delete = new SqlCommand("""
-                DELETE FROM dbo.HinhAnhChiTietPhong
-                WHERE MaPhong = @roomId AND MaHinhAnh = @photoId
-                """, _db, transaction);
-
-            delete.Parameters.Add("@roomId", SqlDbType.Int).Value = roomId;
-            delete.Parameters.Add("@photoId", SqlDbType.Int).Value = photoId;
-
-            var affected = await delete.ExecuteNonQueryAsync();
-
-            if (affected == 0)
+            if (nextImage != null)
             {
-                await transaction.RollbackAsync();
-                return NotFound(new { message = "Ảnh không tồn tại." });
+                nextImage.AnhDaiDien = true;
+                await _db.SaveChangesAsync();
             }
-
-            if (wasCover)
-            {
-                using var update = new SqlCommand("""
-                    UPDATE dbo.HinhAnhChiTietPhong
-                    SET AnhDaiDien = 1
-                    WHERE MaHinhAnh = (
-                        SELECT TOP 1 MaHinhAnh
-                        FROM dbo.HinhAnhChiTietPhong
-                        WHERE MaPhong = @roomId
-                        ORDER BY ThuTuHienThi, MaHinhAnh
-                    )
-                    """, _db, transaction);
-
-                update.Parameters.Add(
-                    "@roomId", SqlDbType.Int).Value = roomId;
-
-                await update.ExecuteNonQueryAsync();
-            }
-
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
         }
 
-        if (path != null && path.StartsWith("/uploads/rooms/"))
+        await transaction.CommitAsync();
+
+        if (path.StartsWith("/uploads/rooms/", StringComparison.Ordinal))
         {
-            var filename = Path.GetFileName(path);
+            string filename = Path.GetFileName(path);
+
             var root = _environment.WebRootPath
-                ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+                ?? Path.Combine(
+                    _environment.ContentRootPath,
+                    "wwwroot");
 
-            var fullPath = Path.Combine(
-                root, "uploads", "rooms", filename);
+            string fullPath = Path.Combine(
+                root,
+                "uploads",
+                "rooms",
+                filename);
 
             try
             {
@@ -393,6 +272,9 @@ public class AdminRoomPhotosController : ControllerBase
                     System.IO.File.Delete(fullPath);
             }
             catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
             {
             }
         }
@@ -405,31 +287,31 @@ public class AdminRoomPhotosController : ControllerBase
 
     private static async Task<bool> IsValidImage(IFormFile file)
     {
-        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        string extension = Path.GetExtension(file.FileName)
+            .ToLowerInvariant();
 
         if (extension is not (".jpg" or ".jpeg" or ".png" or ".webp"))
             return false;
 
-        var buffer = new byte[12];
+        var bytes = new byte[12];
 
-        using var stream = file.OpenReadStream();
-        var count = await stream.ReadAsync(buffer);
+        await using var stream = file.OpenReadStream();
 
-        if (count < 12)
+        if (await stream.ReadAsync(bytes) < 12)
             return false;
 
         if (extension is ".jpg" or ".jpeg")
-            return buffer[0] == 0xFF &&
-                   buffer[1] == 0xD8 &&
-                   buffer[2] == 0xFF;
+            return bytes[0] == 0xFF &&
+                   bytes[1] == 0xD8 &&
+                   bytes[2] == 0xFF;
 
         if (extension == ".png")
-            return buffer.AsSpan(0, 8).SequenceEqual(
+            return bytes.AsSpan(0, 8).SequenceEqual(
                 new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 });
 
-        return System.Text.Encoding.ASCII.GetString(buffer, 0, 4)
+        return System.Text.Encoding.ASCII.GetString(bytes, 0, 4)
                    == "RIFF" &&
-               System.Text.Encoding.ASCII.GetString(buffer, 8, 4)
+               System.Text.Encoding.ASCII.GetString(bytes, 8, 4)
                    == "WEBP";
     }
 }

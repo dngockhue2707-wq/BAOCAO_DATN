@@ -11,32 +11,13 @@
     <link rel="stylesheet" href="/css/admin-employees.css">
 
     <script src="/js/admin-employees.js" defer></script>
+    <script src="/js/admin-layout.js" defer></script>
 </head>
 
 <body data-page="employees">
     <div class="admin-shell">
 
-        <aside class="admin-sidebar">
-            <div class="admin-brand">DNK HOTEL</div>
-
-            <nav>
-                <a href="/admin/dashboard.html">Tổng quan</a>
-                <a href="/admin/rooms.html">Quản lý phòng</a>
-                <a href="/admin/bookings.html">Quản lý đặt phòng</a>
-                <a href="/admin/customers.html">Khách hàng</a>
-                <a href="/admin/employees.html" class="active">Nhân viên</a>
-                <a href="/admin/services.html">Dịch vụ</a>
-                <a href="/admin/invoices.html">Hóa đơn</a>
-                <a href="/admin/reports.html">Báo cáo</a>
-            </nav>
-
-            <button
-                id="logoutButton"
-                type="button"
-                class="admin-button secondary">
-                Đăng xuất
-            </button>
-        </aside>
+        <div id="adminSidebar"></div>
 
         <main class="admin-main">
             <header class="admin-topbar">
@@ -217,7 +198,7 @@
 
                 <div class="employee-field employee-detail-full">
                     <label for="employeeUsername">Tên đăng nhập</label>
-                    <input id="employeeUsername" maxlength="100">
+                    <input id="employeeUsername" maxlength="100" minlength="4" required>
                 </div>
             </div>
 

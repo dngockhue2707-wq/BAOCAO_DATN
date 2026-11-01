@@ -1,7 +1,10 @@
+
+using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
 namespace QuanLyKhachSan.API.Controllers;
 
@@ -10,9 +13,9 @@ namespace QuanLyKhachSan.API.Controllers;
 [Authorize(Roles = "Admin")]
 public class AdminRoomsController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
 
-    public AdminRoomsController(SqlConnection db)
+    public AdminRoomsController(HotelDbContext db)
     {
         _db = db;
     }
@@ -67,62 +70,26 @@ public class AdminRoomsController : ControllerBase
         "Ngừng hoạt động"
     };
 
-    private static object DbValue(object? value)
-    {
-        return value ?? DBNull.Value;
-    }
-
-    private static void Add(SqlCommand command, string name, object? value)
-    {
-        command.Parameters.AddWithValue(name, DbValue(value));
-    }
-
-    private async Task OpenAsync()
-    {
-        if (_db.State != ConnectionState.Open)
-            await _db.OpenAsync();
-    }
-
     [HttpGet("rooms")]
     public async Task<IActionResult> GetRooms()
     {
-        await OpenAsync();
-
-        const string sql = """
-            SELECT
-                p.MaPhong,
-                p.SoPhong,
-                p.MaLoaiPhong,
-                l.TenLoaiPhong,
-                p.Tang,
-                p.TrangThai,
-                p.MoTa,
-                l.GiaCoBan
-            FROM dbo.Phong p
-            INNER JOIN dbo.LoaiPhong l
-                ON p.MaLoaiPhong = l.MaLoaiPhong
-            ORDER BY p.Tang, p.SoPhong
-            """;
-
-        using var command = new SqlCommand(sql, _db);
-        using var reader = await command.ExecuteReaderAsync();
-
-        var rooms = new List<object>();
-
-        while (await reader.ReadAsync())
-        {
-            rooms.Add(new
+        var rooms = await (
+            from room in _db.Set<Phong>()
+            join type in _db.Set<LoaiPhong>()
+                on room.MaLoaiPhong equals type.MaLoaiPhong
+            orderby room.Tang, room.SoPhong
+            select new
             {
-                id = reader.GetInt32(0),
-                roomNumber = reader.GetString(1),
-                roomTypeId = reader.GetInt32(2),
-                roomTypeName = reader.GetString(3),
-                floor = reader.IsDBNull(4) ? (int?)null : reader.GetInt32(4),
-                status = reader.GetString(5),
-                description = reader.IsDBNull(6) ? "" : reader.GetString(6),
-                basePrice = reader.GetDecimal(7)
-            });
-        }
+                id = room.MaPhong,
+                roomNumber = room.SoPhong,
+                roomTypeId = room.MaLoaiPhong,
+                roomTypeName = type.TenLoaiPhong,
+                floor = room.Tang,
+                status = room.TrangThai,
+                description = room.MoTa ?? "",
+                basePrice = type.GiaCoBan
+            }
+        ).AsNoTracking().ToListAsync();
 
         return Ok(rooms);
     }
@@ -130,45 +97,23 @@ public class AdminRoomsController : ControllerBase
     [HttpGet("types")]
     public async Task<IActionResult> GetRoomTypes()
     {
-        await OpenAsync();
-
-        const string sql = """
-            SELECT
-                MaLoaiPhong,
-                TenLoaiPhong,
-                MoTa,
-                SucChuaNguoiLon,
-                SucChuaTreEm,
-                DienTich,
-                SoGiuong,
-                LoaiGiuong,
-                GiaCoBan,
-                TrangThai
-            FROM dbo.LoaiPhong
-            ORDER BY MaLoaiPhong
-            """;
-
-        using var command = new SqlCommand(sql, _db);
-        using var reader = await command.ExecuteReaderAsync();
-
-        var types = new List<object>();
-
-        while (await reader.ReadAsync())
-        {
-            types.Add(new
+        var types = await _db.Set<LoaiPhong>()
+            .AsNoTracking()
+            .OrderBy(x => x.MaLoaiPhong)
+            .Select(x => new
             {
-                id = reader.GetInt32(0),
-                name = reader.GetString(1),
-                description = reader.IsDBNull(2) ? "" : reader.GetString(2),
-                adultCapacity = reader.GetInt32(3),
-                childCapacity = reader.GetInt32(4),
-                area = reader.IsDBNull(5) ? (decimal?)null : reader.GetDecimal(5),
-                bedCount = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
-                bedType = reader.IsDBNull(7) ? "" : reader.GetString(7),
-                basePrice = reader.GetDecimal(8),
-                active = reader.GetBoolean(9)
-            });
-        }
+                id = x.MaLoaiPhong,
+                name = x.TenLoaiPhong,
+                description = x.MoTa ?? "",
+                adultCapacity = x.SucChuaNguoiLon,
+                childCapacity = x.SucChuaTreEm,
+                area = x.DienTich,
+                bedCount = x.SoGiuong,
+                bedType = x.LoaiGiuong ?? "",
+                basePrice = x.GiaCoBan,
+                active = x.TrangThai
+            })
+            .ToListAsync();
 
         return Ok(types);
     }
@@ -176,28 +121,16 @@ public class AdminRoomsController : ControllerBase
     [HttpGet("amenities")]
     public async Task<IActionResult> GetAmenities()
     {
-        await OpenAsync();
-
-        const string sql = """
-            SELECT MaTienNghi, TenTienNghi, TrangThai
-            FROM dbo.TienNghi
-            ORDER BY TenTienNghi
-            """;
-
-        using var command = new SqlCommand(sql, _db);
-        using var reader = await command.ExecuteReaderAsync();
-
-        var amenities = new List<object>();
-
-        while (await reader.ReadAsync())
-        {
-            amenities.Add(new
+        var amenities = await _db.Set<TienNghi>()
+            .AsNoTracking()
+            .OrderBy(x => x.TenTienNghi)
+            .Select(x => new
             {
-                id = reader.GetInt32(0),
-                name = reader.GetString(1),
-                active = reader.GetBoolean(2)
-            });
-        }
+                id = x.MaTienNghi,
+                name = x.TenTienNghi,
+                active = x.TrangThai
+            })
+            .ToListAsync();
 
         return Ok(amenities);
     }
@@ -205,51 +138,36 @@ public class AdminRoomsController : ControllerBase
     [HttpGet("type-details/{id:int}")]
     public async Task<IActionResult> GetRoomTypeDetails(int id)
     {
-        await OpenAsync();
+        var exists = await _db.Set<LoaiPhong>()
+            .AnyAsync(x => x.MaLoaiPhong == id);
 
-        var imageList = new List<object>();
-        var amenityIds = new List<int>();
+        if (!exists)
+            return NotFound(new { message = "Không tìm thấy loại phòng." });
 
-        using (var command = new SqlCommand("""
-            SELECT MaHinhAnh, DuongDan, MoTa, AnhDaiDien
-            FROM dbo.HinhAnhPhong
-            WHERE MaLoaiPhong = @id
-            ORDER BY AnhDaiDien DESC, MaHinhAnh
-            """, _db))
-        {
-            Add(command, "@id", id);
-
-            using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
+        var images = await _db.Set<HinhAnhPhong>()
+            .AsNoTracking()
+            .Where(x => x.MaLoaiPhong == id)
+            .OrderByDescending(x => x.AnhDaiDien)
+            .ThenBy(x => x.MaHinhAnh)
+            .Select(x => new
             {
-                imageList.Add(new
-                {
-                    id = reader.GetInt32(0),
-                    path = reader.GetString(1),
-                    description = reader.IsDBNull(2) ? "" : reader.GetString(2),
-                    isCover = reader.GetBoolean(3)
-                });
-            }
-        }
+                id = x.MaHinhAnh,
+                path = x.DuongDan,
+                description = x.MoTa ?? "",
+                isCover = x.AnhDaiDien
+            })
+            .ToListAsync();
 
-        using (var command = new SqlCommand("""
-            SELECT MaTienNghi
-            FROM dbo.PhongTienNghi
-            WHERE MaLoaiPhong = @id
-            """, _db))
-        {
-            Add(command, "@id", id);
-
-            using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-                amenityIds.Add(reader.GetInt32(0));
-        }
+        var amenityIds = await _db.Set<LoaiPhong>()
+            .AsNoTracking()
+            .Where(x => x.MaLoaiPhong == id)
+            .SelectMany(x => x.MaTienNghis)
+            .Select(x => x.MaTienNghi)
+            .ToListAsync();
 
         return Ok(new
         {
-            images = imageList,
+            images,
             amenityIds
         });
     }
@@ -260,388 +178,234 @@ public class AdminRoomsController : ControllerBase
         int id,
         RoomStatusRequest request)
     {
-        var newStatus = request.Status?.Trim() ?? "";
+        string newStatus = request.Status?.Trim() ?? "";
 
-        await OpenAsync();
+        if (!RoomStatuses.Contains(newStatus))
+            return BadRequest(new { message = "Trạng thái không hợp lệ." });
 
-        using var transaction =
-            (SqlTransaction)await _db.BeginTransactionAsync();
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
 
-        try
+        var room = await _db.Set<Phong>()
+            .FirstOrDefaultAsync(x => x.MaPhong == id);
+
+        if (room == null)
+            return NotFound(new { message = "Không tìm thấy phòng." });
+
+        string currentStatus = room.TrangThai;
+
+        if (currentStatus == newStatus)
+            return Ok(new { message = "Trạng thái phòng không thay đổi." });
+
+        bool allowed = currentStatus switch
         {
-            string? currentStatus;
+            "Trống" => newStatus is "Bảo trì" or "Ngừng hoạt động",
+            "Bảo trì" => newStatus is "Trống" or "Ngừng hoạt động",
+            "Ngừng hoạt động" => newStatus is "Trống" or "Bảo trì",
+            "Đang dọn" => newStatus is "Trống" or "Bảo trì",
+            _ => false
+        };
 
-            using (var check = new SqlCommand("""
-                SELECT TrangThai
-                FROM dbo.Phong WITH (UPDLOCK, HOLDLOCK)
-                WHERE MaPhong = @id
-                """, _db, transaction))
+        if (!allowed)
+            return BadRequest(new
             {
-                Add(check, "@id", id);
-
-                currentStatus = await check.ExecuteScalarAsync() as string;
-            }
-
-            if (currentStatus == null)
-            {
-                await transaction.RollbackAsync();
-
-                return NotFound(new
-                {
-                    message = "Không tìm thấy phòng."
-                });
-            }
-
-            if (currentStatus == newStatus)
-            {
-                await transaction.CommitAsync();
-
-                return Ok(new
-                {
-                    message = "Trạng thái phòng không thay đổi."
-                });
-            }
-
-            bool allowed = currentStatus switch
-            {
-                "Trống" =>
-                    newStatus is "Bảo trì" or "Ngừng hoạt động",
-
-                "Bảo trì" =>
-                    newStatus is "Trống" or "Ngừng hoạt động",
-
-                "Ngừng hoạt động" =>
-                    newStatus is "Trống" or "Bảo trì",
-
-                "Đang dọn" =>
-                    newStatus is "Trống" or "Bảo trì",
-
-                _ => false
-            };
-
-            if (!allowed)
-            {
-                await transaction.RollbackAsync();
-
-                return BadRequest(new
-                {
-                    message = "Không được phép chuyển trạng thái này trực tiếp."
-                });
-            }
-
-            if (newStatus is "Trống" or "Bảo trì" or "Ngừng hoạt động")
-            {
-                using var bookingCheck = new SqlCommand("""
-                    SELECT COUNT(1)
-                    FROM dbo.ChiTietDatPhong c
-                    JOIN dbo.DatPhong d
-                        ON c.MaDatPhong = d.MaDatPhong
-                    WHERE c.MaPhong = @id
-                    AND d.TrangThai = N'Đã nhận phòng'
-                    """, _db, transaction);
-
-                Add(bookingCheck, "@id", id);
-
-                var occupied = Convert.ToInt32(
-                    await bookingCheck.ExecuteScalarAsync());
-
-                if (occupied > 0)
-                {
-                    await transaction.RollbackAsync();
-
-                    return Conflict(new
-                    {
-                        message = "Phòng còn khách lưu trú, không thể đổi trạng thái."
-                    });
-                }
-            }
-
-            using (var update = new SqlCommand("""
-                UPDATE dbo.Phong
-                SET TrangThai = @status
-                WHERE MaPhong = @id
-                """, _db, transaction))
-            {
-                Add(update, "@status", newStatus);
-                Add(update, "@id", id);
-
-                await update.ExecuteNonQueryAsync();
-            }
-
-            await transaction.CommitAsync();
-
-            return Ok(new
-            {
-                message = "Cập nhật trạng thái phòng thành công."
+                message = "Không được phép chuyển trạng thái này trực tiếp."
             });
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+
+        var occupied = await (
+            from detail in _db.Set<ChiTietDatPhong>()
+            join booking in _db.Set<DatPhong>()
+                on detail.MaDatPhong equals booking.MaDatPhong
+            where detail.MaPhong == id
+               && booking.TrangThai == "Đã nhận phòng"
+            select detail.MaPhong
+        ).AnyAsync();
+
+        if (occupied)
+            return Conflict(new
+            {
+                message = "Phòng còn khách lưu trú, không thể đổi trạng thái."
+            });
+
+        room.TrangThai = newStatus;
+
+        await _db.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        return Ok(new { message = "Cập nhật trạng thái phòng thành công." });
     }
 
     [HttpPost("rooms")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateRoom(RoomRequest request)
     {
-        request.RoomNumber = request.RoomNumber.Trim();
+        string number = request.RoomNumber?.Trim() ?? "";
+        string status = request.Status?.Trim() ?? "";
 
-        if (string.IsNullOrWhiteSpace(request.RoomNumber)
-            || request.RoomNumber.Length > 20)
+        if (number.Length is < 1 or > 20)
             return BadRequest(new { message = "Số phòng không hợp lệ." });
 
-        if (!RoomStatuses.Contains(request.Status))
-            return BadRequest(new { message = "Trạng thái phòng không hợp lệ." });
-
-        
-        if (request.Floor.HasValue &&
-            (request.Floor.Value < 0 || request.Floor.Value > 100))
-        {
-            return BadRequest(new { message = "Tầng không hợp lệ." });
-        }
-
-        if (request.Description?.Length > 500)
-            return BadRequest(new { message = "Mô tả không được quá 500 ký tự." });
-
-        await OpenAsync();
-
-        const string sql = """
-            IF NOT EXISTS (
-                SELECT 1 FROM dbo.LoaiPhong
-                WHERE MaLoaiPhong = @typeId AND TrangThai = 1
-            )
-                THROW 50001, N'Loại phòng không tồn tại hoặc đang ngừng hoạt động.', 1;
-
-            IF EXISTS (
-                SELECT 1 FROM dbo.Phong WITH (UPDLOCK, HOLDLOCK)
-                WHERE SoPhong = @roomNumber
-            )
-                THROW 50002, N'Số phòng đã tồn tại.', 1;
-
-            INSERT INTO dbo.Phong
-                (SoPhong, MaLoaiPhong, Tang, TrangThai, MoTa)
-            OUTPUT INSERTED.MaPhong
-            VALUES
-                (@roomNumber, @typeId, @floor, @status, @description)
-            """;
-
-        using var command = new SqlCommand(sql, _db);
-
-        Add(command, "@roomNumber", request.RoomNumber);
-        Add(command, "@typeId", request.RoomTypeId);
-        Add(command, "@floor", request.Floor);
-        Add(command, "@status", request.Status);
-        Add(command, "@description", request.Description?.Trim());
-
-        try
-        {
-            var id = Convert.ToInt32(await command.ExecuteScalarAsync());
-
-            return Ok(new
-            {
-                success = true,
-                id,
-                message = "Thêm phòng thành công."
-            });
-        }
-        catch (SqlException ex) when (ex.Number is 50001 or 50002 or 2601 or 2627)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
-
-    [HttpPut("rooms/{id:int}")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateRoom(int id, RoomRequest request)
-    {
-        request.RoomNumber = request.RoomNumber.Trim();
-
-        if (string.IsNullOrWhiteSpace(request.RoomNumber)
-            || request.RoomNumber.Length > 20)
-            return BadRequest(new { message = "Số phòng không hợp lệ." });
-
-        if (!RoomStatuses.Contains(request.Status))
+        if (!RoomStatuses.Contains(status))
             return BadRequest(new { message = "Trạng thái phòng không hợp lệ." });
 
         if (request.Floor is < 0 or > 100)
             return BadRequest(new { message = "Tầng không hợp lệ." });
 
         if (request.Description?.Length > 500)
-            return BadRequest(new { message = "Mô tả không được quá 500 ký tự." });
+            return BadRequest(new { message = "Mô tả quá dài." });
 
-        await OpenAsync();
+        bool typeExists = await _db.Set<LoaiPhong>()
+            .AnyAsync(x => x.MaLoaiPhong == request.RoomTypeId && x.TrangThai);
 
-        const string sql = """
-            IF EXISTS (
-                SELECT 1
-                FROM dbo.Phong
-                WHERE SoPhong = @roomNumber AND MaPhong <> @id
-            )
-                THROW 50002, N'Số phòng đã tồn tại.', 1;
+        if (!typeExists)
+            return BadRequest(new
+            {
+                message = "Loại phòng không tồn tại hoặc đang ngừng hoạt động."
+            });
 
-            IF NOT EXISTS (
-                SELECT 1 FROM dbo.LoaiPhong
-                WHERE MaLoaiPhong = @typeId
-            )
-                THROW 50001, N'Loại phòng không tồn tại.', 1;
+        bool duplicate = await _db.Set<Phong>()
+            .AnyAsync(x => x.SoPhong == number);
 
-            IF EXISTS (
-                SELECT 1
-                FROM dbo.ChiTietDatPhong c
-                INNER JOIN dbo.DatPhong d
-                    ON c.MaDatPhong = d.MaDatPhong
-                WHERE c.MaPhong = @id
-                  AND d.TrangThai IN (
-                      N'Chờ xác nhận',
-                      N'Đã xác nhận',
-                      N'Đã đặt cọc',
-                      N'Đã nhận phòng'
-                  )
-            )
-            AND (
-                SELECT MaLoaiPhong FROM dbo.Phong WHERE MaPhong = @id
-            ) <> @typeId
-                THROW 50003, N'Không thể đổi loại phòng khi còn đơn đặt phòng đang hoạt động.', 1;
+        if (duplicate)
+            return Conflict(new { message = "Số phòng đã tồn tại." });
 
-            UPDATE dbo.Phong
-            SET SoPhong = @roomNumber,
-                MaLoaiPhong = @typeId,
-                Tang = @floor,
-                TrangThai = @status,
-                MoTa = @description
-            WHERE MaPhong = @id;
+        var room = new Phong
+        {
+            SoPhong = number,
+            MaLoaiPhong = request.RoomTypeId,
+            Tang = request.Floor,
+            TrangThai = status,
+            MoTa = request.Description?.Trim()
+        };
 
-            SELECT @@ROWCOUNT
-            """;
-
-        using var command = new SqlCommand(sql, _db);
-
-        Add(command, "@id", id);
-        Add(command, "@roomNumber", request.RoomNumber);
-        Add(command, "@typeId", request.RoomTypeId);
-        Add(command, "@floor", request.Floor);
-        Add(command, "@status", request.Status);
-        Add(command, "@description", request.Description?.Trim());
+        _db.Set<Phong>().Add(room);
 
         try
         {
-            var affected = Convert.ToInt32(await command.ExecuteScalarAsync());
-
-            if (affected == 0)
-                return NotFound(new { message = "Không tìm thấy phòng." });
-
-            return Ok(new
-            {
-                success = true,
-                message = "Cập nhật phòng thành công."
-            });
+            await _db.SaveChangesAsync();
         }
-        catch (SqlException ex) when (ex.Number is 50001 or 50002 or 50003 or 2601 or 2627)
+        catch (DbUpdateException ex)
+            when (ex.InnerException is Microsoft.Data.SqlClient.SqlException
+                { Number: 2601 or 2627 })
         {
-            return BadRequest(new { message = ex.Message });
+            return Conflict(new { message = "Số phòng đã tồn tại." });
         }
-    }
-
-    [HttpPost("types")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateRoomType(RoomTypeRequest request)
-    {
-        var error = ValidateRoomType(request);
-        if (error != null)
-            return BadRequest(new { message = error });
-
-        await OpenAsync();
-
-        using var command = new SqlCommand("""
-            INSERT INTO dbo.LoaiPhong
-            (
-                TenLoaiPhong, MoTa, SucChuaNguoiLon,
-                SucChuaTreEm, DienTich, SoGiuong,
-                LoaiGiuong, GiaCoBan, TrangThai
-            )
-            OUTPUT INSERTED.MaLoaiPhong
-            VALUES
-            (
-                @name, @description, @adults,
-                @children, @area, @beds,
-                @bedType, @price, @active
-            )
-            """, _db);
-
-        SetRoomTypeParameters(command, request);
-
-        var id = Convert.ToInt32(await command.ExecuteScalarAsync());
 
         return Ok(new
         {
             success = true,
-            id,
-            message = "Thêm loại phòng thành công."
+            id = room.MaPhong,
+            message = "Thêm phòng thành công."
         });
     }
 
-    [HttpPut("types/{id:int}")]
+    [HttpPut("rooms/{id:int}")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateRoomType(int id, RoomTypeRequest request)
+    public async Task<IActionResult> UpdateRoom(
+        int id,
+        RoomRequest request)
     {
-        var error = ValidateRoomType(request);
-        if (error != null)
-            return BadRequest(new { message = error });
+        string number = request.RoomNumber?.Trim() ?? "";
+        string status = request.Status?.Trim() ?? "";
 
-        await OpenAsync();
+        if (number.Length is < 1 or > 20)
+            return BadRequest(new { message = "Số phòng không hợp lệ." });
 
-        using var command = new SqlCommand("""
-            UPDATE dbo.LoaiPhong
-            SET TenLoaiPhong = @name,
-                MoTa = @description,
-                SucChuaNguoiLon = @adults,
-                SucChuaTreEm = @children,
-                DienTich = @area,
-                SoGiuong = @beds,
-                LoaiGiuong = @bedType,
-                GiaCoBan = @price,
-                TrangThai = @active
-            WHERE MaLoaiPhong = @id;
+        if (!RoomStatuses.Contains(status))
+            return BadRequest(new { message = "Trạng thái phòng không hợp lệ." });
 
-            SELECT @@ROWCOUNT
-            """, _db);
+        if (request.Floor is < 0 or > 100)
+            return BadRequest(new { message = "Tầng không hợp lệ." });
 
-        SetRoomTypeParameters(command, request);
-        Add(command, "@id", id);
+        if (request.Description?.Length > 500)
+            return BadRequest(new { message = "Mô tả quá dài." });
 
-        var affected = Convert.ToInt32(await command.ExecuteScalarAsync());
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
 
-        if (affected == 0)
-            return NotFound(new { message = "Không tìm thấy loại phòng." });
+        var room = await _db.Set<Phong>()
+            .FirstOrDefaultAsync(x => x.MaPhong == id);
+
+        if (room == null)
+            return NotFound(new { message = "Không tìm thấy phòng." });
+
+        bool duplicate = await _db.Set<Phong>()
+            .AnyAsync(x => x.MaPhong != id && x.SoPhong == number);
+
+        if (duplicate)
+            return Conflict(new { message = "Số phòng đã tồn tại." });
+
+        bool typeExists = await _db.Set<LoaiPhong>()
+            .AnyAsync(x => x.MaLoaiPhong == request.RoomTypeId);
+
+        if (!typeExists)
+            return BadRequest(new { message = "Loại phòng không tồn tại." });
+
+        if (room.MaLoaiPhong != request.RoomTypeId)
+        {
+            bool hasActiveBookings = await (
+                from detail in _db.Set<ChiTietDatPhong>()
+                join booking in _db.Set<DatPhong>()
+                    on detail.MaDatPhong equals booking.MaDatPhong
+                where detail.MaPhong == id
+                   && (booking.TrangThai == "Chờ xác nhận" ||
+                       booking.TrangThai == "Đã xác nhận" ||
+                       booking.TrangThai == "Đã đặt cọc" ||
+                       booking.TrangThai == "Đã nhận phòng")
+                select detail.MaPhong
+            ).AnyAsync();
+
+            if (hasActiveBookings)
+                return BadRequest(new
+                {
+                    message = "Không thể đổi loại phòng khi còn đơn đặt phòng đang hoạt động."
+                });
+        }
+
+        room.SoPhong = number;
+        room.MaLoaiPhong = request.RoomTypeId;
+        room.Tang = request.Floor;
+        room.TrangThai = status;
+        room.MoTa = request.Description?.Trim();
+
+        try
+        {
+            await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch (DbUpdateException ex)
+            when (ex.InnerException is Microsoft.Data.SqlClient.SqlException
+                { Number: 2601 or 2627 })
+        {
+            return Conflict(new { message = "Số phòng đã tồn tại." });
+        }
 
         return Ok(new
         {
             success = true,
-            message = "Cập nhật loại phòng thành công."
+            message = "Cập nhật phòng thành công."
         });
     }
 
     private static string? ValidateRoomType(RoomTypeRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Name)
-            || request.Name.Length > 100)
+        if (string.IsNullOrWhiteSpace(request.Name) ||
+            request.Name.Length > 100)
             return "Tên loại phòng không hợp lệ.";
 
         if (request.BasePrice <= 0)
             return "Giá phòng phải lớn hơn 0.";
 
-        if (request.AdultCapacity < 1 || request.AdultCapacity > 100)
+        if (request.AdultCapacity is < 1 or > 100)
             return "Sức chứa người lớn không hợp lệ.";
 
-        if (request.ChildCapacity < 0 || request.ChildCapacity > 100)
+        if (request.ChildCapacity is < 0 or > 100)
             return "Sức chứa trẻ em không hợp lệ.";
 
-        if (request.Area is < 0)
+        if (request.Area < 0)
             return "Diện tích không hợp lệ.";
 
-        if (request.BedCount is < 0)
+        if (request.BedCount < 0)
             return "Số giường không hợp lệ.";
 
         if (request.Description?.Length > 1000)
@@ -653,233 +417,251 @@ public class AdminRoomsController : ControllerBase
         return null;
     }
 
-    private static void SetRoomTypeParameters(
-        SqlCommand command,
+    [HttpPost("types")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateRoomType(RoomTypeRequest request)
+    {
+        var error = ValidateRoomType(request);
+
+        if (error != null)
+            return BadRequest(new { message = error });
+
+        var type = new LoaiPhong
+        {
+            TenLoaiPhong = request.Name.Trim(),
+            MoTa = request.Description?.Trim(),
+            SucChuaNguoiLon = request.AdultCapacity,
+            SucChuaTreEm = request.ChildCapacity,
+            DienTich = request.Area,
+            SoGiuong = request.BedCount,
+            LoaiGiuong = request.BedType?.Trim(),
+            GiaCoBan = request.BasePrice,
+            TrangThai = request.Active
+        };
+
+        _db.Set<LoaiPhong>().Add(type);
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            success = true,
+            id = type.MaLoaiPhong,
+            message = "Thêm loại phòng thành công."
+        });
+    }
+
+    [HttpPut("types/{id:int}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateRoomType(
+        int id,
         RoomTypeRequest request)
     {
-        Add(command, "@name", request.Name.Trim());
-        Add(command, "@description", request.Description?.Trim());
-        Add(command, "@adults", request.AdultCapacity);
-        Add(command, "@children", request.ChildCapacity);
-        Add(command, "@area", request.Area);
-        Add(command, "@beds", request.BedCount);
-        Add(command, "@bedType", request.BedType?.Trim());
-        Add(command, "@price", request.BasePrice);
-        Add(command, "@active", request.Active);
+        var error = ValidateRoomType(request);
+
+        if (error != null)
+            return BadRequest(new { message = error });
+
+        var type = await _db.Set<LoaiPhong>()
+            .FirstOrDefaultAsync(x => x.MaLoaiPhong == id);
+
+        if (type == null)
+            return NotFound(new { message = "Không tìm thấy loại phòng." });
+
+        type.TenLoaiPhong = request.Name.Trim();
+        type.MoTa = request.Description?.Trim();
+        type.SucChuaNguoiLon = request.AdultCapacity;
+        type.SucChuaTreEm = request.ChildCapacity;
+        type.DienTich = request.Area;
+        type.SoGiuong = request.BedCount;
+        type.LoaiGiuong = request.BedType?.Trim();
+        type.GiaCoBan = request.BasePrice;
+        type.TrangThai = request.Active;
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            success = true,
+            message = "Cập nhật loại phòng thành công."
+        });
     }
 
     [HttpPut("amenities")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateAmenities(AmenityRequest request)
+    public async Task<IActionResult> UpdateAmenities(
+        AmenityRequest request)
     {
         if (request.RoomTypeId <= 0)
             return BadRequest(new { message = "Chưa chọn loại phòng." });
 
-        await OpenAsync();
+        var type = await _db.Set<LoaiPhong>()
+            .Include(x => x.MaTienNghis)
+            .FirstOrDefaultAsync(x =>
+                x.MaLoaiPhong == request.RoomTypeId);
 
-        using var transaction = (SqlTransaction)await _db.BeginTransactionAsync();
+        if (type == null)
+            return NotFound(new { message = "Loại phòng không tồn tại." });
 
-        try
-        {
-            using (var check = new SqlCommand("""
-                SELECT COUNT(1)
-                FROM dbo.LoaiPhong
-                WHERE MaLoaiPhong = @id
-                """, _db, transaction))
-            {
-                Add(check, "@id", request.RoomTypeId);
+        var ids = (request.AmenityIds ?? new List<int>())
+            .Distinct()
+            .ToList();
 
-                if (Convert.ToInt32(await check.ExecuteScalarAsync()) == 0)
-                {
-                    await transaction.RollbackAsync();
-                    return NotFound(new { message = "Loại phòng không tồn tại." });
-                }
-            }
+        var amenities = await _db.Set<TienNghi>()
+            .Where(x => ids.Contains(x.MaTienNghi))
+            .ToListAsync();
 
-            using (var delete = new SqlCommand("""
-                DELETE FROM dbo.PhongTienNghi
-                WHERE MaLoaiPhong = @id
-                """, _db, transaction))
-            {
-                Add(delete, "@id", request.RoomTypeId);
-                await delete.ExecuteNonQueryAsync();
-            }
-
-            foreach (var amenityId in request.AmenityIds.Distinct())
-            {
-                using var insert = new SqlCommand("""
-                    INSERT INTO dbo.PhongTienNghi
-                        (MaLoaiPhong, MaTienNghi)
-                    VALUES (@typeId, @amenityId)
-                    """, _db, transaction);
-
-                Add(insert, "@typeId", request.RoomTypeId);
-                Add(insert, "@amenityId", amenityId);
-
-                await insert.ExecuteNonQueryAsync();
-            }
-
-            await transaction.CommitAsync();
-
-            return Ok(new
-            {
-                success = true,
-                message = "Cập nhật tiện nghi thành công."
-            });
-        }
-        catch (SqlException)
-        {
-            await transaction.RollbackAsync();
-
+        if (amenities.Count != ids.Count)
             return BadRequest(new
             {
                 message = "Danh sách tiện nghi không hợp lệ."
             });
-        }
+
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
+
+        type.MaTienNghis.Clear();
+
+        await _db.SaveChangesAsync();
+
+        foreach (var amenity in amenities)
+            type.MaTienNghis.Add(amenity);
+
+        await _db.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        return Ok(new
+        {
+            success = true,
+            message = "Cập nhật tiện nghi thành công."
+        });
     }
 
     [HttpPost("images")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddImage(ImageRequest request)
     {
-        request.Path = request.Path.Trim();
+        string path = request.Path?.Trim() ?? "";
 
-        if (string.IsNullOrWhiteSpace(request.Path)
-            || request.Path.Length > 500
-            || request.Path.StartsWith("//")
-            || !(request.Path.StartsWith("/")
-                 || Uri.TryCreate(request.Path, UriKind.Absolute, out var uri)
-                    && uri.Scheme == Uri.UriSchemeHttps))
-            return BadRequest(new { message = "Đường dẫn ảnh không hợp lệ." });
+        bool validPath = path.StartsWith("/") &&
+                         !path.StartsWith("//");
+
+        bool validHttps = Uri.TryCreate(
+            path,
+            UriKind.Absolute,
+            out var uri
+        ) && uri.Scheme == Uri.UriSchemeHttps;
+
+        if (path.Length is < 1 or > 500 ||
+            (!validPath && !validHttps))
+            return BadRequest(new
+            {
+                message = "Đường dẫn ảnh không hợp lệ."
+            });
 
         if (request.Description?.Length > 255)
             return BadRequest(new { message = "Mô tả ảnh quá dài." });
 
-        await OpenAsync();
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
 
-        using var transaction = (SqlTransaction)await _db.BeginTransactionAsync();
+        bool typeExists = await _db.Set<LoaiPhong>()
+            .AnyAsync(x => x.MaLoaiPhong == request.RoomTypeId);
 
-        try
+        if (!typeExists)
+            return NotFound(new { message = "Không tìm thấy loại phòng." });
+
+        if (request.IsCover)
         {
-            if (request.IsCover)
-            {
-                using var reset = new SqlCommand("""
-                    UPDATE dbo.HinhAnhPhong
-                    SET AnhDaiDien = 0
-                    WHERE MaLoaiPhong = @typeId
-                    """, _db, transaction);
-
-                Add(reset, "@typeId", request.RoomTypeId);
-                await reset.ExecuteNonQueryAsync();
-            }
-
-            using var insert = new SqlCommand("""
-                INSERT INTO dbo.HinhAnhPhong
-                    (MaLoaiPhong, DuongDan, MoTa, AnhDaiDien)
-                OUTPUT INSERTED.MaHinhAnh
-                VALUES (@typeId, @path, @description, @cover)
-                """, _db, transaction);
-
-            Add(insert, "@typeId", request.RoomTypeId);
-            Add(insert, "@path", request.Path);
-            Add(insert, "@description", request.Description?.Trim());
-            Add(insert, "@cover", request.IsCover);
-
-            var id = Convert.ToInt32(await insert.ExecuteScalarAsync());
-
-            await transaction.CommitAsync();
-
-            return Ok(new
-            {
-                success = true,
-                id,
-                message = "Thêm hình ảnh thành công."
-            });
+            await _db.Set<HinhAnhPhong>()
+                .Where(x => x.MaLoaiPhong == request.RoomTypeId)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(x => x.AnhDaiDien, false));
         }
-        catch (SqlException)
+
+        var image = new HinhAnhPhong
         {
-            await transaction.RollbackAsync();
-            return BadRequest(new { message = "Không thể thêm hình ảnh." });
-        }
+            MaLoaiPhong = request.RoomTypeId,
+            DuongDan = path,
+            MoTa = request.Description?.Trim(),
+            AnhDaiDien = request.IsCover
+        };
+
+        _db.Set<HinhAnhPhong>().Add(image);
+        await _db.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        return Ok(new
+        {
+            success = true,
+            id = image.MaHinhAnh,
+            message = "Thêm hình ảnh thành công."
+        });
     }
 
     [HttpPut("images/{id:int}/cover")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SetCoverImage(int id)
     {
-        await OpenAsync();
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
 
-        using var transaction = (SqlTransaction)await _db.BeginTransactionAsync();
+        var image = await _db.Set<HinhAnhPhong>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.MaHinhAnh == id);
 
-        try
+        if (image == null)
+            return NotFound(new { message = "Không tìm thấy ảnh." });
+
+        await _db.Set<HinhAnhPhong>()
+            .Where(x => x.MaLoaiPhong == image.MaLoaiPhong)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(
+                    x => x.AnhDaiDien,
+                    x => x.MaHinhAnh == id));
+
+        await transaction.CommitAsync();
+
+        return Ok(new
         {
-            int roomTypeId;
-
-            using (var find = new SqlCommand("""
-                SELECT MaLoaiPhong
-                FROM dbo.HinhAnhPhong
-                WHERE MaHinhAnh = @id
-                """, _db, transaction))
-            {
-                Add(find, "@id", id);
-
-                var result = await find.ExecuteScalarAsync();
-
-                if (result == null)
-                {
-                    await transaction.RollbackAsync();
-                    return NotFound(new { message = "Không tìm thấy ảnh." });
-                }
-
-                roomTypeId = Convert.ToInt32(result);
-            }
-
-            using (var update = new SqlCommand("""
-                UPDATE dbo.HinhAnhPhong
-                SET AnhDaiDien =
-                    CASE WHEN MaHinhAnh = @id THEN 1 ELSE 0 END
-                WHERE MaLoaiPhong = @typeId
-                """, _db, transaction))
-            {
-                Add(update, "@id", id);
-                Add(update, "@typeId", roomTypeId);
-                await update.ExecuteNonQueryAsync();
-            }
-
-            await transaction.CommitAsync();
-
-            return Ok(new
-            {
-                success = true,
-                message = "Đã cập nhật ảnh đại diện."
-            });
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+            success = true,
+            message = "Đã cập nhật ảnh đại diện."
+        });
     }
 
     [HttpDelete("images/{id:int}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteImage(int id)
     {
-        await OpenAsync();
+        await using var transaction = await _db.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable);
 
-        using var command = new SqlCommand("""
-            DELETE FROM dbo.HinhAnhPhong
-            WHERE MaHinhAnh = @id;
+        var image = await _db.Set<HinhAnhPhong>()
+            .FirstOrDefaultAsync(x => x.MaHinhAnh == id);
 
-            SELECT @@ROWCOUNT
-            """, _db);
-
-        Add(command, "@id", id);
-
-        var affected = Convert.ToInt32(await command.ExecuteScalarAsync());
-
-        if (affected == 0)
+        if (image == null)
             return NotFound(new { message = "Không tìm thấy ảnh." });
+
+        int typeId = image.MaLoaiPhong;
+        bool wasCover = image.AnhDaiDien;
+
+        _db.Set<HinhAnhPhong>().Remove(image);
+        await _db.SaveChangesAsync();
+
+        if (wasCover)
+        {
+            var nextImage = await _db.Set<HinhAnhPhong>()
+                .Where(x => x.MaLoaiPhong == typeId)
+                .OrderBy(x => x.MaHinhAnh)
+                .FirstOrDefaultAsync();
+
+            if (nextImage != null)
+            {
+                nextImage.AnhDaiDien = true;
+                await _db.SaveChangesAsync();
+            }
+        }
+
+        await transaction.CommitAsync();
 
         return Ok(new
         {

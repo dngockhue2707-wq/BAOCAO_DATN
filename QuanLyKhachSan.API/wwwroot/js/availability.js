@@ -1,202 +1,270 @@
+
 "use strict";
 
-const availabilityForm = document.getElementById("availabilityForm");
-const checkInInput = document.getElementById("checkIn");
-const checkOutInput = document.getElementById("checkOut");
-const searchButton = document.getElementById("searchAvailability");
-const messageElement = document.getElementById("availabilityMessage");
-const resultElement = document.getElementById("availabilityResults");
-const countElement = document.getElementById("availabilityCount");
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("availabilityForm");
+    const checkInInput = document.getElementById("checkIn");
+    const checkOutInput = document.getElementById("checkOut");
+    const adultsInput = document.getElementById("adults");
+    const childrenInput = document.getElementById("children");
+    const searchButton = document.getElementById("searchAvailability");
+    const message = document.getElementById("availabilityMessage");
+    const results = document.getElementById("availabilityResults");
+    const count = document.getElementById("availabilityCount");
 
-function formatLocalDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+    if (!form || !results) return;
 
-    return `${year}-${month}-${day}`;
-}
-
-function addDays(dateString, days) {
-    const [year, month, day] = dateString.split("-").map(Number);
-    const date = new Date(year, month - 1, day);
-
-    date.setDate(date.getDate() + days);
-
-    return formatLocalDate(date);
-}
-
-function formatMoney(value) {
-    return new Intl.NumberFormat("vi-VN", {
+    const money = value => new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
         maximumFractionDigits: 0
-    }).format(value);
-}
+    }).format(Number(value) || 0);
 
-function setMessage(text, isError = false) {
-    messageElement.textContent = text;
-    messageElement.classList.toggle("error", isError);
-}
+    function localDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
 
-function createTextElement(tag, text, className = "") {
-    const element = document.createElement(tag);
-    element.textContent = text;
-
-    if (className) {
-        element.className = className;
+        return `${year}-${month}-${day}`;
     }
 
-    return element;
-}
+    function addDays(value, days) {
+        const [y, m, d] = value.split("-").map(Number);
+        const date = new Date(y, m - 1, d);
+        date.setDate(date.getDate() + days);
+        return localDate(date);
+    }
 
-function renderAvailableRooms(data) {
-    resultElement.replaceChildren();
+    function nightsBetween(start, end) {
+        const a = Date.parse(`${start}T00:00:00Z`);
+        const b = Date.parse(`${end}T00:00:00Z`);
+        return Math.round((b - a) / 86400000);
+    }
 
-    countElement.textContent = `${data.availableCount} phòng còn trống`;
+    function showMessage(text, error = false) {
+        message.textContent = text;
+        message.classList.toggle("error", error);
+    }
 
-    if (!data.rooms.length) {
-        resultElement.appendChild(
-            createTextElement(
+    function el(tag, text, className = "") {
+        const item = document.createElement(tag);
+        item.textContent = text;
+        if (className) item.className = className;
+        return item;
+    }
+
+    function render(types, params, nights) {
+        results.replaceChildren();
+
+        const available = types.filter(type =>
+            Number(type.phongConTrong) > 0
+        );
+
+        const totalRooms = available.reduce(
+            (sum, type) => sum + Number(type.phongConTrong),
+            0
+        );
+
+        count.textContent = `${totalRooms} phòng khả dụng`;
+
+        if (!available.length) {
+            results.appendChild(el(
                 "p",
-                "Không có phòng phù hợp trong khoảng ngày đã chọn."
-            )
-        );
-        return;
-    }
+                "Không có phòng phù hợp trong khoảng thời gian đã chọn."
+            ));
+            return totalRooms;
+        }
 
-    for (const room of data.rooms) {
-        const card = document.createElement("article");
-        card.className = "availability-card";
+        available.forEach(type => {
+            const card = el("article", "", "availability-card");
 
-        const title = createTextElement(
-            "h3",
-            `${room.roomTypeName} – ${room.roomNumber}`
-        );
+            if (type.hinhAnh) {
+                const image = document.createElement("img");
+                image.src = type.hinhAnh;
+                image.alt = type.tenLoaiPhong;
+                image.loading = "lazy";
+                image.className = "availability-room-image";
+                card.appendChild(image);
+            }
 
-        const floor = createTextElement(
-            "p",
-            `Tầng: ${room.floor ?? "Chưa cập nhật"}`
-        );
+            card.appendChild(el("h3", type.tenLoaiPhong));
 
-        const capacity = createTextElement(
-            "p",
-            `Sức chứa: ${room.adultCapacity} người lớn, ${room.childCapacity} trẻ em`
-        );
+            card.appendChild(el(
+                "p",
+                type.moTa || "Không gian nghỉ dưỡng tại DNK Hotel."
+            ));
 
-        const description = createTextElement(
-            "p",
-            room.description || "Không gian nghỉ dưỡng tại DNK Hotel."
-        );
+            card.appendChild(el(
+                "p",
+                `Sức chứa: ${type.sucChuaNguoiLon} người lớn, ${type.sucChuaTreEm} trẻ em`
+            ));
 
-        const priceArea = document.createElement("div");
-        priceArea.className = "availability-price";
+            if (type.dienTich) {
+                card.appendChild(el(
+                    "p",
+                    `Diện tích: ${type.dienTich} m²`
+                ));
+            }
 
-        const price = createTextElement(
-            "strong",
-            formatMoney(room.estimatedTotal)
-        );
+            card.appendChild(el(
+                "p",
+                `Còn ${type.phongConTrong}/${type.tongPhong} phòng`
+            ));
 
-        const priceDetail = createTextElement(
-            "small",
-            `${room.nights} đêm × ${formatMoney(room.pricePerNight)}`
-        );
+            const priceArea = el("div", "", "availability-price");
 
-        priceArea.append(price, priceDetail);
+            const price = Number(type.giaCoBan);
 
-        const link = document.createElement("a");
+            priceArea.appendChild(el(
+                "strong",
+                money(price * nights)
+            ));
 
-        link.href = `/room-detail.html?id=${encodeURIComponent(room.roomTypeId)}`;
-        link.textContent = "Xem chi tiết phòng";
+            priceArea.appendChild(el(
+                "small",
+                `${nights} đêm × ${money(price)}`
+            ));
 
-        card.append(
-            title,
-            floor,
-            capacity,
-            description,
-            priceArea,
-            link
-        );
+            card.appendChild(priceArea);
 
-        resultElement.appendChild(card);
-    }
-}
+            const detailParams = new URLSearchParams({
+                id: String(type.maLoaiPhong),
+                checkIn: params.checkIn,
+                checkOut: params.checkOut,
+                adults: params.adults,
+                children: params.children
+            });
 
-async function searchAvailability(event) {
-    event.preventDefault();
+            const detail = el(
+                "a",
+                "Xem chi tiết và đặt phòng"
+            );
 
-    const checkIn = checkInInput.value;
-    const checkOut = checkOutInput.value;
+            detail.href = `/room-detail.html?${detailParams.toString()}`;
 
-    if (!checkIn || !checkOut) {
-        setMessage("Vui lòng chọn đủ ngày nhận và ngày trả phòng.", true);
-        return;
-    }
-
-    if (checkOut <= checkIn) {
-        setMessage("Ngày trả phòng phải sau ngày nhận phòng.", true);
-        return;
-    }
-
-    searchButton.disabled = true;
-    searchButton.textContent = "Đang tìm phòng...";
-    setMessage("");
-
-    try {
-        const params = new URLSearchParams({
-            checkIn,
-            checkOut
+            card.appendChild(detail);
+            results.appendChild(card);
         });
 
-        const response = await fetch(
-            `/api/room-availability?${params.toString()}`,
-            {
-                credentials: "same-origin"
-            }
-        );
+        return totalRooms;
+    }
 
-        const data = await response.json();
+    async function search(event) {
+        event?.preventDefault();
 
-        if (!response.ok) {
-            throw new Error(
-                data.message || "Không thể kiểm tra phòng trống."
+        const checkIn = checkInInput.value;
+        const checkOut = checkOutInput.value;
+        const adults = adultsInput.value;
+        const children = childrenInput.value;
+        const today = localDate(new Date());
+
+        const nights = nightsBetween(checkIn, checkOut);
+
+        if (!checkIn || !checkOut ||
+            checkIn < today ||
+            !Number.isFinite(nights) ||
+            nights < 1 ||
+            nights > 30) {
+            showMessage(
+                "Ngày lưu trú không hợp lệ. Bạn có thể đặt từ 1 đến 30 đêm.",
+                true
             );
+            return;
         }
 
-        renderAvailableRooms(data);
+        searchButton.disabled = true;
+        searchButton.textContent = "Đang tìm phòng...";
+        results.replaceChildren();
+        count.textContent = "";
+        showMessage("");
 
-        setMessage(
-            `Có ${data.availableCount} phòng khả dụng từ ${checkIn} đến ${checkOut}.`
-        );
-    } catch (error) {
-        resultElement.replaceChildren();
-        countElement.textContent = "";
-        setMessage(error.message, true);
-    } finally {
-        searchButton.disabled = false;
-        searchButton.textContent = "Tìm phòng trống";
+        const params = {
+            checkIn,
+            checkOut,
+            adults,
+            children
+        };
+
+        try {
+            const query = new URLSearchParams(params);
+
+            const response = await fetch(
+                `/api/rooms?${query.toString()}`,
+                { credentials: "same-origin" }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Không thể kiểm tra phòng trống."
+                );
+            }
+
+            const total = render(
+                data.danhSach || [],
+                params,
+                nights
+            );
+
+            showMessage(
+                total > 0
+                    ? `Tìm thấy ${total} phòng khả dụng cho ${nights} đêm.`
+                    : "Không tìm thấy phòng phù hợp. Vui lòng chọn thời gian hoặc số khách khác."
+            );
+        } catch (error) {
+            showMessage(
+                error.message || "Có lỗi xảy ra khi tìm phòng.",
+                true
+            );
+        } finally {
+            searchButton.disabled = false;
+            searchButton.textContent = "Tìm phòng trống";
+        }
     }
-}
 
-function initializeAvailability() {
-    const today = formatLocalDate(new Date());
+    const today = localDate(new Date());
+    const query = new URLSearchParams(location.search);
 
     checkInInput.min = today;
-    checkOutInput.min = addDays(today, 1);
+    checkInInput.value =
+        query.get("checkIn") >= today
+            ? query.get("checkIn")
+            : today;
 
-    checkInInput.value = today;
-    checkOutInput.value = addDays(today, 1);
+    checkOutInput.min = addDays(checkInInput.value, 1);
+    checkOutInput.value =
+        query.get("checkOut") > checkInInput.value
+            ? query.get("checkOut")
+            : addDays(checkInInput.value, 1);
+
+    const adults = Number(query.get("adults"));
+    const children = Number(query.get("children"));
+
+    if (adults >= 1 && adults <= 6) {
+        adultsInput.value = String(adults);
+    }
+
+    if (children >= 0 && children <= 4) {
+        childrenInput.value = String(children);
+    }
 
     checkInInput.addEventListener("change", () => {
-        const minimumCheckout = addDays(checkInInput.value, 1);
+        const min = addDays(checkInInput.value, 1);
+        checkOutInput.min = min;
 
-        checkOutInput.min = minimumCheckout;
-
-        if (checkOutInput.value < minimumCheckout) {
-            checkOutInput.value = minimumCheckout;
+        if (checkOutInput.value < min) {
+            checkOutInput.value = min;
         }
+
+        checkOutInput.max = addDays(checkInInput.value, 30);
     });
 
-    availabilityForm.addEventListener("submit", searchAvailability);
-}
+    checkOutInput.max = addDays(checkInInput.value, 30);
 
-initializeAvailability();
+    form.addEventListener("submit", search);
+
+    if (query.has("checkIn") && query.has("checkOut")) {
+        search();
+    }
+});

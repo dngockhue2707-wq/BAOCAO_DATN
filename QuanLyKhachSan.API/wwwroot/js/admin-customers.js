@@ -108,6 +108,82 @@ document.addEventListener("DOMContentLoaded", async () => {
         return date.toLocaleDateString("vi-VN");
     }
 
+    let customerHistoryRequestId = 0;
+
+    async function loadCustomerBookingHistory(customerId) {
+        const requestId = ++customerHistoryRequestId;
+        const body = $("customerBookingHistoryBody");
+        const count = $("customerBookingCount");
+
+        body.replaceChildren();
+        count.textContent = "Đang tải lịch sử đặt phòng...";
+
+        try {
+            const data = await api(
+                `/api/admin/customers/${customerId}/bookings`
+            );
+
+            if (requestId !== customerHistoryRequestId) return;
+
+            const bookings = Array.isArray(data.items)
+                ? data.items
+                : [];
+
+            count.textContent =
+                `Tổng cộng ${bookings.length} đơn đặt phòng`;
+
+            if (bookings.length === 0) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+
+                cell.colSpan = 6;
+                cell.textContent = "Khách hàng chưa có lịch sử đặt phòng.";
+
+                row.appendChild(cell);
+                body.appendChild(row);
+                return;
+            }
+
+            const money = value => new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+                maximumFractionDigits: 0
+            }).format(Number(value || 0));
+
+            for (const booking of bookings) {
+                const row = document.createElement("tr");
+
+                [
+                    `#${booking.id}`,
+                    booking.rooms || "—",
+                    formatDate(booking.checkIn),
+                    formatDate(booking.checkOut),
+                    money(booking.total),
+                    booking.status || "—"
+                ].forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                body.appendChild(row);
+            }
+        } catch (error) {
+            if (requestId !== customerHistoryRequestId) return;
+
+            count.textContent = "Không tải được lịch sử đặt phòng.";
+
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+
+            cell.colSpan = 6;
+            cell.textContent = error.message;
+
+            row.appendChild(cell);
+            body.appendChild(row);
+        }
+    }
+
     function openDetail(customer) {
         $("detailCustomerName").textContent =
             display(customer.name);
@@ -146,6 +222,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             display(customer.address);
 
         $("customerDetailDialog").showModal();
+        loadCustomerBookingHistory(customer.id);
     }
 
     function renderTable() {
@@ -359,8 +436,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("closeCustomerDetailTop").addEventListener("click", () => {
         $("customerDetailDialog").close();
     });
-
-    $("logoutButton").addEventListener("click", logout);
 
     try {
         await verifyAdmin();

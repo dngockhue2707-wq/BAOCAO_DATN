@@ -469,24 +469,30 @@ async function saveAmenities() {
     const roomTypeId = Number($("amenityTypeSelect").value);
 
     const amenityIds = Array.from(
-        $("amenityCheckboxes input:checked")
+        document.querySelectorAll("#amenityCheckboxes input:checked")
     ).map(input => Number(input.value));
 
-    if (!roomTypeId) {
-        showMessage("Chưa chọn loại phòng.", true);
-        return;
-    }
+    const button = $("saveAmenitiesButton");
+    button.disabled = true;
 
     try {
+        if (!roomTypeId) {
+            throw new Error("Chưa chọn loại phòng.");
+        }
+
         const result = await sendApi(
             "/amenities",
             "PUT",
             { roomTypeId, amenityIds }
         );
 
-        showMessage(result.message);
+        await loadAmenities();
+
+        showMessage(result.message || "Cập nhật tiện nghi thành công.");
     } catch (error) {
         showMessage(error.message, true);
+    } finally {
+        button.disabled = false;
     }
 }
 
@@ -705,9 +711,7 @@ async function initializeRooms() {
                 });
             }
         );
-
-        $("logoutButton").addEventListener("click", logout);
-
+ 
         await getCsrfToken();
 
         const [rooms, types, amenities] = await Promise.all([

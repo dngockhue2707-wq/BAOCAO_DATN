@@ -462,3 +462,35 @@
         align-items: flex-start;
     }
 }
+
+.service-image-preview-wrapper {
+    margin-top: 12px;
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px dashed #d8c9b7;
+    border-radius: 12px;
+    background: #faf8f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.service-image-preview {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    max-height: 210px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.service-image-preview[hidden] {
+    display: none;
+}
+
+#serviceImageMessage {
+    color: #817569;
+    font-size: 14px;
+    text-align: center;
+}

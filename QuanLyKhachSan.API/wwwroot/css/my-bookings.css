@@ -123,3 +123,147 @@
         flex-wrap: wrap;
     }
 }
+
+
+.booking-payment-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0 30px;
+}
+
+.booking-deposit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 12px 24px;
+    background: #926024;
+    border: 1px solid #926024;
+    border-radius: 5px;
+    color: #FFFFFF;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.booking-deposit-button:hover {
+    background: #78501E;
+    color: #FFFFFF;
+}
+
+@media (max-width: 600px) {
+    .booking-payment-actions {
+        width: 100%;
+    }
+
+    .booking-deposit-button {
+        width: 100%;
+    }
+}
+
+.booking-payment-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 24px 0;
+}
+
+.booking-payment-actions a,
+.booking-payment-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 43px;
+    padding: 11px 20px;
+    border: 1px solid #926024;
+    border-radius: 8px;
+    font-family: "Times New Roman", serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.booking-deposit-button {
+    background: #926024;
+    color: #fff;
+}
+
+#refreshBookings {
+    background: #fff;
+    color: #926024;
+}
+
+.booking-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.booking-pay-button,
+.cancel-booking {
+    padding: 10px 17px;
+    border-radius: 7px;
+    font-family: "Times New Roman", serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.booking-pay-button {
+    border: 1px solid #926024;
+    color: #fff;
+    background: #926024;
+}
+
+.cancel-booking {
+    border: 1px solid #b45353;
+    background: #fff;
+    color: #b45353;
+}
+
+.booking-pay-button:hover,
+.booking-deposit-button:hover {
+    background: #754b1a;
+    color: #fff;
+}
+
+.cancel-booking:hover {
+    background: #fff1f1;
+}
+
+.booking-deposit-status {
+    margin: 7px 0 0;
+    color: #817569;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+#bookingsMessage.error {
+    color: #b42318;
+}
+
+@media (max-width: 768px) {
+    .booking-payment-actions,
+    .booking-card-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .booking-payment-actions a,
+    .booking-payment-actions button,
+    .booking-card-actions button {
+        width: 100%;
+    }
+
+    .my-booking-bottom {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 16px;
+    }
+}

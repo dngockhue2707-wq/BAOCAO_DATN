@@ -1,5 +1,4 @@
 
-using System.Data;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Antiforgery;
@@ -8,11 +7,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
 namespace QuanLyKhachSan.API.Controllers;
 
-// Dữ liệu đăng ký tài khoản
 public class RegisterDto
 {
     public string HoTen { get; set; } = "";
@@ -22,7 +22,6 @@ public class RegisterDto
     public string MatKhau { get; set; } = "";
 }
 
-// Dữ liệu đăng nhập
 public class LoginDto
 {
     public string TenDangNhap { get; set; } = "";
@@ -33,12 +32,12 @@ public class LoginDto
 [Route("api/account")]
 public class AccountController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
     private readonly IPasswordHasher<object> _hasher;
     private readonly IAntiforgery _antiforgery;
 
     public AccountController(
-        SqlConnection db,
+        HotelDbContext db,
         IPasswordHasher<object> hasher,
         IAntiforgery antiforgery)
     {
@@ -46,9 +45,6 @@ public class AccountController : ControllerBase
         _hasher = hasher;
         _antiforgery = antiforgery;
     }
-
-    // 1. LẤY MÃ BẢO VỆ CSRF
-    // GET: /api/account/csrf-token
 
     [HttpGet("csrf-token")]
     [AllowAnonymous]
@@ -74,9 +70,6 @@ public class AccountController : ControllerBase
             return false;
         }
     }
-
-    // 2. ĐĂNG KÝ
-    // POST: /api/account/register
 
     [HttpPost("register")]
     [AllowAnonymous]
@@ -117,135 +110,68 @@ public class AccountController : ControllerBase
             });
         }
 
-        await _db.OpenAsync();
+        var role = await _db.Set<VaiTro>()
+            .AsNoTracking()
+            .Where(x =>
+                x.TenVaiTro == "KhachHang" ||
+                x.TenVaiTro == "Khách hàng" ||
+                x.TenVaiTro == "Khach Hang")
+            .OrderBy(x => x.MaVaiTro)
+            .FirstOrDefaultAsync();
 
-        using var transaction =
-            (SqlTransaction)await _db.BeginTransactionAsync();
+        if (role == null)
+        {
+            return StatusCode(500, new
+            {
+                message = "Chưa thiết lập vai trò khách hàng trong SQL Server."
+            });
+        }
+
+        bool usernameExists = await _db.Set<TaiKhoan>()
+            .AnyAsync(x => x.TenDangNhap == username);
+
+        if (usernameExists)
+        {
+            return Conflict(new
+            {
+                message = "Tên đăng nhập đã tồn tại."
+            });
+        }
+
+        string passwordHash = _hasher.HashPassword(
+            new object(),
+            password
+        );
+
+        await using var transaction =
+            await _db.Database.BeginTransactionAsync();
 
         try
         {
-            // Chỉ cho phép người dùng tự đăng ký vai trò khách hàng
-            const string roleSql = """
-                SELECT TOP 1 MaVaiTro
-                FROM dbo.VaiTro
-                WHERE LOWER(
-                    REPLACE(
-                        REPLACE(LTRIM(RTRIM(TenVaiTro)), N' ', N''),
-                        N'á', N'a'
-                    )
-                ) IN (N'khachhang', N'kháchhàng')
-                ORDER BY MaVaiTro
-                """;
-
-            using var roleCommand =
-                new SqlCommand(roleSql, _db, transaction);
-
-            object? roleValue = await roleCommand.ExecuteScalarAsync();
-
-            if (roleValue == null)
+            var account = new TaiKhoan
             {
-                await transaction.RollbackAsync();
+                TenDangNhap = username,
+                MatKhau = passwordHash,
+                Email = email,
+                MaVaiTro = role.MaVaiTro,
+                TrangThai = true,
+                NgayTao = DateTime.Now
+            };
 
-                return StatusCode(500, new
-                {
-                    message = "Chưa thiết lập vai trò khách hàng trong SQL Server."
-                });
-            }
+            _db.Set<TaiKhoan>().Add(account);
+            await _db.SaveChangesAsync();
 
-            int roleId = Convert.ToInt32(roleValue);
+            var customer = new KhachHang
+            {
+                MaTaiKhoan = account.MaTaiKhoan,
+                HoTen = fullName,
+                SoDienThoai = phone,
+                Email = email,
+                NgayTao = DateTime.Now
+            };
 
-            // Tự động băm mật khẩu trước khi lưu
-            string passwordHash = _hasher.HashPassword(
-                new object(),
-                password
-            );
-
-            // Tạo tài khoản
-            const string accountSql = """
-                INSERT INTO dbo.TaiKhoan
-                    (
-                        TenDangNhap,
-                        MatKhau,
-                        Email,
-                        MaVaiTro,
-                        TrangThai,
-                        NgayTao
-                    )
-                OUTPUT INSERTED.MaTaiKhoan
-                VALUES
-                    (
-                        @Username,
-                        @PasswordHash,
-                        @Email,
-                        @RoleId,
-                        1,
-                        SYSDATETIME()
-                    )
-                """;
-
-            using var accountCommand =
-                new SqlCommand(accountSql, _db, transaction);
-
-            accountCommand.Parameters.Add(
-                "@Username", SqlDbType.NVarChar, 100
-            ).Value = username;
-
-            accountCommand.Parameters.Add(
-                "@PasswordHash", SqlDbType.NVarChar, 255
-            ).Value = passwordHash;
-
-            accountCommand.Parameters.Add(
-                "@Email", SqlDbType.NVarChar, 150
-            ).Value = email;
-
-            accountCommand.Parameters.Add(
-                "@RoleId", SqlDbType.Int
-            ).Value = roleId;
-
-            int accountId = Convert.ToInt32(
-                await accountCommand.ExecuteScalarAsync()
-            );
-
-            // Tạo hồ sơ khách hàng
-            const string customerSql = """
-                INSERT INTO dbo.KhachHang
-                    (
-                        MaTaiKhoan,
-                        HoTen,
-                        SoDienThoai,
-                        Email,
-                        NgayTao
-                    )
-                VALUES
-                    (
-                        @AccountId,
-                        @FullName,
-                        @Phone,
-                        @Email,
-                        SYSDATETIME()
-                    )
-                """;
-
-            using var customerCommand =
-                new SqlCommand(customerSql, _db, transaction);
-
-            customerCommand.Parameters.Add(
-                "@AccountId", SqlDbType.Int
-            ).Value = accountId;
-
-            customerCommand.Parameters.Add(
-                "@FullName", SqlDbType.NVarChar, 100
-            ).Value = fullName;
-
-            customerCommand.Parameters.Add(
-                "@Phone", SqlDbType.VarChar, 20
-            ).Value = phone;
-
-            customerCommand.Parameters.Add(
-                "@Email", SqlDbType.NVarChar, 150
-            ).Value = email;
-
-            await customerCommand.ExecuteNonQueryAsync();
+            _db.Set<KhachHang>().Add(customer);
+            await _db.SaveChangesAsync();
 
             await transaction.CommitAsync();
 
@@ -255,7 +181,9 @@ public class AccountController : ControllerBase
                 message = "Đăng ký thành công! Bạn có thể đăng nhập."
             });
         }
-        catch (SqlException ex) when (ex.Number is 2601 or 2627)
+        catch (DbUpdateException ex)
+            when (ex.InnerException is Microsoft.Data.SqlClient.SqlException
+                { Number: 2601 or 2627 })
         {
             await transaction.RollbackAsync();
 
@@ -270,9 +198,6 @@ public class AccountController : ControllerBase
             throw;
         }
     }
-
-    // 3. ĐĂNG NHẬP
-    // POST: /api/account/login
 
     [HttpPost("login")]
     [AllowAnonymous]
@@ -299,46 +224,26 @@ public class AccountController : ControllerBase
             });
         }
 
-        await _db.OpenAsync();
+        var account = await _db.Set<TaiKhoan>()
+            .AsNoTracking()
+            .Include(x => x.MaVaiTroNavigation)
+            .FirstOrDefaultAsync(x =>
+                x.TenDangNhap == username);
 
-        const string sql = """
-            SELECT
-                tk.MaTaiKhoan,
-                tk.TenDangNhap,
-                tk.MatKhau,
-                vt.TenVaiTro
-            FROM dbo.TaiKhoan tk
-            INNER JOIN dbo.VaiTro vt
-                ON tk.MaVaiTro = vt.MaVaiTro
-            WHERE tk.TenDangNhap = @Username
-              AND tk.TrangThai = 1
-            """;
-
-        int accountId;
-        string accountName;
-        string storedHash;
-        string roleName;
-
-        using (var command = new SqlCommand(sql, _db))
+        if (account == null)
         {
-            command.Parameters.Add(
-                "@Username", SqlDbType.NVarChar, 100
-            ).Value = username;
-
-            using var reader = await command.ExecuteReaderAsync();
-
-            if (!await reader.ReadAsync())
+            return Unauthorized(new
             {
-                return Unauthorized(new
-                {
-                    message = "Tên đăng nhập hoặc mật khẩu không đúng."
-                });
-            }
+                message = "Tên đăng nhập hoặc mật khẩu không đúng."
+            });
+        }
 
-            accountId = reader.GetInt32(0);
-            accountName = reader.GetString(1);
-            storedHash = reader.GetString(2);
-            roleName = reader.GetString(3);
+        if (!account.TrangThai)
+        {
+            return Unauthorized(new
+            {
+                message = "Tài khoản của bạn đã ngừng hoạt động. Vui lòng liên hệ quản trị viên DNK Hotel để được hỗ trợ."
+            });
         }
 
         PasswordVerificationResult verificationResult;
@@ -347,7 +252,7 @@ public class AccountController : ControllerBase
         {
             verificationResult = _hasher.VerifyHashedPassword(
                 new object(),
-                storedHash,
+                account.MatKhau,
                 password
             );
         }
@@ -364,7 +269,9 @@ public class AccountController : ControllerBase
             });
         }
 
-        // Chuẩn hóa vai trò từ SQL Server
+        string roleName =
+            account.MaVaiTroNavigation.TenVaiTro;
+
         string role = roleName.Trim().ToLowerInvariant() switch
         {
             "admin" or "quản trị" or "quản trị viên"
@@ -387,15 +294,32 @@ public class AccountController : ControllerBase
             });
         }
 
+        if (verificationResult ==
+            PasswordVerificationResult.SuccessRehashNeeded)
+        {
+            var trackedAccount = await _db.Set<TaiKhoan>()
+                .FindAsync(account.MaTaiKhoan);
+
+            if (trackedAccount != null)
+            {
+                trackedAccount.MatKhau = _hasher.HashPassword(
+                    new object(),
+                    password
+                );
+
+                await _db.SaveChangesAsync();
+            }
+        }
+
         var claims = new List<Claim>
         {
             new Claim(
                 ClaimTypes.NameIdentifier,
-                accountId.ToString()
+                account.MaTaiKhoan.ToString()
             ),
             new Claim(
                 ClaimTypes.Name,
-                accountName
+                account.TenDangNhap
             ),
             new Claim(
                 ClaimTypes.Role,
@@ -417,19 +341,16 @@ public class AccountController : ControllerBase
         {
             success = true,
             message = "Đăng nhập thành công!",
-            username = accountName,
+            username = account.TenDangNhap,
             role,
             redirectUrl = role switch
-                {
-                    "Admin" => "/admin/dashboard.html",
-                    "Staff" => "/staff/dashboard.html",
-                    _ => "/"
-                }
+            {
+                "Admin" => "/admin/dashboard.html",
+                "Staff" => "/staff/dashboard.html",
+                _ => "/"
+            }
         });
     }
-
-    // 4. THÔNG TIN TÀI KHOẢN
-    // GET: /api/account/profile
 
     [HttpGet("profile")]
     [Authorize]
@@ -442,9 +363,6 @@ public class AccountController : ControllerBase
             role = User.FindFirst(ClaimTypes.Role)?.Value
         });
     }
-
-    // 5. ĐĂNG XUẤT
-    // POST: /api/account/logout
 
     [HttpPost("logout")]
     [Authorize]

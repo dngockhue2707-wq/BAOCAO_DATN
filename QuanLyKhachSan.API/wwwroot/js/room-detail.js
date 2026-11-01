@@ -22,7 +22,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const response = await fetch(`/api/rooms/${id}`);
+        const response = await fetch(`/api/rooms/by-room/${id}`, {
+            credentials: "same-origin",
+            cache: "no-store"
+        });
         const data = await response.json();
 
         if (!response.ok) {
@@ -31,7 +34,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const room = data.room;
 
-        setText("roomName", room.tenLoaiPhong);
+        setText(
+            "roomName",
+            `${room.tenLoaiPhong} - Phòng ${room.soPhong}`
+        );
         setText(
             "roomDescription",
             room.moTa || "Thông tin phòng đang được cập nhật."
@@ -92,7 +98,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         document.getElementById("bookRoomButton").href =
-            `/booking.html?roomId=${id}`;
+            `/booking.html?roomId=${room.maLoaiPhong}`;
 
     } catch (error) {
         setText("roomMessage", error.message);

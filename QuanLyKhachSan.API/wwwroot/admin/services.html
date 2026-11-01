@@ -11,32 +11,13 @@
     <link rel="stylesheet" href="/css/admin-services.css">
 
     <script src="/js/admin-services.js" defer></script>
+    <script src="/js/admin-layout.js" defer></script>
 </head>
 
 <body data-page="services">
     <div class="admin-shell">
 
-        <aside class="admin-sidebar">
-            <div class="admin-brand">DNK HOTEL</div>
-
-            <nav>
-                <a href="/admin/dashboard.html">Tổng quan</a>
-                <a href="/admin/rooms.html">Quản lý phòng</a>
-                <a href="/admin/bookings.html">Quản lý đặt phòng</a>
-                <a href="/admin/customers.html">Khách hàng</a>
-                <a href="/admin/employees.html">Nhân viên</a>
-                <a href="/admin/services.html" class="active">Dịch vụ</a>
-                <a href="/admin/invoices.html">Hóa đơn</a>
-                <a href="/admin/reports.html">Báo cáo</a>
-            </nav>
-
-            <button
-                id="logoutButton"
-                type="button"
-                class="admin-button secondary">
-                Đăng xuất
-            </button>
-        </aside>
+        <div id="adminSidebar"></div>
 
         <main class="admin-main">
 
@@ -292,6 +273,37 @@
                         rows="4"
                         maxlength="1000"
                         placeholder="Nhập mô tả về dịch vụ..."></textarea>
+                </div>
+
+                <div class="service-field service-full">
+                    <label for="serviceImage">
+                        Hình ảnh dịch vụ
+                    </label>
+
+                    <input
+                        id="serviceImage"
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+
+                    <div class="service-image-preview-wrapper">
+                        <img
+                            id="serviceImagePreview"
+                            class="service-image-preview"
+                            alt="Ảnh xem trước dịch vụ"
+                            hidden>
+
+                        <p id="serviceImageMessage">
+                            Chưa chọn hình ảnh.
+                        </p>
+                    </div>
+
+                    <button
+                        id="deleteServiceImage"
+                        type="button"
+                        class="service-outline-button"
+                        hidden>
+                        Xóa ảnh hiện tại
+                    </button>
                 </div>
 
                 <div class="service-field service-full">

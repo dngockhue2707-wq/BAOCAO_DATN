@@ -1,7 +1,9 @@
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +15,10 @@ string connectionString = builder.Configuration
         "Chưa cấu hình kết nối SQL Server."
     );
 
-builder.Services.AddScoped<SqlConnection>(_ =>
-    new SqlConnection(connectionString));
+builder.Services.AddDbContext<HotelDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<VnPayService>();
 
 builder.Services.AddScoped<IPasswordHasher<object>,
     PasswordHasher<object>>();

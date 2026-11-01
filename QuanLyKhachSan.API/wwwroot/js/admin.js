@@ -193,21 +193,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // TẠO GIAO DIỆN CHUNG
     const shell = el("div", "", "admin-shell");
-    const sidebar = el("aside", "", "admin-sidebar");
-    const brand = el("div", "DNK HOTEL", "admin-brand");
-    const nav = document.createElement("nav");
 
-    Object.entries(pages).forEach(([key, title]) => {
-        const link = el("a", title);
-        link.href = `/admin/${key}.html`;
-        if (page === key) link.classList.add("active");
-        nav.appendChild(link);
-    });
-
-    sidebar.append(brand, nav);
-    sidebar.appendChild(button("Đăng xuất", logout, "secondary"));
+    const sidebar = document.createElement("div");
+    sidebar.id = "adminSidebar";
 
     const main = el("main", "", "admin-main");
     const topbar = el("header", "", "admin-topbar");
@@ -229,6 +218,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     main.append(topbar, message, content);
     shell.append(sidebar, main);
     root.appendChild(shell);
+    
+    document.addEventListener("DOMContentLoaded", loadAdminLayout);
+    document.addEventListener("admin-shell-ready", loadAdminLayout);
 
     function showMessage(value) {
         message.textContent = value;
@@ -299,67 +291,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function loadBookings() {
-        const data = await api("bookings");
-        const box = panel("Danh sách đặt phòng");
+        if (!window.AdminBookings) {
+            throw new Error("Không tải được chức năng quản lý đặt phòng.");
+        }
 
-        const rows = data.items.map(booking => {
-            const actions = el("div", "", "admin-actions");
-
-            if (booking.status === "Chờ xác nhận") {
-                [
-                    ["Xác nhận", "Đã xác nhận"],
-                    ["Hủy", "Đã hủy"]
-                ].forEach(([label, status]) => {
-                    const action = button(
-                        label,
-                        async () => {
-                            if (!confirm(
-                                `Đổi đơn #${booking.id} thành "${status}"?`
-                            )) return;
-
-                            action.disabled = true;
-
-                            try {
-                                const result = await write(
-                                    "PUT",
-                                    `bookings/${booking.id}/status`,
-                                    { status }
-                                );
-
-                                showMessage(result.message);
-                                await loadBookings();
-                            } catch (error) {
-                                showMessage(error.message);
-                                action.disabled = false;
-                            }
-                        },
-                        status === "Đã hủy" ? "danger" : ""
-                    );
-
-                    actions.appendChild(action);
-                });
-            } else {
-                actions.textContent = "—";
-            }
-
-            return [
-                `#${booking.id}`,
-                booking.customer,
-                `${booking.roomType} · ${booking.roomNumber}`,
-                `${date(booking.checkIn)} – ${date(booking.checkOut)}`,
-                money(booking.total),
-                booking.status,
-                actions
-            ];
+        await window.AdminBookings.init({
+            api,
+            write,
+            panel,
+            button,
+            table,
+            date,
+            money,
+            el,
+            showMessage,
+            content
         });
-
-        box.appendChild(table(
-            ["Mã", "Khách", "Phòng", "Lưu trú",
-             "Tiền phòng", "Trạng thái", "Thao tác"],
-            rows
-        ));
-
-        content.replaceChildren(box);
     }
 
     async function loadEmployees() {

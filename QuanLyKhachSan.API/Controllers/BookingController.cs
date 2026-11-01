@@ -4,7 +4,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
 namespace QuanLyKhachSan.API.Controllers;
 
@@ -23,18 +26,26 @@ public class CreateBookingDto
 [Authorize]
 public class BookingController : ControllerBase
 {
-    private readonly SqlConnection _db;
+    private readonly HotelDbContext _db;
     private readonly IAntiforgery _antiforgery;
 
+    private static readonly string[] BlockingStatuses =
+    {
+        "Chờ xác nhận",
+        "Đã xác nhận",
+        "Đã đặt cọc",
+        "Đã nhận phòng"
+    };
+
     public BookingController(
-        SqlConnection db,
+        HotelDbContext db,
         IAntiforgery antiforgery)
     {
         _db = db;
         _antiforgery = antiforgery;
     }
 
-    private int? GetAccountId()
+    private int? AccountId()
     {
         return int.TryParse(
             User.FindFirstValue(ClaimTypes.NameIdentifier),
@@ -42,7 +53,7 @@ public class BookingController : ControllerBase
         ) ? id : null;
     }
 
-    private async Task<bool> ValidateCsrfToken()
+    private async Task<bool> ValidCsrf()
     {
         try
         {
@@ -55,43 +66,18 @@ public class BookingController : ControllerBase
         }
     }
 
-    private async Task OpenConnection()
+    private async Task<int?> CustomerId()
     {
-        if (_db.State != ConnectionState.Open)
-        {
-            await _db.OpenAsync();
-        }
-    }
+        var accountId = AccountId();
 
-    private static void AddInt(
-        SqlCommand command,
-        string name,
-        int value)
-    {
-        command.Parameters.Add(name, SqlDbType.Int).Value = value;
-    }
+        if (!accountId.HasValue)
+            return null;
 
-    private static void AddDate(
-        SqlCommand command,
-        string name,
-        DateTime value)
-    {
-        command.Parameters.Add(name, SqlDbType.Date).Value = value.Date;
-    }
-
-    private static void AddMoney(
-        SqlCommand command,
-        string name,
-        decimal value)
-    {
-        var parameter = command.Parameters.Add(
-            name,
-            SqlDbType.Decimal
-        );
-
-        parameter.Precision = 18;
-        parameter.Scale = 2;
-        parameter.Value = value;
+        return await _db.KhachHangs
+            .AsNoTracking()
+            .Where(x => x.MaTaiKhoan == accountId.Value)
+            .Select(x => (int?)x.MaKhachHang)
+            .FirstOrDefaultAsync();
     }
 
     [HttpPost]
@@ -99,267 +85,169 @@ public class BookingController : ControllerBase
     public async Task<IActionResult> Create(
         [FromBody] CreateBookingDto dto)
     {
-        if (!await ValidateCsrfToken())
-        {
+        if (!await ValidCsrf())
             return BadRequest(new
             {
                 message = "Phiên biểu mẫu không hợp lệ. Vui lòng tải lại trang."
             });
-        }
 
-        int? accountId = GetAccountId();
+        int? customerId = await CustomerId();
 
-        if (!accountId.HasValue)
-        {
+        if (!customerId.HasValue)
             return Unauthorized(new
             {
-                message = "Vui lòng đăng nhập để đặt phòng."
+                message = "Không tìm thấy hồ sơ khách hàng."
             });
-        }
 
-        DateTime checkIn = dto.CheckIn.Date;
-        DateTime checkOut = dto.CheckOut.Date;
-
-        int nights = (checkOut - checkIn).Days;
+        DateTime start = dto.CheckIn.Date;
+        DateTime end = dto.CheckOut.Date;
+        int nights = (end - start).Days;
 
         if (dto.RoomTypeId <= 0 ||
-            checkIn < DateTime.Today ||
-            nights < 1 ||
-            nights > 30 ||
-            dto.Adults < 1 ||
-            dto.Adults > 20 ||
-            dto.Children < 0 ||
-            dto.Children > 20)
+            start < DateTime.Today ||
+            nights < 1 || nights > 30 ||
+            dto.Adults < 1 || dto.Adults > 20 ||
+            dto.Children < 0 || dto.Children > 20)
         {
             return BadRequest(new
             {
-                message = "Ngày nhận, ngày trả hoặc số lượng khách không hợp lệ."
+                message = "Thông tin đặt phòng không hợp lệ."
             });
         }
 
         string? note = dto.Note?.Trim();
 
         if (note?.Length > 500)
-        {
             return BadRequest(new
             {
-                message = "Ghi chú không được vượt quá 500 ký tự."
+                message = "Ghi chú tối đa 500 ký tự."
             });
-        }
 
-        await OpenConnection();
+        DateOnly checkIn = DateOnly.FromDateTime(start);
+        DateOnly checkOut = DateOnly.FromDateTime(end);
 
-        using var transaction =
-            (SqlTransaction)await _db.BeginTransactionAsync(
-                IsolationLevel.Serializable
-            );
+        await using var transaction =
+            await _db.Database.BeginTransactionAsync(
+                IsolationLevel.Serializable);
 
         try
         {
-            int customerId;
-
-            using (var command = new SqlCommand("""
-                SELECT TOP 1 MaKhachHang
-                FROM dbo.KhachHang
-                WHERE MaTaiKhoan = @AccountId
-                """, _db, transaction))
-            {
-                AddInt(command, "@AccountId", accountId.Value);
-
-                object? value = await command.ExecuteScalarAsync();
-
-                if (value is null or DBNull)
+            var type = await _db.LoaiPhongs
+                .AsNoTracking()
+                .Where(x =>
+                    x.MaLoaiPhong == dto.RoomTypeId &&
+                    x.TrangThai &&
+                    x.SucChuaNguoiLon >= dto.Adults &&
+                    x.SucChuaTreEm >= dto.Children)
+                .Select(x => new
                 {
-                    await transaction.RollbackAsync();
+                    x.MaLoaiPhong,
+                    x.GiaCoBan
+                })
+                .FirstOrDefaultAsync();
 
-                    return BadRequest(new
-                    {
-                        message = "Tài khoản chưa có hồ sơ khách hàng."
-                    });
-                }
-
-                customerId = Convert.ToInt32(value);
-            }
-
-            decimal price;
-
-            using (var command = new SqlCommand("""
-                SELECT GiaCoBan
-                FROM dbo.LoaiPhong
-                WHERE MaLoaiPhong = @RoomTypeId
-                  AND TrangThai = 1
-                  AND SucChuaNguoiLon >= @Adults
-                  AND SucChuaTreEm >= @Children
-                """, _db, transaction))
-            {
-                AddInt(command, "@RoomTypeId", dto.RoomTypeId);
-                AddInt(command, "@Adults", dto.Adults);
-                AddInt(command, "@Children", dto.Children);
-
-                object? value = await command.ExecuteScalarAsync();
-
-                if (value is null or DBNull)
+            if (type == null)
+                return BadRequest(new
                 {
-                    await transaction.RollbackAsync();
+                    message = "Loại phòng không tồn tại hoặc không đủ sức chứa."
+                });
 
-                    return BadRequest(new
-                    {
-                        message = "Loại phòng không hoạt động hoặc không đủ sức chứa."
-                    });
-                }
+            var busyIds =
+                from detail in _db.ChiTietDatPhongs
+                join existingBooking in _db.DatPhongs
+                    on detail.MaDatPhong equals existingBooking.MaDatPhong
+                where BlockingStatuses.Contains(existingBooking.TrangThai)
+                    && existingBooking.NgayNhanPhong < checkOut
+                    && existingBooking.NgayTraPhong > checkIn
+                select detail.MaPhong;
 
-                price = Convert.ToDecimal(value);
-            }
+            var room = await _db.Phongs
+                .Where(x =>
+                    x.MaLoaiPhong == dto.RoomTypeId &&
+                    x.TrangThai == "Trống" &&
+                    !busyIds.Contains(x.MaPhong))
+                .OrderBy(x => x.MaPhong)
+                .FirstOrDefaultAsync();
 
-            int roomId;
-
-            using (var command = new SqlCommand("""
-                SELECT TOP 1 p.MaPhong
-                FROM dbo.Phong p WITH (UPDLOCK, HOLDLOCK)
-                WHERE p.MaLoaiPhong = @RoomTypeId
-                  AND p.TrangThai = N'Trống'
-                  AND NOT EXISTS
-                  (
-                      SELECT 1
-                      FROM dbo.ChiTietDatPhong ct
-                      INNER JOIN dbo.DatPhong dp
-                          ON dp.MaDatPhong = ct.MaDatPhong
-                      WHERE ct.MaPhong = p.MaPhong
-                        AND dp.TrangThai IN
-                        (
-                            N'Chờ xác nhận',
-                            N'Đã xác nhận',
-                            N'Đã đặt cọc',
-                            N'Đã nhận phòng'
-                        )
-                        AND dp.NgayNhanPhong < @CheckOut
-                        AND dp.NgayTraPhong > @CheckIn
-                  )
-                ORDER BY p.MaPhong
-                """, _db, transaction))
-            {
-                AddInt(command, "@RoomTypeId", dto.RoomTypeId);
-                AddDate(command, "@CheckIn", checkIn);
-                AddDate(command, "@CheckOut", checkOut);
-
-                object? value = await command.ExecuteScalarAsync();
-
-                if (value is null or DBNull)
+            if (room == null)
+                return Conflict(new
                 {
-                    await transaction.RollbackAsync();
+                    message = "Không còn phòng trống trong thời gian đã chọn."
+                });
 
-                    return Conflict(new
-                    {
-                        message = "Loại phòng này đã hết phòng trống trong thời gian bạn chọn."
-                    });
-                }
-
-                roomId = Convert.ToInt32(value);
-            }
-
+            decimal price = type.GiaCoBan;
             decimal total = price * nights;
-            int bookingId;
 
-            using (var command = new SqlCommand("""
-                INSERT INTO dbo.DatPhong
-                (
-                    MaKhachHang,
-                    NgayDat,
-                    NgayNhanPhong,
-                    NgayTraPhong,
-                    SoNguoiLon,
-                    SoTreEm,
-                    TrangThai,
-                    GhiChu
-                )
-                OUTPUT INSERTED.MaDatPhong
-                VALUES
-                (
-                    @CustomerId,
-                    SYSDATETIME(),
-                    @CheckIn,
-                    @CheckOut,
-                    @Adults,
-                    @Children,
-                    N'Chờ xác nhận',
-                    @Note
-                )
-                """, _db, transaction))
+            var booking = new DatPhong
             {
-                AddInt(command, "@CustomerId", customerId);
-                AddDate(command, "@CheckIn", checkIn);
-                AddDate(command, "@CheckOut", checkOut);
-                AddInt(command, "@Adults", dto.Adults);
-                AddInt(command, "@Children", dto.Children);
+                MaKhachHang = customerId.Value,
+                NgayDat = DateTime.Now,
+                NgayNhanPhong = checkIn,
+                NgayTraPhong = checkOut,
+                SoNguoiLon = dto.Adults,
+                SoTreEm = dto.Children,
+                TrangThai = "Chờ xác nhận",
+                GhiChu = note
+            };
 
-                command.Parameters.Add(
-                    "@Note",
-                    SqlDbType.NVarChar,
-                    500
-                ).Value = string.IsNullOrWhiteSpace(note)
-                    ? DBNull.Value
-                    : note;
+            _db.DatPhongs.Add(booking);
+            await _db.SaveChangesAsync();
 
-                bookingId = Convert.ToInt32(
-                    await command.ExecuteScalarAsync()
-                );
-            }
-
-            using (var command = new SqlCommand("""
-                INSERT INTO dbo.ChiTietDatPhong
-                (
-                    MaDatPhong,
-                    MaPhong,
-                    DonGia,
-                    SoDem,
-                    ThanhTien
-                )
-                VALUES
-                (
-                    @BookingId,
-                    @RoomId,
-                    @Price,
-                    @Nights,
-                    @Total
-                )
-                """, _db, transaction))
+            _db.ChiTietDatPhongs.Add(new ChiTietDatPhong
             {
-                AddInt(command, "@BookingId", bookingId);
-                AddInt(command, "@RoomId", roomId);
-                AddMoney(command, "@Price", price);
-                AddInt(command, "@Nights", nights);
-                AddMoney(command, "@Total", total);
+                MaDatPhong = booking.MaDatPhong,
+                MaPhong = room.MaPhong,
+                DonGia = price,
+                SoDem = nights,
+                ThanhTien = total
+            });
 
-                await command.ExecuteNonQueryAsync();
-            }
+            _db.LichSuTuongTacs.Add(new LichSuTuongTac
+            {
+                MaKhachHang = customerId.Value,
+                MaLoaiPhong = dto.RoomTypeId,
+                LoaiTuongTac = "Đặt phòng",
+                ThoiGian = DateTime.Now,
+                MucDoQuanTam = 5m
+            });
 
+            await _db.SaveChangesAsync();
             await transaction.CommitAsync();
 
             return Ok(new
             {
                 success = true,
                 message = "Đặt phòng thành công! Đơn đang chờ xác nhận.",
-                bookingId,
-                roomId,
+                bookingId = booking.MaDatPhong,
+                roomId = room.MaPhong,
                 nights,
                 pricePerNight = price,
                 total,
-                status = "Chờ xác nhận"
+                status = booking.TrangThai
             });
         }
-        catch (SqlException ex) when (ex.Number is 1205 or 1222 or 3960)
+        catch (DbUpdateException ex)
+            when (ex.InnerException is SqlException
+            {
+                Number: 1205 or 1222 or 3960
+            })
         {
-            await SafeRollbackAsync(transaction);
+            await transaction.RollbackAsync();
 
             return Conflict(new
             {
-                message = "Phòng đang được người khác đặt. Vui lòng thử lại."
+                message = "Phòng đang có yêu cầu đặt khác. Vui lòng thử lại."
             });
         }
-        catch
+        catch (SqlException ex)
+            when (ex.Number is 1205 or 1222 or 3960)
         {
-            await SafeRollbackAsync(transaction);
-            throw;
+            await transaction.RollbackAsync();
+
+            return Conflict(new
+            {
+                message = "Phòng đang được đặt. Vui lòng thử lại."
+            });
         }
     }
 
@@ -367,62 +255,35 @@ public class BookingController : ControllerBase
     [Authorize(Roles = "Customer")]
     public async Task<IActionResult> GetMine()
     {
-        int? accountId = GetAccountId();
+        int? customerId = await CustomerId();
 
-        if (!accountId.HasValue)
-        {
+        if (!customerId.HasValue)
             return Unauthorized();
-        }
 
-        await OpenConnection();
-
-        using var command = new SqlCommand("""
-            SELECT
-                dp.MaDatPhong,
-                lp.TenLoaiPhong,
-                p.SoPhong,
-                dp.NgayDat,
-                dp.NgayNhanPhong,
-                dp.NgayTraPhong,
-                dp.SoNguoiLon,
-                dp.SoTreEm,
-                dp.TrangThai,
-                ct.ThanhTien
-            FROM dbo.DatPhong dp
-            INNER JOIN dbo.KhachHang kh
-                ON kh.MaKhachHang = dp.MaKhachHang
-            INNER JOIN dbo.ChiTietDatPhong ct
-                ON ct.MaDatPhong = dp.MaDatPhong
-            INNER JOIN dbo.Phong p
-                ON p.MaPhong = ct.MaPhong
-            INNER JOIN dbo.LoaiPhong lp
-                ON lp.MaLoaiPhong = p.MaLoaiPhong
-            WHERE kh.MaTaiKhoan = @AccountId
-            ORDER BY dp.NgayDat DESC, dp.MaDatPhong DESC
-            """, _db);
-
-        AddInt(command, "@AccountId", accountId.Value);
-
-        var bookings = new List<object>();
-
-        using var reader = await command.ExecuteReaderAsync();
-
-        while (await reader.ReadAsync())
-        {
-            bookings.Add(new
+        var bookings = await (
+            from b in _db.DatPhongs.AsNoTracking()
+            join d in _db.ChiTietDatPhongs.AsNoTracking()
+                on b.MaDatPhong equals d.MaDatPhong
+            join p in _db.Phongs.AsNoTracking()
+                on d.MaPhong equals p.MaPhong
+            join t in _db.LoaiPhongs.AsNoTracking()
+                on p.MaLoaiPhong equals t.MaLoaiPhong
+            where b.MaKhachHang == customerId.Value
+            orderby b.NgayDat descending, b.MaDatPhong descending
+            select new
             {
-                bookingId = reader.GetInt32(0),
-                roomName = reader.GetString(1),
-                roomNumber = reader.GetString(2),
-                bookedAt = reader.GetDateTime(3),
-                checkIn = reader.GetDateTime(4),
-                checkOut = reader.GetDateTime(5),
-                adults = reader.GetInt32(6),
-                children = reader.GetInt32(7),
-                status = reader.GetString(8),
-                total = reader.GetDecimal(9)
-            });
-        }
+                bookingId = b.MaDatPhong,
+                roomName = t.TenLoaiPhong,
+                roomNumber = p.SoPhong,
+                bookedAt = b.NgayDat,
+                checkIn = b.NgayNhanPhong,
+                checkOut = b.NgayTraPhong,
+                adults = b.SoNguoiLon,
+                children = b.SoTreEm,
+                status = b.TrangThai,
+                total = d.ThanhTien
+            }
+        ).ToListAsync();
 
         return Ok(new
         {
@@ -435,77 +296,172 @@ public class BookingController : ControllerBase
     [Authorize(Roles = "Customer")]
     public async Task<IActionResult> Cancel(int id)
     {
-        if (!await ValidateCsrfToken())
-        {
+        if (!await ValidCsrf())
             return BadRequest(new
             {
                 message = "Phiên biểu mẫu không hợp lệ."
             });
-        }
 
-        int? accountId = GetAccountId();
+        int? customerId = await CustomerId();
 
-        if (!accountId.HasValue)
-        {
+        if (!customerId.HasValue)
             return Unauthorized();
-        }
 
         if (id <= 0)
-        {
             return BadRequest(new
             {
                 message = "Mã đặt phòng không hợp lệ."
             });
-        }
 
-        await OpenConnection();
+        await using var transaction =
+            await _db.Database.BeginTransactionAsync(
+                IsolationLevel.Serializable);
 
-        using var command = new SqlCommand("""
-            UPDATE dp
-            SET
-                dp.TrangThai = N'Đã hủy',
-                dp.LyDoHuy = N'Khách hàng tự hủy'
-            FROM dbo.DatPhong dp
-            INNER JOIN dbo.KhachHang kh
-                ON kh.MaKhachHang = dp.MaKhachHang
-            WHERE dp.MaDatPhong = @BookingId
-              AND kh.MaTaiKhoan = @AccountId
-              AND dp.TrangThai = N'Chờ xác nhận'
-              AND dp.NgayNhanPhong > CAST(GETDATE() AS date)
-            """, _db);
+        var booking = await _db.DatPhongs
+            .FirstOrDefaultAsync(x =>
+                x.MaDatPhong == id &&
+                x.MaKhachHang == customerId.Value);
 
-        AddInt(command, "@BookingId", id);
-        AddInt(command, "@AccountId", accountId.Value);
+        if (booking == null)
+            return NotFound(new
+            {
+                message = "Không tìm thấy đơn đặt phòng."
+            });
 
-        int affected = await command.ExecuteNonQueryAsync();
-
-        if (affected == 0)
+        if (booking.TrangThai != "Chờ xác nhận" &&
+            booking.TrangThai != "Đã xác nhận")
         {
             return BadRequest(new
             {
-                message = "Không thể hủy đơn đã xác nhận, đã hủy hoặc đến ngày nhận phòng."
+                message = "Trạng thái đơn không cho phép tự hủy."
             });
         }
+
+        if (booking.NgayNhanPhong <=
+            DateOnly.FromDateTime(DateTime.Today))
+        {
+            return BadRequest(new
+            {
+                message = "Đã đến ngày nhận phòng. Vui lòng liên hệ khách sạn."
+            });
+        }
+
+        bool hasPaid = await _db.DatCocs
+            .AnyAsync(x =>
+                x.MaDatPhong == id &&
+                (x.TrangThai == "Thành công" ||
+                 x.TrangThai == "Đã thanh toán"));
+
+        if (hasPaid)
+            return Conflict(new
+            {
+                message = "Đơn đã có tiền cọc. Vui lòng liên hệ khách sạn để được xử lý hủy và hoàn cọc."
+            });
+
+        bool hasPendingPayment = await _db.DatCocs
+            .AnyAsync(x =>
+                x.MaDatPhong == id &&
+                (x.TrangThai == "Chờ thanh toán" ||
+                 x.TrangThai == "Hết hạn"));
+
+        if (hasPendingPayment)
+            return Conflict(new
+            {
+                message = "Đơn có giao dịch VNPay cần đối soát trước khi hủy."
+            });
+
+        booking.TrangThai = "Đã hủy";
+        booking.LyDoHuy = "Khách hàng tự hủy";
+
+        await _db.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         return Ok(new
         {
             success = true,
-            message = "Hủy đặt phòng thành công!"
+            message = "Hủy đặt phòng thành công."
         });
     }
 
-    private static async Task SafeRollbackAsync(
-        SqlTransaction transaction)
+    [HttpGet("management")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<IActionResult> Management()
     {
-        try
+        var bookings = await (
+            from b in _db.DatPhongs.AsNoTracking()
+            join c in _db.KhachHangs.AsNoTracking()
+                on b.MaKhachHang equals c.MaKhachHang
+            orderby b.NgayDat descending
+            select new
+            {
+                bookingId = b.MaDatPhong,
+                customerName = c.HoTen,
+                checkIn = b.NgayNhanPhong,
+                checkOut = b.NgayTraPhong,
+                adults = b.SoNguoiLon,
+                children = b.SoTreEm,
+                status = b.TrangThai,
+                bookedAt = b.NgayDat,
+                confirmedAt = b.NgayXacNhan
+            }
+        ).ToListAsync();
+
+        return Ok(new
         {
-            await transaction.RollbackAsync();
-        }
-        catch (InvalidOperationException)
+            success = true,
+            bookings
+        });
+    }
+
+    [HttpPost("{id:int}/confirm")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<IActionResult> Confirm(int id)
+    {
+        if (!await ValidCsrf())
+            return BadRequest(new
+            {
+                message = "Phiên biểu mẫu không hợp lệ."
+            });
+
+        int? accountId = AccountId();
+
+        if (!accountId.HasValue)
+            return Unauthorized();
+
+        var employeeId = await _db.NhanViens
+            .AsNoTracking()
+            .Where(x =>
+                x.MaTaiKhoan == accountId.Value &&
+                x.TrangThai)
+            .Select(x => (int?)x.MaNhanVien)
+            .FirstOrDefaultAsync();
+
+        if (!employeeId.HasValue)
+            return Forbid();
+
+        int affected = await _db.DatPhongs
+            .Where(x =>
+                x.MaDatPhong == id &&
+                x.TrangThai == "Chờ xác nhận" &&
+                x.NgayNhanPhong >=
+                    DateOnly.FromDateTime(DateTime.Today))
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.TrangThai, "Đã xác nhận")
+                .SetProperty(x => x.MaNhanVienXacNhan, employeeId)
+                .SetProperty(x => x.NgayXacNhan, DateTime.Now));
+
+        if (affected == 0)
+            return Conflict(new
+            {
+                message = "Không thể xác nhận. Đơn không tồn tại hoặc trạng thái đã thay đổi."
+            });
+
+        return Ok(new
         {
-        }
-        catch (SqlException)
-        {
-        }
+            success = true,
+            message = "Xác nhận đặt phòng thành công.",
+            bookingId = id,
+            status = "Đã xác nhận"
+        });
     }
 }

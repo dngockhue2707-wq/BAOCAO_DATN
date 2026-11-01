@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7,8 +8,8 @@
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/my-bookings.css">
     <script src="/js/layout.js" defer></script>
-    <script src="/js/my-bookings.js" defer></script>
     <script src="/js/account-nav.js" defer></script>
+    <script src="/js/my-bookings.js" defer></script>
 </head>
 <body>
     <div id="site-header"></div>
@@ -16,11 +17,27 @@
     <main class="my-bookings-page">
         <div class="my-bookings-container">
             <span class="section-label">DNK HOTEL</span>
+
             <h1>Đơn đặt phòng của tôi</h1>
-            <p>Theo dõi lịch sử lưu trú và trạng thái đặt phòng.</p>
+
+            <p>
+                Theo dõi lịch sử đặt phòng, trạng thái xác nhận
+                và thanh toán tiền đặt cọc.
+            </p>
+
+            <div class="booking-payment-actions">
+                <a href="/availability.html" class="booking-deposit-button">
+                    Đặt phòng mới
+                </a>
+
+                <button type="button" id="refreshBookings">
+                    Cập nhật trạng thái
+                </button>
+            </div>
 
             <div class="booking-filter">
                 <label for="statusFilter">Lọc trạng thái</label>
+
                 <select id="statusFilter">
                     <option value="all">Tất cả</option>
                     <option value="Chờ xác nhận">Chờ xác nhận</option>
@@ -32,7 +49,8 @@
                 </select>
             </div>
 
-            <p id="bookingsMessage" role="status"></p>
+            <p id="bookingsMessage" role="status" aria-live="polite"></p>
+
             <div id="myBookingsList"></div>
         </div>
     </main>

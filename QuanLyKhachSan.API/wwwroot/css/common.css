@@ -266,11 +266,13 @@ b {
     border-top: 1px solid var(--border);
 }
 
+
 .footer-main {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 65px;
-    padding-bottom: 55px;
+    grid-template-columns: 2fr 1fr 1.3fr;
+    gap: 50px;
+    padding-bottom: 45px;
+    align-items: start;
 }
 
 .footer-brand {
@@ -398,3 +400,4 @@ b {
         padding: 45px 6% 20px;
     }
 }
+

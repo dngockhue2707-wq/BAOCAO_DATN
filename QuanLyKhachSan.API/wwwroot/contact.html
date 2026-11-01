@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tư vấn & Hỗ trợ | DNK Hotel</title>
+    <meta name="description" content="Liên hệ và gửi yêu cầu hỗ trợ đến DNK Hotel.">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/information.css">
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+    <script src="/js/contact.js" defer></script>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main class="info-page">
+        <section class="info-hero">
+            <div class="info-container">
+                <span class="info-eyebrow">KẾT NỐI VỚI CHÚNG TÔI</span>
+                <h1>Tư vấn <em>& Hỗ trợ</em></h1>
+                <p>
+                    Bạn cần tư vấn phòng nghỉ, dịch vụ
+                    hoặc hỗ trợ đặt phòng? Hãy liên hệ với chúng tôi.
+                </p>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <div class="info-container contact-grid">
+                <aside class="contact-details">
+                    <span class="info-eyebrow">THÔNG TIN KHÁCH SẠN</span>
+                    <h2>Thông tin hỗ trợ</h2>
+
+                    <div class="contact-item">
+                        <h3>Địa chỉ</h3>
+                        <p>Đang cập nhật địa chỉ khách sạn.</p>
+                    </div>
+
+                    <div class="contact-item">
+                        <h3>Số điện thoại</h3>
+                        <p>Đang cập nhật số điện thoại.</p>
+                    </div>
+
+                    <div class="contact-item">
+                        <h3>Email</h3>
+                        <p>Đang cập nhật email liên hệ.</p>
+                    </div>
+
+                    <div class="contact-item">
+                        <h3>Hỗ trợ khách hàng</h3>
+                        <p>
+                            Thông tin về phòng nghỉ, đặt phòng,
+                            dịch vụ và các yêu cầu trong thời gian lưu trú.
+                        </p>
+                    </div>
+                </aside>
+
+                <section class="contact-form">
+                    <span class="info-eyebrow">GỬI YÊU CẦU</span>
+                    <h2>Gửi yêu cầu hỗ trợ</h2>
+
+                    <form id="contactForm">
+                        <div class="contact-fields">
+                            <div class="contact-field">
+                                <label for="contactName">Họ và tên *</label>
+                                <input
+                                    type="text"
+                                    id="contactName"
+                                    maxlength="100"
+                                    autocomplete="name"
+                                    placeholder="Nhập họ và tên"
+                                    required
+                                >
+                            </div>
+
+                            <div class="contact-field">
+                                <label for="contactEmail">Email *</label>
+                                <input
+                                    type="email"
+                                    id="contactEmail"
+                                    maxlength="254"
+                                    autocomplete="email"
+                                    placeholder="Nhập email"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="contact-field">
+                            <label for="contactSubject">Chủ đề *</label>
+                            <input
+                                type="text"
+                                id="contactSubject"
+                                maxlength="150"
+                                placeholder="Nhập chủ đề cần hỗ trợ"
+                                required
+                            >
+                        </div>
+
+                        <div class="contact-field">
+                            <label for="contactContent">Nội dung *</label>
+                            <textarea
+                                id="contactContent"
+                                maxlength="3000"
+                                placeholder="Nhập nội dung yêu cầu của bạn"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <button type="submit" class="info-button">
+                            Gửi yêu cầu
+                        </button>
+
+                        <p class="contact-note">
+                            Biểu mẫu hiện hỗ trợ soạn và sao chép
+                            nội dung. Yêu cầu chưa được gửi đến
+                            khách sạn hoặc lưu vào hệ thống.
+                        </p>
+
+                        <p id="contactMessage" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+            </div>
+        </section>
+
+        <section class="info-cta">
+            <h2>Bạn đang tìm phòng nghỉ?</h2>
+            <p>
+                Khám phá các loại phòng và tìm kiếm phòng trống
+                phù hợp với lịch trình của bạn.
+            </p>
+            <a href="/rooms.html" class="info-button">
+                Xem phòng nghỉ →
+            </a>
+        </section>
+    </main>
+
+    <div id="site-footer"></div>
+</body>
+</html>

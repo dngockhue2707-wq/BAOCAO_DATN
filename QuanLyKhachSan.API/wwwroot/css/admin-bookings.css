@@ -1,0 +1,123 @@
+
+.admin-booking-toolbar {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) 190px 170px auto;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0 14px;
+}
+
+.admin-booking-toolbar .admin-input,
+.admin-booking-toolbar .admin-select {
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    margin: 0;
+    padding: 10px 13px;
+    border: 1px solid #E8E0D7;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #27272A;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.admin-booking-toolbar .admin-input:focus,
+.admin-booking-toolbar .admin-select:focus {
+    outline: none;
+    border-color: #926024;
+    box-shadow: 0 0 0 3px rgba(146, 96, 36, 0.10);
+}
+
+.admin-booking-toolbar .admin-button {
+    height: 44px;
+    padding: 10px 17px;
+    white-space: nowrap;
+    border-radius: 8px;
+}
+
+.admin-booking-count {
+    margin: 8px 0 18px;
+    color: #817569;
+    font-size: 15px;
+}
+
+.admin-booking-results {
+    width: 100%;
+    min-width: 0;
+}
+
+.admin-booking-results .admin-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-booking-results .admin-table {
+    width: 100%;
+}
+
+.admin-booking-results .admin-table th,
+.admin-booking-results .admin-table td {
+    vertical-align: middle;
+}
+
+.admin-booking-results .admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-booking-results .admin-actions .admin-button {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.admin-booking-status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #F2EEE9;
+    color: #5D5248;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-booking-status[data-status="Chờ xác nhận"] {
+    background: #FFF3DC;
+    color: #98631D;
+}
+
+.admin-booking-status[data-status="Đã xác nhận"],
+.admin-booking-status[data-status="Đã đặt cọc"] {
+    background: #E6F4EA;
+    color: #237345;
+}
+
+.admin-booking-status[data-status="Đã nhận phòng"] {
+    background: #E7F0FF;
+    color: #245CA8;
+}
+
+.admin-booking-status[data-status="Đã trả phòng"] {
+    background: #EDF0F2;
+    color: #59636D;
+}
+
+.admin-booking-status[data-status="Đã hủy"] {
+    background: #FCE9E9;
+    color: #AD3636;
+}
+
+@media (max-width: 1100px) {
+    .admin-booking-toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-booking-toolbar {
+        grid-template-columns: 1fr;
+    }
+}

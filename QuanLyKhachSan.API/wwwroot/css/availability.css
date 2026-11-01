@@ -194,3 +194,62 @@
         flex-direction: column;
     }
 }
+
+.availability-form select {
+    width: 100%;
+    min-height: 47px;
+    padding: 11px 13px;
+    border: 1px solid #e8e0d7;
+    border-radius: 8px;
+    background: #fff;
+    color: #27272a;
+    font-family: "Times New Roman", serif;
+    font-size: 16px;
+}
+
+.availability-room-image {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 9px;
+    margin-bottom: 15px;
+}
+
+.availability-card {
+    background: #fff;
+    border: 1px solid #e8e0d7;
+    border-radius: 13px;
+    padding: 20px;
+    box-shadow: 0 5px 18px rgba(48, 37, 30, .05);
+}
+
+.availability-card h3 {
+    color: #30251e;
+    margin: 0 0 13px;
+}
+
+.availability-card p {
+    color: #817569;
+    line-height: 1.55;
+}
+
+.availability-card a {
+    display: block;
+    margin-top: 15px;
+    padding: 12px;
+    text-align: center;
+    color: #fff;
+    background: #926024;
+    border-radius: 7px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.availability-card a:hover {
+    background: #754b1a;
+}
+
+#availabilityMessage.error {
+    color: #b42318;
+}

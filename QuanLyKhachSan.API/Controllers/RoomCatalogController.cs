@@ -1,151 +1,121 @@
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
+using QuanLyKhachSan.API.Data;
+using QuanLyKhachSan.API.Data.Entities;
 
-namespace QuanLyKhachSan.API.Controllers
+namespace QuanLyKhachSan.API.Controllers;
+
+[ApiController]
+[Route("api/room-catalog")]
+public class RoomCatalogController : ControllerBase
 {
-    [ApiController]
-    [Route("api/room-catalog")]
-    public class RoomCatalogController : ControllerBase
+    private readonly HotelDbContext _db;
+
+    public RoomCatalogController(HotelDbContext db)
     {
-        private readonly IConfiguration _configuration;
+        _db = db;
+    }
 
-        public RoomCatalogController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetRoomCatalog()
-        {
-            var connectionString =
-                _configuration.GetConnectionString("DefaultConnection")
-                ?? _configuration.GetConnectionString("DefaultConnectionString");
-
-            if (string.IsNullOrWhiteSpace(connectionString))
+    [HttpGet]
+    public async Task<IActionResult> GetRoomCatalog()
+    {
+        var roomTypes = await _db.Set<LoaiPhong>()
+            .AsNoTracking()
+            .OrderBy(x => x.MaLoaiPhong)
+            .Select(x => new RoomTypeCatalogDto
             {
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = "Chưa cấu hình kết nối SQL Server."
-                });
-            }
+                MaLoaiPhong = x.MaLoaiPhong,
+                TenLoaiPhong = x.TenLoaiPhong,
+                MoTa = x.MoTa,
+                GiaCoBan = x.GiaCoBan
+            })
+            .ToListAsync();
 
-            const string sql = @"
-                SELECT
-                    lp.MaLoaiPhong,
-                    lp.TenLoaiPhong,
-                    lp.MoTa AS MoTaLoaiPhong,
-                    lp.GiaCoBan,
-                    p.MaPhong,
-                    p.SoPhong,
-                    p.Tang,
-                    p.TrangThai,
-                    p.MoTa AS MoTaPhong
-                FROM dbo.LoaiPhong AS lp
-                LEFT JOIN dbo.Phong AS p
-                    ON p.MaLoaiPhong = lp.MaLoaiPhong
-                ORDER BY lp.MaLoaiPhong, p.Tang, p.SoPhong;
-            ";
-
-            try
+        var rooms = await _db.Set<Phong>()
+            .AsNoTracking()
+            .OrderBy(x => x.MaLoaiPhong)
+            .ThenBy(x => x.Tang)
+            .ThenBy(x => x.SoPhong)
+            .Select(x => new
             {
-                var danhSach = new List<RoomTypeCatalogDto>();
-                var lookup = new Dictionary<int, RoomTypeCatalogDto>();
-
-                await using var connection =
-                    new SqlConnection(connectionString);
-
-                await connection.OpenAsync();
-
-                await using var command =
-                    new SqlCommand(sql, connection);
-
-                await using var reader =
-                    await command.ExecuteReaderAsync();
-
-                while (await reader.ReadAsync())
+                x.MaLoaiPhong,
+                Room = new RoomCatalogItemDto
                 {
-                    var maLoaiPhong =
-                        Convert.ToInt32(reader["MaLoaiPhong"]);
+                    MaPhong = x.MaPhong,
+                    SoPhong = x.SoPhong,
+                    Tang = x.Tang,
+                    TrangThai = x.TrangThai,
+                    MoTa = x.MoTa
+                }
+            })
+            .ToListAsync();
 
-                    if (!lookup.TryGetValue(maLoaiPhong, out var loaiPhong))
-                    {
-                        loaiPhong = new RoomTypeCatalogDto
-                        {
-                            MaLoaiPhong = maLoaiPhong,
-                            TenLoaiPhong =
-                                Convert.ToString(reader["TenLoaiPhong"])
-                                ?? "",
-                            MoTa = reader["MoTaLoaiPhong"] == DBNull.Value
-                                ? null
-                                : Convert.ToString(reader["MoTaLoaiPhong"]),
-                            GiaCoBan = reader["GiaCoBan"] == DBNull.Value
-                                ? null
-                                : Convert.ToDecimal(reader["GiaCoBan"])
-                        };
+        var lookup = roomTypes.ToDictionary(x => x.MaLoaiPhong);
 
-                        lookup.Add(maLoaiPhong, loaiPhong);
-                        danhSach.Add(loaiPhong);
-                    }
+        var photos = await _db.Set<HinhAnhChiTietPhong>()
+            .AsNoTracking()
+            .OrderByDescending(x => x.AnhDaiDien)
+            .ThenBy(x => x.ThuTuHienThi)
+            .Select(x => new
+            {
+                x.MaPhong,
+                x.DuongDan
+            })
+            .ToListAsync();
 
-                    if (reader["MaPhong"] != DBNull.Value)
-                    {
-                        loaiPhong.Phong.Add(new RoomCatalogItemDto
-                        {
-                            MaPhong =
-                                Convert.ToInt32(reader["MaPhong"]),
-                            SoPhong =
-                                Convert.ToString(reader["SoPhong"])
-                                ?? "",
-                            Tang = reader["Tang"] == DBNull.Value
-                                ? null
-                                : Convert.ToInt32(reader["Tang"]),
-                            TrangThai = reader["TrangThai"] == DBNull.Value
-                                ? null
-                                : Convert.ToString(reader["TrangThai"]),
-                            MoTa = reader["MoTaPhong"] == DBNull.Value
-                                ? null
-                                : Convert.ToString(reader["MoTaPhong"])
-                        });
-                    }
+        var photoLookup = photos
+            .GroupBy(x => x.MaPhong)
+            .ToDictionary(x => x.Key, x => x.First().DuongDan);
+
+        foreach (var room in rooms)
+        {
+            if (lookup.TryGetValue(room.MaLoaiPhong, out var roomType))
+            {
+                if (photoLookup.TryGetValue(room.Room.MaPhong, out var photo))
+                {
+                    room.Room.HinhAnh = photo;
                 }
 
-                return Ok(new
-                {
-                    success = true,
-                    tongLoaiPhong = danhSach.Count,
-                    tongPhong = danhSach.Sum(x => x.Phong.Count),
-                    danhSach
-                });
-            }
-            catch (SqlException)
-            {
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = "Không thể đọc danh sách phòng từ SQL Server."
-                });
+                roomType.Phong.Add(room.Room);
             }
         }
 
-        public class RoomTypeCatalogDto
+        return Ok(new
         {
-            public int MaLoaiPhong { get; set; }
-            public string TenLoaiPhong { get; set; } = "";
-            public string? MoTa { get; set; }
-            public decimal? GiaCoBan { get; set; }
-            public List<RoomCatalogItemDto> Phong { get; set; } = new();
-        }
+            success = true,
+            tongLoaiPhong = roomTypes.Count,
+            tongPhong = roomTypes.Sum(x => x.Phong.Count),
+            danhSach = roomTypes
+        });
+    }
 
-        public class RoomCatalogItemDto
-        {
-            public int MaPhong { get; set; }
-            public string SoPhong { get; set; } = "";
-            public int? Tang { get; set; }
-            public string? TrangThai { get; set; }
-            public string? MoTa { get; set; }
-        }
+    public class RoomTypeCatalogDto
+    {
+        public int MaLoaiPhong { get; set; }
+
+        public string TenLoaiPhong { get; set; } = "";
+
+        public string? MoTa { get; set; }
+
+        public decimal? GiaCoBan { get; set; }
+
+        public List<RoomCatalogItemDto> Phong { get; set; }
+            = new();
+    }
+
+    public class RoomCatalogItemDto
+    {
+        public int MaPhong { get; set; }
+
+        public string SoPhong { get; set; } = "";
+
+        public int? Tang { get; set; }
+
+        public string? TrangThai { get; set; }
+
+        public string? MoTa { get; set; }
+
+        public string? HinhAnh { get; set; }
     }
 }

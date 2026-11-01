@@ -10,32 +10,13 @@
     <link rel="stylesheet" href="/css/admin-customers.css">
 
     <script src="/js/admin-customers.js" defer></script>
+    <script src="/js/admin-layout.js" defer></script>
 </head>
 <body data-page="customers">
 
 <div class="admin-shell">
 
-    <aside class="admin-sidebar">
-        <div class="admin-brand">DNK HOTEL</div>
-
-        <nav>
-            <a href="/admin/dashboard.html">Tổng quan</a>
-            <a href="/admin/rooms.html">Quản lý phòng</a>
-            <a href="/admin/bookings.html">Quản lý đặt phòng</a>
-            <a href="/admin/customers.html" class="active">Khách hàng</a>
-            <a href="/admin/employees.html">Nhân viên</a>
-            <a href="/admin/services.html">Dịch vụ</a>
-            <a href="/admin/invoices.html">Hóa đơn</a>
-            <a href="/admin/reports.html">Báo cáo</a>
-        </nav>
-
-        <button
-            id="logoutButton"
-            class="admin-button secondary"
-            type="button">
-            Đăng xuất
-        </button>
-    </aside>
+    <div id="adminSidebar"></div>
 
     <main class="admin-main">
 
@@ -248,6 +229,27 @@
             <strong id="detailCustomerAddress">—</strong>
         </div>
     </div>
+    
+    <section class="customer-booking-history">
+        <h3>Lịch sử đặt phòng</h3>
+        <p id="customerBookingCount">Đang tải lịch sử...</p>
+
+        <div class="customer-booking-table-wrapper">
+            <table class="customer-booking-table">
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Phòng</th>
+                        <th>Ngày nhận</th>
+                        <th>Ngày trả</th>
+                        <th>Tiền phòng</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody id="customerBookingHistoryBody"></tbody>
+            </table>
+        </div>
+    </section>
 
     <div class="customer-dialog-actions">
         <button

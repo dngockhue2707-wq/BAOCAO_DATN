@@ -76,10 +76,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = makeElement("article", "rooms-card");
 
         const image = makeElement("div", "rooms-card-image");
-        image.append(
-            makeElement("span", "rooms-card-symbol", "✦"),
-            makeElement("span", "rooms-card-number", `Phòng ${room.soPhong}`)
-        );
+
+        if (room.hinhAnh) {
+            const img = document.createElement("img");
+            img.src = room.hinhAnh;
+            img.alt = `Phòng ${room.soPhong} - ${type.tenLoaiPhong}`;
+            img.loading = "lazy";
+
+            image.appendChild(img);
+        } else {
+            image.appendChild(
+                makeElement("span", "rooms-card-symbol", "✦")
+            );
+        }
 
         const body = makeElement("div", "rooms-card-body");
         const meta = makeElement("div", "rooms-card-meta");
@@ -112,7 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         button.href =
-            `/room-detail.html?id=${encodeURIComponent(type.maLoaiPhong)}`;
+            `/room-detail.html?id=${encodeURIComponent(room.maPhong)}`;
+
+        button.textContent = "Xem chi tiết phòng";
 
         body.append(meta, title, description, button);
         card.append(image, body);

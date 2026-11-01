@@ -6,23 +6,107 @@ document.addEventListener("DOMContentLoaded", () => {
     const filter = document.getElementById("statusFilter");
     const message = document.getElementById("bookingsMessage");
 
+    if (!list || !filter || !message) return;
+
     let bookings = [];
+    let deposits = new Map();
+    let busy = false;
 
-    const money = number =>
-        new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-            maximumFractionDigits: 0
-        }).format(number);
+    const money = value => new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        maximumFractionDigits: 0
+    }).format(Number(value) || 0);
 
-    const formatDate = date =>
-        new Date(date).toLocaleDateString("vi-VN");
+    function dateOnly(value) {
+        return String(value || "").slice(0, 10);
+    }
 
-    function element(tag, className, text) {
-        const el = document.createElement(tag);
-        if (className) el.className = className;
-        if (text !== undefined) el.textContent = String(text);
-        return el;
+    function formatDate(value) {
+        const date = dateOnly(value);
+        if (!date) return "Chưa cập nhật";
+
+        const parts = date.split("-");
+        return parts.length === 3
+            ? `${parts[2]}/${parts[1]}/${parts[0]}`
+            : date;
+    }
+
+    function today() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+    }
+
+    function element(tag, className = "", value) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (value !== undefined) node.textContent = String(value);
+        return node;
+    }
+
+    function show(text, error = false) {
+        message.textContent = text;
+        message.classList.toggle("error", error);
+    }
+
+    async function jsonRequest(url, options = {}) {
+        const response = await fetch(url, {
+            credentials: "same-origin",
+            ...options
+        });
+
+        let data = {};
+
+        try {
+            data = await response.json();
+        } catch {
+            data = {};
+        }
+
+        if (response.status === 401) {
+            location.href = "/login.html";
+            throw new Error("Vui lòng đăng nhập.");
+        }
+
+        if (response.status === 403) {
+            throw new Error("Bạn không có quyền thực hiện thao tác này.");
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                data.message ||
+                data.title ||
+                `Yêu cầu không thành công (${response.status}).`
+            );
+        }
+
+        return data;
+    }
+
+    async function csrfToken() {
+        const data = await jsonRequest("/api/account/csrf-token");
+
+        if (!data.csrfToken) {
+            throw new Error("Không lấy được mã bảo vệ biểu mẫu.");
+        }
+
+        return data.csrfToken;
+    }
+
+    async function runAction(action) {
+        if (busy) return;
+        busy = true;
+
+        try {
+            await action();
+        } catch (error) {
+            show(error.message || "Không thể xử lý yêu cầu.", true);
+        } finally {
+            busy = false;
+        }
     }
 
     async function cancelBooking(id) {
@@ -30,98 +114,173 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        try {
-            const tokenResponse =
-                await fetch("/api/account/csrf-token");
+        await runAction(async () => {
+            show("Đang xử lý hủy đặt phòng...");
 
-            const { csrfToken } = await tokenResponse.json();
+            const token = await csrfToken();
 
-            const response = await fetch(
+            const result = await jsonRequest(
                 `/api/bookings/${id}/cancel`,
                 {
                     method: "POST",
-                    headers: { "X-CSRF-TOKEN": csrfToken },
-                    credentials: "same-origin"
+                    headers: {
+                        "X-CSRF-TOKEN": token
+                    }
                 }
             );
 
-            const data = await response.json();
+            await loadBookings();
+            show(result.message || "Đã hủy đặt phòng.");
+        });
+    }
 
-            if (!response.ok) {
-                throw new Error(data.message || "Không thể hủy đơn.");
+    async function payDeposit(id) {
+        if (!confirm("Chuyển đến VNPay để thanh toán tiền đặt cọc?")) {
+            return;
+        }
+
+        await runAction(async () => {
+            show("Đang tạo yêu cầu thanh toán VNPay...");
+
+            const token = await csrfToken();
+
+            const result = await jsonRequest(
+                "/api/vnpay/create",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": token
+                    },
+                    body: JSON.stringify({
+                        bookingId: id
+                    })
+                }
+            );
+
+            if (!result.paymentUrl) {
+                throw new Error("VNPay chưa trả về đường dẫn thanh toán.");
             }
 
-            await loadBookings();
-        } catch (error) {
-            message.textContent = error.message;
-        }
+            const url = new URL(result.paymentUrl);
+
+            if (url.protocol !== "https:") {
+                throw new Error("Đường dẫn thanh toán không an toàn.");
+            }
+
+            location.assign(url.href);
+        });
+    }
+
+    function makeButton(text, className, action) {
+        const button = element("button", className, text);
+        button.type = "button";
+        button.addEventListener("click", action);
+        return button;
     }
 
     function render() {
         list.replaceChildren();
 
-        const filtered = bookings.filter(item =>
+        const filtered = bookings.filter(b =>
             filter.value === "all" ||
-            item.status === filter.value
+            filter.value === b.status
         );
 
-        if (filtered.length === 0) {
-            list.appendChild(
-                element("p", "", "Chưa có đơn đặt phòng phù hợp.")
-            );
+        if (!filtered.length) {
+            list.appendChild(element(
+                "p",
+                "",
+                "Chưa có đơn đặt phòng phù hợp."
+            ));
             return;
         }
 
-        filtered.forEach(booking => {
+        filtered.forEach(b => {
+            const payment = deposits.get(b.bookingId);
             const card = element("article", "my-booking-card");
             const top = element("div", "my-booking-top");
 
-            top.appendChild(
-                element(
-                    "h2",
-                    "",
-                    `${booking.roomName} · #${booking.bookingId}`
-                )
-            );
-
-            top.appendChild(
-                element("span", "my-booking-status", booking.status)
+            top.append(
+                element("h2", "", `${b.roomName} · #${b.bookingId}`),
+                element("span", "my-booking-status", b.status)
             );
 
             const info = element("div", "my-booking-info");
 
             const fields = [
-                ["Số phòng", booking.roomNumber],
-                ["Ngày nhận", formatDate(booking.checkIn)],
-                ["Ngày trả", formatDate(booking.checkOut)],
-                ["Người lớn", booking.adults],
-                ["Trẻ em", booking.children],
-                ["Ngày đặt", formatDate(booking.bookedAt)]
+                ["Số phòng", b.roomNumber],
+                ["Ngày nhận", formatDate(b.checkIn)],
+                ["Ngày trả", formatDate(b.checkOut)],
+                ["Người lớn", b.adults],
+                ["Trẻ em", b.children],
+                ["Ngày đặt", formatDate(b.bookedAt)]
             ];
 
             fields.forEach(([label, value]) => {
                 const box = element("div");
-                box.appendChild(element("span", "", label));
-                box.appendChild(element("strong", "", value));
+                box.append(
+                    element("span", "", label),
+                    element("strong", "", value)
+                );
                 info.appendChild(box);
             });
 
             const bottom = element("div", "my-booking-bottom");
-            bottom.appendChild(
-                element("strong", "", money(booking.total))
-            );
+            const totalBox = element("div");
 
-            if (booking.status === "Chờ xác nhận" &&
-                new Date(booking.checkIn) > new Date()) {
-                const cancel = element(
-                    "button", "cancel-booking", "Hủy đặt phòng"
-                );
-                cancel.type = "button";
-                cancel.addEventListener(
-                    "click",
-                    () => cancelBooking(booking.bookingId)
-                );
-                bottom.appendChild(cancel);
+            totalBox.appendChild(element(
+                "strong",
+                "",
+                money(b.total)
+            ));
+
+            if (payment) {
+                const status = payment.hasPaid
+                    ? "Đã thanh toán tiền cọc"
+                    : payment.pending
+                        ? "Đang chờ thanh toán"
+                        : payment.lastStatus || "Chưa đặt cọc";
+
+                totalBox.appendChild(element(
+                    "p",
+                    "booking-deposit-status",
+                    `Tiền cọc: ${money(payment.depositAmount)} – ${status}`
+                ));
+            }
+
+            bottom.appendChild(totalBox);
+
+            const actions = element("div", "booking-card-actions");
+
+            const active = [
+                "Chờ xác nhận",
+                "Đã xác nhận"
+            ].includes(b.status);
+
+            const future = dateOnly(b.checkIn) > today();
+            const paid = payment?.hasPaid === true;
+            const pending = payment?.pending === true;
+
+            if (active && !paid && !pending &&
+                dateOnly(b.checkIn) >= today()) {
+                actions.appendChild(makeButton(
+                    "Thanh toán cọc VNPay",
+                    "booking-pay-button",
+                    () => payDeposit(b.bookingId)
+                ));
+            }
+
+            if (active && future && !paid && !pending) {
+                actions.appendChild(makeButton(
+                    "Hủy đặt phòng",
+                    "cancel-booking",
+                    () => cancelBooking(b.bookingId)
+                ));
+            }
+
+            if (actions.childElementCount) {
+                bottom.appendChild(actions);
             }
 
             card.append(top, info, bottom);
@@ -130,36 +289,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function loadBookings() {
-        message.textContent = "Đang tải đơn đặt phòng...";
+        show("Đang tải đơn đặt phòng...");
 
         try {
-            const response = await fetch("/api/bookings/mine");
+            const [bookingData, paymentData] = await Promise.all([
+                jsonRequest("/api/bookings/mine"),
+                jsonRequest("/api/vnpay/bookings")
+            ]);
 
-            if (response.status === 401) {
-                location.href = "/login.html";
-                return;
-            }
+            bookings = bookingData.bookings || [];
 
-            if (response.status === 403) {
-                throw new Error(
-                    "Trang này dành cho tài khoản khách hàng."
-                );
-            }
+            deposits = new Map(
+                (paymentData.bookings || []).map(item => [
+                    item.bookingId,
+                    item
+                ])
+            );
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || "Không thể tải đơn.");
-            }
-
-            bookings = data.bookings || [];
-            message.textContent = "";
+            show("");
             render();
         } catch (error) {
-            message.textContent = error.message;
+            show(error.message || "Không tải được đơn đặt phòng.", true);
         }
     }
 
     filter.addEventListener("change", render);
+
+    const refresh = document.getElementById("refreshBookings");
+    refresh?.addEventListener("click", loadBookings);
+
     loadBookings();
 });

@@ -10,26 +10,11 @@
     <script src="/js/admin-rooms.js" defer></script>
     <script src="/js/admin-room-photos.js" defer></script>
     <script src="/js/admin-room-extras.js" defer></script>
+    <script src="/js/admin-layout.js" defer></script>
 </head>
 <body data-page="rooms">
 <div class="admin-shell">
-    <aside class="admin-sidebar">
-        <div class="admin-brand">DNK HOTEL</div>
-        <nav>
-            <a href="/admin/dashboard.html">Tổng quan</a>
-            <a href="/admin/rooms.html" class="active">Quản lý phòng</a>
-            <a href="/admin/bookings.html">Quản lý đặt phòng</a>
-            <a href="/admin/customers.html">Khách hàng</a>
-            <a href="/admin/employees.html">Nhân viên</a>
-            <a href="/admin/services.html">Dịch vụ</a>
-            <a href="/admin/invoices.html">Hóa đơn</a>
-            <a href="/admin/reports.html">Báo cáo</a>
-        </nav>
-        <button id="logoutButton" type="button"
-                class="admin-button secondary">
-            Đăng xuất
-        </button>
-    </aside>
+    <div id="adminSidebar"></div>
 
     <main class="admin-main">
         <header class="admin-topbar">
