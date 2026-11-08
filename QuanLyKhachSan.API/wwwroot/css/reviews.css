@@ -1,0 +1,359 @@
+
+.reviews-page {
+    min-height: 75vh;
+    padding: 70px 20px 100px;
+    background: #FAF8F5;
+    color: #27272A;
+}
+
+.reviews-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.reviews-heading {
+    text-align: center;
+    margin-bottom: 55px;
+}
+
+.reviews-heading > span,
+.review-eyebrow {
+    color: #926024;
+    letter-spacing: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.reviews-heading h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 500;
+    margin: 15px 0;
+}
+
+.reviews-heading p {
+    color: #817569;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+.reviews-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.reviews-toolbar h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 27px;
+    font-weight: 500;
+}
+
+.reviews-toolbar a {
+    color: #926024;
+    text-decoration: none;
+}
+
+#reviewsMessage,
+#reviewFormMessage {
+    color: #42754B;
+    margin: 15px 0;
+}
+
+#reviewsMessage.error,
+#reviewFormMessage.error {
+    color: #B42318;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.review-card {
+    background: #FFFFFF;
+    border: 1px solid #E8E0D7;
+    border-radius: 15px;
+    padding: 28px;
+    box-shadow: 0 6px 25px rgba(48, 37, 30, .04);
+}
+
+.review-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.review-booking-code {
+    color: #926024;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.review-card h3 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 500;
+    font-size: 25px;
+    margin: 10px 0 5px;
+}
+
+.review-room-number,
+.review-date {
+    color: #817569;
+    font-size: 15px;
+    margin: 9px 0;
+}
+
+.review-badge {
+    font-size: 12px;
+    padding: 7px 11px;
+    border-radius: 30px;
+    white-space: nowrap;
+}
+
+.review-badge.completed {
+    background: #E7F2E8;
+    color: #387447;
+}
+
+.review-badge.pending {
+    background: #F3E7D6;
+    color: #926024;
+}
+
+.review-existing-stars {
+    margin: 18px 0 10px;
+    font-size: 26px;
+    color: #D49A36;
+    letter-spacing: 3px;
+}
+
+.review-existing-content {
+    color: #61584F;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.review-action {
+    display: block;
+    width: 100%;
+    padding: 13px 20px;
+    margin-top: 25px;
+    border: 1px solid #926024;
+    border-radius: 7px;
+    background: #926024;
+    color: white;
+    cursor: pointer;
+    font: inherit;
+    transition: .2s;
+}
+
+.review-action:hover {
+    background: #785324;
+}
+
+.reviews-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 65px 20px;
+    border: 1px solid #E8E0D7;
+    background: white;
+    border-radius: 15px;
+}
+
+.reviews-empty h3 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.reviews-empty p {
+    color: #817569;
+}
+
+.review-modal[hidden] {
+    display: none !important;
+}
+
+.review-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.review-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(30, 24, 19, .65);
+}
+
+.review-modal-content {
+    position: relative;
+    z-index: 1;
+    background: #FFFFFF;
+    width: 100%;
+    max-width: 540px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 38px;
+    box-shadow: 0 15px 60px rgba(0, 0, 0, .2);
+}
+
+.review-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #817569;
+    font-size: 32px;
+}
+
+.review-modal-content h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 500;
+    font-size: 30px;
+    margin: 13px 0;
+}
+
+#reviewRoomName {
+    color: #817569;
+    margin-bottom: 30px;
+}
+
+.review-rating-area {
+    text-align: center;
+    background: #FAF8F5;
+    padding: 23px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.review-rating-area > p {
+    margin: 0 0 12px;
+}
+
+.review-stars {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.review-stars button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #D8D1C8;
+    font-size: 42px;
+    padding: 0 2px;
+    transition: transform .2s, color .2s;
+}
+
+.review-stars button:hover {
+    transform: scale(1.15);
+}
+
+.review-stars button.active {
+    color: #D49A36;
+}
+
+#reviewRatingText {
+    margin: 12px 0 0;
+    color: #926024;
+    font-size: 14px;
+}
+
+#reviewForm label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+#reviewContent {
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    padding: 15px;
+    border: 1px solid #E8E0D7;
+    border-radius: 8px;
+    background: #FFFFFF;
+    font: inherit;
+    line-height: 1.6;
+    outline: none;
+    box-sizing: border-box;
+}
+
+#reviewContent:focus {
+    border-color: #926024;
+}
+
+.review-character-count {
+    text-align: right;
+    color: #817569;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+#submitReview {
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    background: #926024;
+    color: white;
+    padding: 15px;
+    font: inherit;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+#submitReview:hover {
+    background: #785324;
+}
+
+#submitReview:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+
+.review-modal-open {
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .reviews-page {
+        padding: 40px 15px 70px;
+    }
+
+    .reviews-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reviews-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .review-card {
+        padding: 22px;
+    }
+
+    .review-modal-content {
+        padding: 30px 22px;
+    }
+
+    .review-stars button {
+        font-size: 36px;
+    }
+}

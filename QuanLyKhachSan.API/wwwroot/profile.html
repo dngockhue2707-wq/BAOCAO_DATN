@@ -1,12 +1,18 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hồ sơ cá nhân | DNK Hotel</title>
+    <meta name="description" content="Quản lý tài khoản khách hàng DNK Hotel.">
+    <title>Tài khoản của tôi | DNK Hotel</title>
+
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="/css/customer-layout.css">
+
     <script src="/js/layout.js" defer></script>
+    <script src="/js/customer-layout.js" defer></script>
     <script src="/js/profile.js" defer></script>
     <script src="/js/account-nav.js" defer></script>
 </head>
@@ -14,33 +20,436 @@
     <div id="site-header"></div>
 
     <main class="profile-page">
-        <div class="profile-container">
-            <span>DNK HOTEL · TÀI KHOẢN</span>
-            <h1>Thông tin cá nhân</h1>
-            <p>Quản lý thông tin của bạn tại DNK Hotel.</p>
+        <section class="profile-heading">
+            <div class="profile-container">
+                <span class="profile-eyebrow">
+                    DNK HOTEL · TÀI KHOẢN KHÁCH HÀNG
+                </span>
+                <h1>Không gian <em>của bạn</em></h1>
+                <p>
+                    Quản lý thông tin cá nhân, bảo mật tài khoản
+                    và theo dõi những chuyến lưu trú tại DNK Hotel.
+                </p>
+            </div>
+        </section>
 
-            <form id="profileForm" class="profile-card">
-                <label for="username">Tên đăng nhập</label>
-                <input id="username" readonly>
+        <div class="profile-container profile-layout">
+            <aside id="customerSidebar"
+                   class="profile-sidebar"
+                   aria-label="Menu tài khoản khách hàng">
+            </aside>
 
-                <label for="email">Email</label>
-                <input id="email" readonly>
+            <div class="profile-content">
 
-                <label for="fullName">Họ và tên</label>
-                <input id="fullName" maxlength="100" required>
+                <!-- THÔNG TIN CÁ NHÂN -->
+                <section class="profile-panel"
+                         id="profilePersonalPanel">
+                    <div class="profile-panel-header">
+                        <span class="profile-eyebrow">
+                            HỒ SƠ KHÁCH HÀNG
+                        </span>
+                        <h2>Thông tin cá nhân</h2>
+                        <p>
+                            Cập nhật thông tin để thuận tiện hơn
+                            trong quá trình đặt phòng và lưu trú.
+                        </p>
+                    </div>
 
-                <label for="phone">Số điện thoại</label>
-                <input id="phone" type="tel" maxlength="20">
+                    <form id="profileForm" class="profile-card">
+                        <div class="profile-form-group">
+                            <h3>Thông tin tài khoản</h3>
+                            <p>
+                                Tên đăng nhập và thư điện tử
+                                không thể chỉnh sửa tại đây.
+                            </p>
 
-                <label for="address">Địa chỉ</label>
-                <textarea id="address" maxlength="255" rows="3"></textarea>
+                            <div class="profile-form-grid">
+                                <div class="profile-field">
+                                    <label for="username">
+                                        Tên đăng nhập
+                                    </label>
+                                    <input type="text"
+                                           id="username"
+                                           autocomplete="username"
+                                           readonly>
+                                </div>
 
-                <p id="profileMessage" role="status"></p>
+                                <div class="profile-field">
+                                    <label for="email">
+                                        Thư điện tử
+                                    </label>
+                                    <input type="email"
+                                           id="email"
+                                           autocomplete="email"
+                                           readonly>
+                                </div>
+                            </div>
+                        </div>
 
-                <button id="saveProfile" type="submit">
-                    Lưu thay đổi
-                </button>
-            </form>
+                        <div class="profile-form-divider"></div>
+
+                        <div class="profile-form-group">
+                            <h3>Thông tin liên hệ</h3>
+                            <p>
+                                Vui lòng cung cấp thông tin chính xác
+                                để khách sạn thuận tiện liên hệ.
+                            </p>
+
+                            <div class="profile-form-grid">
+                                <div class="profile-field">
+                                    <label for="fullName">
+                                        Họ và tên <span>*</span>
+                                    </label>
+                                    <input type="text"
+                                           id="fullName"
+                                           maxlength="100"
+                                           minlength="2"
+                                           autocomplete="name"
+                                           placeholder="Nhập họ và tên"
+                                           required>
+                                </div>
+
+                                <div class="profile-field">
+                                    <label for="phone">
+                                        Số điện thoại
+                                    </label>
+                                    <input type="tel"
+                                           id="phone"
+                                           maxlength="20"
+                                           autocomplete="tel"
+                                           placeholder="Nhập số điện thoại">
+                                </div>
+                            </div>
+
+                            <div class="profile-field">
+                                <label for="address">
+                                    Địa chỉ
+                                </label>
+                                <textarea id="address"
+                                          maxlength="255"
+                                          rows="4"
+                                          autocomplete="street-address"
+                                          placeholder="Nhập địa chỉ của bạn"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="profile-form-actions">
+                            <p id="profileMessage"
+                               class="profile-message"
+                               role="status"
+                               aria-live="polite"></p>
+
+                            <button type="submit"
+                                    id="saveProfile"
+                                    class="profile-primary-button">
+                                Lưu thay đổi <span>→</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- ĐỔI MẬT KHẨU -->
+                <section class="profile-panel"
+                         id="profileSecurityPanel"
+                         hidden>
+                    <div class="profile-panel-header">
+                        <span class="profile-eyebrow">
+                            BẢO MẬT TÀI KHOẢN
+                        </span>
+                        <h2>Đổi mật khẩu</h2>
+                        <p>
+                            Cập nhật mật khẩu để bảo vệ
+                            tài khoản khách hàng DNK Hotel.
+                        </p>
+                    </div>
+
+                    <form id="changePasswordForm"
+                          class="profile-card">
+                        <div class="profile-form-group">
+                            <h3>Cập nhật mật khẩu</h3>
+                            <p>
+                                Mật khẩu mới cần ít nhất 12 ký tự
+                                và phải khác mật khẩu hiện tại.
+                            </p>
+
+                            <div class="profile-field">
+                                <label for="currentPassword">
+                                    Mật khẩu hiện tại <span>*</span>
+                                </label>
+                                <input type="password"
+                                       id="currentPassword"
+                                       autocomplete="current-password"
+                                       placeholder="Nhập mật khẩu hiện tại"
+                                       required>
+                            </div>
+
+                            <div class="profile-field">
+                                <label for="newPassword">
+                                    Mật khẩu mới <span>*</span>
+                                </label>
+                                <input type="password"
+                                       id="newPassword"
+                                       minlength="12"
+                                       maxlength="128"
+                                       autocomplete="new-password"
+                                       placeholder="Nhập mật khẩu mới"
+                                       required>
+                            </div>
+
+                            <div class="profile-field">
+                                <label for="confirmNewPassword">
+                                    Xác nhận mật khẩu mới <span>*</span>
+                                </label>
+                                <input type="password"
+                                       id="confirmNewPassword"
+                                       minlength="12"
+                                       maxlength="128"
+                                       autocomplete="new-password"
+                                       placeholder="Nhập lại mật khẩu mới"
+                                       required>
+                            </div>
+
+                            <label class="profile-show-password">
+                                <input type="checkbox"
+                                       id="showChangePasswords">
+                                Hiển thị mật khẩu
+                            </label>
+                        </div>
+
+                        <div class="profile-security-note">
+                            <span aria-hidden="true">✦</span>
+                            <p>
+                                Hãy sử dụng mật khẩu dài,
+                                khó đoán và không dùng chung
+                                với các tài khoản khác.
+                            </p>
+                        </div>
+
+                        <div class="profile-form-actions">
+                            <p id="passwordMessage"
+                               class="profile-message"
+                               role="status"
+                               aria-live="polite"></p>
+
+                            <button type="submit"
+                                    id="changePasswordButton"
+                                    class="profile-primary-button">
+                                Cập nhật mật khẩu <span>→</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- SỞ THÍCH LƯU TRÚ -->
+                <section class="profile-panel"
+                         id="profilePreferencesPanel"
+                         hidden>
+                    <div class="profile-panel-header">
+                        <span class="profile-eyebrow">
+                            DNK HOTEL · CÁ NHÂN HÓA
+                        </span>
+                        <h2>Sở thích lưu trú</h2>
+                        <p>
+                            Thiết lập nhu cầu nghỉ dưỡng để
+                            nhận những gợi ý phòng phù hợp.
+                        </p>
+                    </div>
+
+                    <form id="preferencesForm"
+                          class="profile-card">
+
+                        <div class="profile-form-group">
+                            <h3>Lựa chọn phòng nghỉ</h3>
+                            <p>
+                                Thông tin này sẽ được sử dụng
+                                để cá nhân hóa gợi ý phòng.
+                            </p>
+
+                            <div class="profile-form-grid">
+                                <div class="profile-field">
+                                    <label for="favoriteRoomType">
+                                        Loại phòng yêu thích
+                                    </label>
+                                    <select id="favoriteRoomType">
+                                        <option value="">
+                                            Đang tải loại phòng...
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="profile-field">
+                                    <label for="usualGuests">
+                                        Số người thường đi cùng
+                                    </label>
+                                    <input type="number"
+                                           id="usualGuests"
+                                           min="1"
+                                           max="20"
+                                           step="1"
+                                           placeholder="Ví dụ: 2">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-form-divider"></div>
+
+                        <div class="profile-form-group">
+                            <h3>Ngân sách lưu trú</h3>
+                            <p>
+                                Khoảng ngân sách dự kiến
+                                dành cho một đêm lưu trú.
+                            </p>
+
+                            <div class="profile-form-grid">
+                                <div class="profile-field">
+                                    <label for="minimumBudget">
+                                        Ngân sách tối thiểu (VNĐ)
+                                    </label>
+                                    <input type="number"
+                                           id="minimumBudget"
+                                           min="0"
+                                           max="100000000"
+                                           step="1000"
+                                           inputmode="numeric"
+                                           placeholder="Ví dụ: 500000">
+                                </div>
+
+                                <div class="profile-field">
+                                    <label for="preferredBudget">
+                                        Ngân sách tối đa (VNĐ)
+                                    </label>
+                                    <input type="number"
+                                           id="preferredBudget"
+                                           min="0"
+                                           max="100000000"
+                                           step="1000"
+                                           inputmode="numeric"
+                                           placeholder="Ví dụ: 1500000">
+                                </div>
+                            </div>
+
+                            <p class="preference-hint"
+                               id="budgetPreview">
+                                Chưa thiết lập ngân sách
+                            </p>
+                        </div>
+
+                        <div class="profile-form-divider"></div>
+
+                        <div class="profile-form-group">
+                            <h3>Không gian mong muốn</h3>
+                            <p>
+                                Chọn diện tích tối thiểu
+                                mà bạn ưu tiên khi tìm phòng.
+                            </p>
+
+                            <div class="profile-field">
+                                <label for="minimumArea">
+                                    Diện tích tối thiểu (m²)
+                                </label>
+                                <input type="number"
+                                       id="minimumArea"
+                                       min="0"
+                                       max="10000"
+                                       step="0.5"
+                                       placeholder="Ví dụ: 35">
+                            </div>
+                        </div>
+
+                        <div class="profile-form-divider"></div>
+
+                        <div class="profile-form-group">
+                            <h3>Tiện nghi yêu thích</h3>
+                            <p>
+                                Chọn tiện nghi quan trọng với bạn
+                                và mức độ ưu tiên từ 1 đến 5.
+                            </p>
+
+                            <div class="preference-amenities"
+                                 id="amenitiesList"
+                                 aria-live="polite">
+                                <p class="preference-hint">
+                                    Đang tải danh sách tiện nghi...
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="profile-security-note">
+                            <span aria-hidden="true">✦</span>
+                            <p>
+                                Bạn có thể cập nhật sở thích
+                                bất cứ lúc nào để cải thiện
+                                kết quả gợi ý phòng.
+                            </p>
+                        </div>
+
+                        <div class="profile-form-actions">
+                            <p id="preferencesMessage"
+                               class="profile-message"
+                               role="status"
+                               aria-live="polite"></p>
+
+                            <button type="submit"
+                                    id="savePreferences"
+                                    class="profile-primary-button">
+                                Lưu sở thích <span>→</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- LIÊN KẾT NHANH -->
+                <section class="profile-quick-section">
+                    <div class="profile-quick-heading">
+                        <span class="profile-eyebrow">
+                            TIỆN ÍCH DÀNH CHO BẠN
+                        </span>
+                        <h2>Tiếp tục hành trình</h2>
+                    </div>
+
+                    <div class="profile-quick-grid">
+                        <a href="/my-bookings.html"
+                           class="profile-quick-card">
+                            <span class="profile-quick-icon">▤</span>
+                            <h3>Đơn đặt phòng</h3>
+                            <p>
+                                Theo dõi trạng thái
+                                và lịch sử đặt phòng.
+                            </p>
+                            <span class="profile-quick-link">
+                                Xem đơn →
+                            </span>
+                        </a>
+
+                        <a href="/availability.html"
+                           class="profile-quick-card">
+                            <span class="profile-quick-icon">✧</span>
+                            <h3>Tìm phòng nghỉ</h3>
+                            <p>
+                                Khám phá phòng phù hợp
+                                cho chuyến đi sắp tới.
+                            </p>
+                            <span class="profile-quick-link">
+                                Tìm phòng →
+                            </span>
+                        </a>
+
+                        <a href="/contact.html"
+                           class="profile-quick-card">
+                            <span class="profile-quick-icon">♡</span>
+                            <h3>Hỗ trợ khách hàng</h3>
+                            <p>
+                                Liên hệ khách sạn
+                                khi cần hỗ trợ.
+                            </p>
+                            <span class="profile-quick-link">
+                                Liên hệ →
+                            </span>
+                        </a>
+                    </div>
+                </section>
+
+            </div>
         </div>
     </main>
 

@@ -1,155 +1,933 @@
 
+/* ==========================================
+   DNK HOTEL - ROOM DETAIL
+   PHONG CACH SANG TRONG, HIEN DAI
+========================================== */
+
 .detail-page {
-    min-height: 75vh;
-    padding: 55px 20px 90px;
-    background: #FAF8F5;
-    color: #27272A;
+    --detail-gold: #926024;
+    --detail-dark: #30251e;
+    --detail-muted: #817569;
+    --detail-border: #e8e0d7;
+    --detail-cream: #faf8f5;
+
+    background: #f7f4ef;
+    min-height: 100vh;
+    padding: 35px 0 100px;
+    color: var(--detail-dark);
+}
+
+.detail-page * {
+    box-sizing: border-box;
 }
 
 .detail-container {
-    max-width: 1160px;
-    margin: auto;
+    width: min(1200px, calc(100% - 48px));
+    margin: 0 auto;
 }
 
-.back-link {
-    color: #926024;
+/* ==========================================
+   DIEU HUONG
+========================================== */
+
+.detail-breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+    color: #867b70;
+    font-size: 14px;
+}
+
+.detail-breadcrumb a {
+    color: #756a5f;
     text-decoration: none;
-    font-size: 13px;
+}
+
+.detail-breadcrumb a:hover {
+    color: var(--detail-gold);
+}
+
+.detail-breadcrumb span:last-child {
+    color: var(--detail-gold);
+}
+
+/* ==========================================
+   TIEU DE PHONG
+========================================== */
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 25px;
+    margin-bottom: 30px;
 }
 
 .detail-eyebrow {
-    margin-top: 35px;
-    color: #926024;
-    font-size: 11px;
-    letter-spacing: 3px;
+    display: inline-block;
+    margin-bottom: 13px;
+    color: var(--detail-gold);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
 }
 
-.detail-container > h1 {
-    margin: 12px 0 35px;
-    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
-    font-size: clamp(32px, 5vw, 49px);
-    font-weight: 400;
+.detail-header h1 {
+    margin: 0;
+    color: var(--detail-dark);
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: clamp(34px, 4.5vw, 52px);
+    font-weight: 500;
+    line-height: 1.2;
 }
 
-.detail-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(270px, 1fr);
-    align-items: start;
-    gap: 35px;
+.detail-header-subtitle {
+    margin: 13px 0 0;
+    color: #80766d;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 12px 18px;
+    border: 1px solid #ded4c9;
+    border-radius: 30px;
+    color: #6f5943;
+    background: #fffdf9;
+    font-size: 14px;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.back-link:hover {
+    background: var(--detail-dark);
+    border-color: var(--detail-dark);
+    color: white;
+}
+
+/* ==========================================
+   BO CUC ANH PHONG
+========================================== */
+
+.detail-gallery-section {
+    margin-bottom: 45px;
 }
 
 .detail-gallery {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: 175px;
     gap: 12px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #ebe4da;
 }
 
 .detail-gallery img {
+    display: block;
     width: 100%;
-    height: 220px;
+    height: 100%;
+    min-width: 0;
     object-fit: cover;
-    border-radius: 5px;
+    border-radius: 9px;
+    transition: transform .3s ease, filter .3s ease;
+}
+
+.detail-gallery img:hover {
+    filter: brightness(.94);
 }
 
 .detail-gallery img:first-child {
     grid-column: span 2;
-    height: 370px;
+    grid-row: span 2;
 }
+
+/* Neu chi co 1 anh thi hien anh lon */
+
+.detail-gallery img:only-child {
+    grid-column: 1 / -1;
+    grid-row: span 2;
+}
+
+/* Hai anh thi chia doi */
+
+.detail-gallery:has(img:nth-child(2):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 350px;
+}
+
+.detail-gallery:has(img:nth-child(2):last-child) img {
+    grid-column: auto;
+    grid-row: auto;
+}
+
+/* Ba anh */
+
+.detail-gallery:has(img:nth-child(3):last-child) {
+    grid-template-columns: 2fr 1fr;
+    grid-auto-rows: 170px;
+}
+
+.detail-gallery:has(img:nth-child(3):last-child)
+img:first-child {
+    grid-column: 1;
+    grid-row: span 2;
+}
+
+.detail-gallery:has(img:nth-child(3):last-child)
+img:not(:first-child) {
+    grid-column: 2;
+}
+
+/* Anh du phong */
 
 .detail-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     grid-column: 1 / -1;
-    display: grid;
     min-height: 300px;
-    place-items: center;
-    background: #C9B49A;
-    color: white;
-    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
-    font-size: 32px;
+    color: #926024;
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 34px;
+    letter-spacing: 5px;
 }
 
+/* ==========================================
+   CHU THICH ANH
+========================================== */
+
+.gallery-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+    padding: 19px 5px 0;
+}
+
+.gallery-caption-label {
+    color: #926024;
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.gallery-caption p {
+    margin: 7px 0 0;
+    color: #817569;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.gallery-brand {
+    color: #ab9984;
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 23px;
+    white-space: nowrap;
+}
+
+/* ==========================================
+   LAYOUT CHINH
+========================================== */
+
+.detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 345px;
+    gap: 30px;
+    align-items: start;
+}
+
+.detail-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    min-width: 0;
+}
+
+/* ==========================================
+   CAC KHU VUC THONG TIN
+========================================== */
+
 .detail-section {
-    margin-top: 38px;
-    padding: 30px;
-    background: white;
-    border: 1px solid #E9E1D7;
+    padding: 32px 35px 35px;
+    border: 1px solid var(--detail-border);
+    border-radius: 16px;
+    background: #fffdf9;
+}
+
+.detail-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    margin-bottom: 22px;
+}
+
+.detail-section-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 47px;
+    height: 47px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #f3e9dc;
+    color: var(--detail-gold);
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 18px;
+}
+
+.detail-label {
+    color: var(--detail-gold);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
 }
 
 .detail-section h2 {
-    margin: 0 0 20px;
-    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
-    font-size: 27px;
-    font-weight: 400;
+    margin: 5px 0 0;
+    color: var(--detail-dark);
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 29px;
+    font-weight: 500;
 }
 
-.detail-section p {
-    color: #70665B;
+.detail-description {
+    margin: 0;
+    color: #665c53;
+    font-size: 16px;
     line-height: 1.9;
-    font-size: 14px;
+    white-space: pre-line;
 }
 
-.detail-specs,
-.detail-amenities {
+.detail-section-subtitle {
+    margin: -5px 0 24px;
+    color: #817569;
+    font-size: 15px;
+    line-height: 1.75;
+}
+
+/* ==========================================
+   THONG TIN PHONG
+========================================== */
+
+.detail-specs {
     display: flex;
     flex-wrap: wrap;
+    gap: 11px;
+}
+
+.detail-specs span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 45px;
+    padding: 11px 16px;
+    border: 1px solid #e9dfd3;
+    border-radius: 9px;
+    background: #faf7f2;
+    color: #574738;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ==========================================
+   TIEN NGHI
+========================================== */
+
+.detail-amenities {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
 }
 
-.detail-specs span,
 .detail-amenities span {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
     padding: 12px 16px;
-    border: 1px solid #E7DED4;
-    background: #FAF8F5;
-    font-size: 13px;
+    border: 1px solid #eee6dc;
+    border-radius: 9px;
+    background: #faf8f4;
+    color: #584d42;
+    font-size: 14px;
+    line-height: 1.6;
+    transition: .2s;
 }
 
-.detail-booking-card {
+.detail-amenities span:hover {
+    border-color: #d7b88c;
+    background: #f6efe5;
+}
+
+/* ==========================================
+   GHI CHU VE KHACH SAN
+========================================== */
+
+.detail-note-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 28px 32px;
+    border: 1px solid #e7d8c5;
+    border-radius: 15px;
+    background: #f1e9dd;
+}
+
+.detail-note-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #fff9f0;
+    color: var(--detail-gold);
+    font-size: 26px;
+}
+
+.detail-note-section h3 {
+    margin: 0 0 9px;
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 22px;
+    font-weight: 500;
+    color: #473629;
+}
+
+.detail-note-section p {
+    margin: 0;
+    color: #74665a;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* ==========================================
+   THANH BEN PHAI
+========================================== */
+
+.detail-sidebar {
     position: sticky;
     top: 25px;
-    padding: 30px;
-    background: white;
-    border: 1px solid #E9E1D7;
-    box-shadow: 0 12px 35px #0000000A;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
 }
 
-.detail-booking-card > span {
+/* ==========================================
+   THE DAT PHONG
+========================================== */
+
+.detail-booking-card {
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid #e6d9ca;
+    border-radius: 17px;
+    background: #fffdf9;
+    box-shadow: 0 12px 35px rgba(57, 38, 21, .06);
+}
+
+.booking-card-top {
+    padding: 28px 27px 24px;
+    background: #30251e;
+    color: white;
+}
+
+.booking-eyebrow {
+    color: #dfbe91;
     font-size: 11px;
     letter-spacing: 2px;
-    color: #926024;
 }
 
-.detail-booking-card h2 {
-    color: #926024;
-    margin: 18px 0 8px;
-    font-size: 29px;
+.booking-card-top h3 {
+    margin: 11px 0 9px;
+    color: #fffaf2;
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 27px;
+    font-weight: 500;
+    line-height: 1.3;
 }
 
-.detail-booking-card p,
-.detail-booking-card small {
-    color: #817569;
+.booking-card-top p {
+    margin: 0;
+    color: #d2c5b9;
+    font-size: 13px;
     line-height: 1.7;
 }
 
-#bookRoomButton {
-    display: block;
-    margin: 25px 0 15px;
-    padding: 16px;
+.booking-price-area {
+    padding: 28px 27px 18px;
+}
+
+.booking-price-label {
+    color: #926024;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+}
+
+#roomPrice {
+    margin: 12px 0 7px;
+    color: #926024;
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: clamp(25px, 2.5vw, 32px);
+    font-weight: 600;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.booking-price-area p {
+    margin: 0;
+    color: #887b70;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.booking-divider {
+    height: 1px;
+    margin: 0 27px;
+    background: #ebe2d8;
+}
+
+.booking-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 23px 27px;
+}
+
+.booking-benefits > div {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    color: #63584e;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.booking-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #e8f0e5;
+    color: #477247;
+    font-size: 12px;
+}
+
+.booking-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 0 27px;
+    padding: 16px 19px;
+    border-radius: 9px;
     background: #926024;
-    color: white;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
     text-decoration: none;
-    text-align: center;
+    transition: .2s ease;
+}
+
+.booking-button span {
+    font-size: 20px;
+}
+
+.booking-button:hover {
+    background: #6f491c;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.booking-notice {
+    margin: 0;
+    padding: 18px 27px 27px;
+    color: #93877c;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+/* ==========================================
+   HO TRO
+========================================== */
+
+.detail-help-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 23px;
+    border: 1px solid #e8e0d7;
+    border-radius: 14px;
+    background: #f0ebe4;
+}
+
+.help-icon {
+    color: #926024;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.detail-help-card h4 {
+    margin: 0 0 7px;
+    color: #44362b;
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 19px;
+    font-weight: 500;
+}
+
+.detail-help-card p {
+    margin: 0;
+    color: #817569;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* ==========================================
+   THONG BAO
+========================================== */
+
+.detail-message {
+    margin: 25px 0 0;
+    color: #a43d39;
     font-size: 14px;
 }
 
+.detail-message:empty {
+    display: none;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 1000px) {
+    .detail-layout {
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 20px;
+    }
+
+    .detail-section {
+        padding: 27px 25px;
+    }
+
+    .detail-gallery {
+        grid-auto-rows: 145px;
+    }
+
+    .detail-gallery:has(img:nth-child(2):last-child) {
+        grid-auto-rows: 290px;
+    }
+
+    .detail-amenities {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-card-top,
+    .booking-price-area {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    .booking-button {
+        margin-left: 22px;
+        margin-right: 22px;
+    }
+}
+
+/* ==========================================
+   MOBILE / TABLET NHO
+========================================== */
+
 @media (max-width: 760px) {
+    .detail-page {
+        padding: 25px 0 65px;
+    }
+
+    .detail-container {
+        width: calc(100% - 30px);
+    }
+
+    .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .detail-header h1 {
+        font-size: 34px;
+    }
+
     .detail-layout {
         grid-template-columns: 1fr;
     }
 
-    .detail-booking-card {
+    .detail-sidebar {
         position: static;
     }
 
+    .detail-gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: 145px;
+        gap: 8px;
+    }
+
     .detail-gallery img:first-child {
-        height: 260px;
+        grid-column: span 2;
+        grid-row: span 2;
+    }
+
+    .detail-gallery img:only-child {
+        grid-column: 1 / -1;
+        grid-row: span 2;
+    }
+
+    .detail-gallery:has(img:nth-child(2):last-child) {
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: 200px;
+    }
+
+    .detail-gallery:has(img:nth-child(2):last-child) img {
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .detail-gallery:has(img:nth-child(3):last-child) {
+        grid-template-columns: 2fr 1fr;
+        grid-auto-rows: 130px;
+    }
+
+    .detail-gallery:has(img:nth-child(3):last-child)
+    img:first-child {
+        grid-column: 1;
+        grid-row: span 2;
+    }
+
+    .detail-gallery:has(img:nth-child(3):last-child)
+    img:not(:first-child) {
+        grid-column: 2;
+    }
+
+    .gallery-caption {
+        align-items: flex-start;
+    }
+
+    .gallery-brand {
+        display: none;
+    }
+
+    .detail-amenities {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ==========================================
+   DIEN THOAI
+========================================== */
+
+@media (max-width: 480px) {
+    .detail-breadcrumb {
+        gap: 8px;
+        margin-bottom: 22px;
+        font-size: 12px;
+    }
+
+    .detail-header {
+        gap: 16px;
+    }
+
+    .detail-header h1 {
+        font-size: 30px;
+    }
+
+    .detail-header-subtitle {
+        font-size: 14px;
+    }
+
+    .detail-gallery {
+        grid-auto-rows: 110px;
+    }
+
+    .detail-gallery:has(img:nth-child(2):last-child) {
+        grid-auto-rows: 160px;
+    }
+
+    .detail-gallery:has(img:nth-child(3):last-child) {
+        grid-auto-rows: 105px;
+    }
+
+    .detail-section {
+        padding: 24px 19px;
+        border-radius: 12px;
+    }
+
+    .detail-section-heading {
+        gap: 12px;
+    }
+
+    .detail-section-number {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .detail-section h2 {
+        font-size: 24px;
+    }
+
+    .detail-description {
+        font-size: 15px;
+    }
+
+    .detail-amenities {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-specs span {
+        font-size: 13px;
+    }
+
+    .detail-note-section {
+        padding: 22px;
+    }
+
+    .detail-booking-card {
+        border-radius: 12px;
+    }
+}
+
+/* DANH GIA PHONG - DNK HOTEL */
+
+.detail-reviews {
+    margin-top: 36px;
+}
+
+.detail-review-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 25px;
+    margin: 25px 0;
+    border: 1px solid #E8E0D7;
+    border-radius: 14px;
+    background: #FAF8F5;
+}
+
+.detail-review-score {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.detail-review-score > strong {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 48px;
+    font-weight: 500;
+    color: #926024;
+}
+
+#roomReviewStars {
+    display: block;
+    font-size: 23px;
+    letter-spacing: 2px;
+    color: #D49A36;
+}
+
+#roomReviewTotal {
+    margin: 7px 0 0;
+    color: #817569;
+    font-size: 14px;
+}
+
+.detail-review-write {
+    display: inline-block;
+    padding: 12px 20px;
+    background: #926024;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    transition: background .2s;
+}
+
+.detail-review-write:hover {
+    background: #785324;
+}
+
+.detail-reviews-list {
+    display: grid;
+    gap: 15px;
+}
+
+.detail-review-card {
+    padding: 24px;
+    border: 1px solid #E8E0D7;
+    border-radius: 12px;
+    background: white;
+}
+
+.detail-review-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.detail-review-card-header strong {
+    font-size: 17px;
+    color: #27272A;
+}
+
+.detail-review-card-stars {
+    color: #D49A36;
+    font-size: 19px;
+    letter-spacing: 2px;
+}
+
+.detail-review-date {
+    color: #817569;
+    font-size: 13px;
+    margin: 9px 0 12px;
+}
+
+.detail-review-content {
+    color: #61584F;
+    line-height: 1.8;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.detail-review-empty {
+    color: #817569;
+    text-align: center;
+    padding: 25px;
+    border: 1px dashed #E8E0D7;
+    border-radius: 10px;
+}
+
+@media (max-width: 600px) {
+    .detail-review-summary {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .detail-review-write {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .detail-review-score > strong {
+        font-size: 40px;
     }
 }

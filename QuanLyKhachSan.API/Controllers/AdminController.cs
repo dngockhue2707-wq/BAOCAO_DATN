@@ -756,6 +756,85 @@ public class AdminController : ControllerBase
             message = "Đã cập nhật dịch vụ."
         });
     }
+    
+    [HttpGet("invoices/{id:int}")]
+    public async Task<IActionResult> InvoiceDetail(int id)
+    {
+        var invoice = await (
+            from hd in _db.Set<HoaDon>()
+            join dp in _db.Set<DatPhong>()
+                on hd.MaDatPhong equals dp.MaDatPhong
+            join kh in _db.Set<KhachHang>()
+                on dp.MaKhachHang equals kh.MaKhachHang
+            where hd.MaHoaDon == id
+            select new
+            {
+                id = hd.MaHoaDon,
+                bookingId = hd.MaDatPhong,
+                customer = kh.HoTen,
+                phone = kh.SoDienThoai,
+                email = kh.Email,
+                checkIn = dp.NgayNhanPhong,
+                checkOut = dp.NgayTraPhong,
+                bookingStatus = dp.TrangThai,
+                date = hd.NgayLap,
+                roomAmount = hd.TienPhong,
+                serviceAmount = hd.TienDichVu,
+                deposit = hd.TienDatCoc,
+                discount = hd.GiamGia,
+                total = hd.TongTien,
+                remaining = hd.SoTienConLai,
+                status = hd.TrangThai,
+                note = hd.GhiChu
+            }
+        ).AsNoTracking().FirstOrDefaultAsync();
+
+        if (invoice == null)
+        {
+            return NotFound(new
+            {
+                message = "Không tìm thấy hóa đơn."
+            });
+        }
+
+        var payments = await _db.Set<ThanhToan>()
+            .AsNoTracking()
+            .Where(x => x.MaHoaDon == id)
+            .OrderByDescending(x => x.NgayThanhToan)
+            .Select(x => new
+            {
+                id = x.MaThanhToan,
+                amount = x.SoTien,
+                method = x.PhuongThuc,
+                date = x.NgayThanhToan,
+                transactionCode = x.MaGiaoDich,
+                status = x.TrangThai
+            })
+            .ToListAsync();
+
+        var deposits = await _db.Set<DatCoc>()
+            .AsNoTracking()
+            .Where(x => x.MaDatPhong == invoice.bookingId)
+            .OrderByDescending(x => x.NgayDatCoc)
+            .Select(x => new
+            {
+                id = x.MaDatCoc,
+                amount = x.SoTien,
+                method = x.PhuongThuc,
+                date = x.NgayDatCoc,
+                transactionCode = x.MaGiaoDich,
+                status = x.TrangThai
+            })
+            .ToListAsync();
+
+        return Ok(new
+        {
+            invoice,
+            payments,
+            deposits
+        });
+    }
+
 
     [HttpGet("invoices")]
     public async Task<IActionResult> Invoices()
@@ -787,33 +866,91 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("reports")]
-    public async Task<IActionResult> Reports()
+    public async Task<IActionResult> Reports([FromQuery] int? year)
     {
-        var totalBookings = await _db.Set<DatPhong>()
-            .CountAsync();
+        int selectedYear = year ?? DateTime.Today.Year;
 
-        var completedBookings = await _db.Set<DatPhong>()
-            .CountAsync(x => x.TrangThai == "Đã trả phòng");
+        if (selectedYear < 2000 || selectedYear > 2100)
+        {
+            return BadRequest(new
+            {
+                message = "Năm thống kê không hợp lệ."
+            });
+        }
 
-        var cancelledBookings = await _db.Set<DatPhong>()
-            .CountAsync(x => x.TrangThai == "Đã hủy");
+        var bookings = await _db.Set<DatPhong>()
+            .AsNoTracking()
+            .Select(x => x.TrangThai)
+            .ToListAsync();
 
-        var invoicedAmount = await _db.Set<HoaDon>()
-            .SumAsync(x => (decimal?)x.TongTien) ?? 0m;
+        var invoices = await _db.Set<HoaDon>()
+            .AsNoTracking()
+            .Where(x => x.NgayLap.Year == selectedYear)
+            .Select(x => new
+            {
+                x.NgayLap,
+                x.TongTien
+            })
+            .ToListAsync();
 
-        var receivedAmount = await _db.Set<ThanhToan>()
+        var payments = await _db.Set<ThanhToan>()
+            .AsNoTracking()
             .Where(x =>
-                x.TrangThai == "Thành công" ||
-                x.TrangThai == "Đã thanh toán")
-            .SumAsync(x => (decimal?)x.SoTien) ?? 0m;
+                x.NgayThanhToan.Year == selectedYear &&
+                (x.TrangThai == "Thành công" ||
+                x.TrangThai == "Đã thanh toán"))
+            .Select(x => new
+            {
+                x.NgayThanhToan,
+                x.SoTien
+            })
+            .ToListAsync();
+
+        var roomStatuses = await _db.Set<Phong>()
+            .AsNoTracking()
+            .GroupBy(x => x.TrangThai)
+            .Select(g => new
+            {
+                status = g.Key,
+                count = g.Count()
+            })
+            .ToListAsync();
+
+        var monthly = Enumerable.Range(1, 12)
+            .Select(month => new
+            {
+                month,
+                invoiceAmount = invoices
+                    .Where(x => x.NgayLap.Month == month)
+                    .Sum(x => x.TongTien),
+                receivedAmount = payments
+                    .Where(x => x.NgayThanhToan.Month == month)
+                    .Sum(x => x.SoTien)
+            })
+            .ToList();
+
+        var bookingStatuses = bookings
+            .GroupBy(x => x ?? "Chưa xác định")
+            .Select(g => new
+            {
+                status = g.Key,
+                count = g.Count()
+            })
+            .OrderByDescending(x => x.count)
+            .ToList();
 
         return Ok(new
         {
-            totalBookings,
-            completedBookings,
-            cancelledBookings,
-            invoicedAmount,
-            receivedAmount
+            year = selectedYear,
+            totalBookings = bookings.Count,
+            completedBookings = bookings.Count(x => x == "Đã trả phòng"),
+            cancelledBookings = bookings.Count(x => x == "Đã hủy"),
+            invoicedAmount = invoices.Sum(x => x.TongTien),
+            receivedAmount = payments.Sum(x => x.SoTien),
+            monthly,
+            bookingStatuses,
+            roomStatuses
         });
     }
+
 }

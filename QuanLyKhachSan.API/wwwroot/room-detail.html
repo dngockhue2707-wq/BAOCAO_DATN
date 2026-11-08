@@ -1,8 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Chi tiết phòng | DNK Hotel</title>
 
     <link rel="stylesheet" href="/css/common.css">
@@ -12,54 +15,279 @@
     <script src="/js/room-detail.js" defer></script>
     <script src="/js/account-nav.js" defer></script>
 </head>
+
 <body>
     <div id="site-header"></div>
 
     <main class="detail-page">
+
         <div class="detail-container">
-            <a class="back-link" href="/rooms.html">← Danh sách phòng</a>
 
-            <p class="detail-eyebrow">DNK HOTEL · HẠNG PHÒNG</p>
-            <h1 id="roomName">Đang tải thông tin phòng...</h1>
+            <!-- DIEU HUONG -->
+            <nav class="detail-breadcrumb">
+                <a href="/">Trang chủ</a>
+                <span>/</span>
+                <a href="/rooms.html">Phòng nghỉ</a>
+                <span>/</span>
+                <span>Chi tiết phòng</span>
+            </nav>
 
+            <!-- TIEU DE -->
+            <header class="detail-header">
+                <div>
+                    <span class="detail-eyebrow">
+                        DNK HOTEL · KHÔNG GIAN NGHỈ DƯỠNG
+                    </span>
+
+                    <h1 id="roomName">
+                        Đang tải thông tin phòng...
+                    </h1>
+
+                    <p class="detail-header-subtitle">
+                        Tận hưởng không gian nghỉ dưỡng
+                        tinh tế và tiện nghi tại DNK Hotel.
+                    </p>
+                </div>
+
+                <a class="back-link" href="/rooms.html">
+                    ← Quay lại danh sách
+                </a>
+            </header>
+
+            <!-- HINH ANH PHONG -->
+            <section class="detail-gallery-section">
+                <div id="roomImages" class="detail-gallery"></div>
+
+                <div class="gallery-caption">
+                    <div>
+                        <span class="gallery-caption-label">
+                            KHÁM PHÁ KHÔNG GIAN
+                        </span>
+                        <p>
+                            Mỗi căn phòng đều được chăm chút
+                            để mang đến trải nghiệm lưu trú
+                            thoải mái và đáng nhớ.
+                        </p>
+                    </div>
+
+                    <span class="gallery-brand">
+                        DNK HOTEL
+                    </span>
+                </div>
+            </section>
+
+            <!-- NOI DUNG CHINH -->
             <div class="detail-layout">
-                <section>
-                    <div id="roomImages" class="detail-gallery"></div>
 
-                    <div class="detail-section">
-                        <h2>Giới thiệu phòng</h2>
-                        <p id="roomDescription"></p>
+                <!-- COT BEN TRAI -->
+                <div class="detail-main-content">
+
+                    <!-- GIOI THIEU -->
+                    <section class="detail-section detail-intro">
+                        <div class="detail-section-heading">
+                            <span class="detail-section-number">01</span>
+
+                            <div>
+                                <span class="detail-label">
+                                    TỔNG QUAN
+                                </span>
+                                <h2>Giới thiệu phòng</h2>
+                            </div>
+                        </div>
+
+                        <p id="roomDescription"
+                           class="detail-description"></p>
+                    </section>
+
+                    <!-- THONG TIN PHONG -->
+                    <section class="detail-section">
+                        <div class="detail-section-heading">
+                            <span class="detail-section-number">02</span>
+
+                            <div>
+                                <span class="detail-label">
+                                    CHI TIẾT LƯU TRÚ
+                                </span>
+                                <h2>Thông tin phòng</h2>
+                            </div>
+                        </div>
+
+                        <p class="detail-section-subtitle">
+                            Các thông tin cơ bản giúp bạn
+                            lựa chọn không gian nghỉ ngơi
+                            phù hợp với nhu cầu.
+                        </p>
+
+                        <div id="roomSpecs"
+                             class="detail-specs"></div>
+                    </section>
+
+                    <!-- TIEN NGHI -->
+                    <section class="detail-section">
+                        <div class="detail-section-heading">
+                            <span class="detail-section-number">03</span>
+
+                            <div>
+                                <span class="detail-label">
+                                    DỊCH VỤ & TIỆN ÍCH
+                                </span>
+                                <h2>Tiện nghi phòng</h2>
+                            </div>
+                        </div>
+
+                        <p class="detail-section-subtitle">
+                            Khám phá những tiện nghi
+                            được trang bị trong phòng
+                            để kỳ nghỉ thêm trọn vẹn.
+                        </p>
+
+                        <div id="roomAmenities"
+                             class="detail-amenities"></div>
+                    </section>
+
+                    <!-- DANH GIA KHACH HANG -->
+                    <section class="detail-section detail-reviews">
+                        <div class="detail-section-heading">
+                            <span class="detail-section-number">04</span>
+
+                            <div>
+                                <span class="detail-label">
+                                    CẢM NHẬN KHÁCH HÀNG
+                                </span>
+                                <h2>Đánh giá từ khách lưu trú</h2>
+                            </div>
+                        </div>
+
+                        <p class="detail-section-subtitle">
+                            Khám phá những trải nghiệm và nhận xét
+                            thực tế từ khách hàng đã lưu trú tại DNK Hotel.
+                        </p>
+
+                        <div class="detail-review-summary">
+                            <div class="detail-review-score">
+                                <strong id="roomReviewAverage">—</strong>
+                                <div>
+                                    <span id="roomReviewStars">☆☆☆☆☆</span>
+                                    <p id="roomReviewTotal">Đang tải đánh giá...</p>
+                                </div>
+                            </div>
+
+                            <a href="/reviews.html"
+                            class="detail-review-write">
+                                Viết đánh giá
+                            </a>
+                        </div>
+
+                        <div id="roomReviewsList"
+                            class="detail-reviews-list">
+                        </div>
+                    </section>
+
+                    <!-- THONG TIN THEM -->
+                    <section class="detail-note-section">
+                        <div class="detail-note-icon">✦</div>
+
+                        <div>
+                            <h3>Trải nghiệm lưu trú tại DNK Hotel</h3>
+
+                            <p>
+                                DNK Hotel luôn hướng đến
+                                không gian nghỉ dưỡng thoải mái,
+                                sự riêng tư và trải nghiệm
+                                phục vụ chu đáo dành cho khách hàng.
+                            </p>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- COT GIA BEN PHAI -->
+                <aside class="detail-sidebar">
+
+                    <div class="detail-booking-card">
+
+                        <div class="booking-card-top">
+                            <span class="booking-eyebrow">
+                                DNK HOTEL
+                            </span>
+
+                            <h3>Đặt phòng nghỉ dưỡng</h3>
+
+                            <p>
+                                Lựa chọn không gian phù hợp
+                                cho kỳ nghỉ của bạn.
+                            </p>
+                        </div>
+
+                        <div class="booking-price-area">
+                            <span class="booking-price-label">
+                                GIÁ PHÒNG TỪ
+                            </span>
+
+                            <h2 id="roomPrice">
+                                Đang tải...
+                            </h2>
+
+                            <p>
+                                Giá cơ bản cho một đêm lưu trú
+                            </p>
+                        </div>
+
+                        <div class="booking-divider"></div>
+
+                        <div class="booking-benefits">
+                            <div>
+                                <span class="booking-check">✓</span>
+                                <span>Xem thông tin phòng chi tiết</span>
+                            </div>
+
+                            <div>
+                                <span class="booking-check">✓</span>
+                                <span>Kiểm tra phòng còn trống</span>
+                            </div>
+
+                            <div>
+                                <span class="booking-check">✓</span>
+                                <span>Đặt phòng trực tuyến</span>
+                            </div>
+                        </div>
+
+                        <a id="bookRoomButton"
+                           class="booking-button"
+                           href="/login.html">
+                            Đặt phòng ngay
+                            <span>→</span>
+                        </a>
+
+                        <p class="booking-notice">
+                            Giá chính thức và tình trạng phòng
+                            được kiểm tra trong quá trình đặt phòng.
+                        </p>
                     </div>
 
-                    <div class="detail-section">
-                        <h2>Thông tin phòng</h2>
-                        <div id="roomSpecs" class="detail-specs"></div>
+                    <div class="detail-help-card">
+                        <span class="help-icon">✧</span>
+
+                        <div>
+                            <h4>Cần thêm thông tin?</h4>
+
+                            <p>
+                                Liên hệ DNK Hotel để được
+                                hỗ trợ về phòng nghỉ và dịch vụ.
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="detail-section">
-                        <h2>Tiện nghi</h2>
-                        <div id="roomAmenities" class="detail-amenities"></div>
-                    </div>
-                </section>
-
-                <aside class="detail-booking-card">
-                    <span>GIÁ PHÒNG TỪ</span>
-                    <h2 id="roomPrice">Đang tải...</h2>
-                    <p>Giá cơ bản cho một đêm lưu trú</p>
-
-                    <a id="bookRoomButton" href="/login.html">
-                        Đặt phòng ngay →
-                    </a>
-
-                    <small>
-                        Giá chính thức và tình trạng phòng
-                        được kiểm tra khi đặt phòng.
-                    </small>
                 </aside>
+
             </div>
 
-            <p id="roomMessage" role="status"></p>
+            <p id="roomMessage"
+               class="detail-message"
+               role="status"></p>
+
         </div>
+
     </main>
 
     <div id="site-footer"></div>

@@ -3,36 +3,327 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Kết quả thanh toán | DNK Hotel</title>
+
     <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/deposit.css">
+
     <script src="/js/layout.js" defer></script>
-    <script src="/js/payment-result.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+    <script src="/js/payment-result.js?v=2" defer></script>
+
+
+    <style>
+        .payment-result-page {
+            min-height: 75vh;
+            padding: 85px 20px 110px;
+            background:
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(146,96,36,.09),
+                    transparent 40%
+                ),
+                #FAF8F5;
+        }
+
+        .payment-result-container {
+            max-width: 720px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .payment-result-eyebrow {
+            display: block;
+            color: #926024;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+        }
+
+        .payment-result-container h1 {
+            margin: 18px 0 15px;
+            color: #30251E;
+            font-family: var(
+                --font-heading,
+                "Playfair Display",
+                Georgia,
+                serif
+            );
+            font-size: clamp(34px, 5vw, 52px);
+            font-weight: 500;
+        }
+
+        .payment-result-intro {
+            margin: 0 auto 38px;
+            max-width: 560px;
+            color: #817569;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .payment-result-card {
+            padding: 45px 38px;
+            border: 1px solid #E8E0D7;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 18px 45px
+                rgba(48,37,30,.06);
+        }
+
+        .payment-result-icon {
+            display: grid;
+            place-items: center;
+            width: 82px;
+            height: 82px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            background: #F3E7D6;
+            color: #926024;
+            font-size: 35px;
+            font-weight: 700;
+        }
+
+        .payment-result-card[data-state="success"]
+        .payment-result-icon {
+            background: #E8F5EC;
+            color: #278049;
+        }
+
+        .payment-result-card[data-state="failed"]
+        .payment-result-icon {
+            background: #FDECEC;
+            color: #B23C3C;
+        }
+
+        .payment-result-card h2 {
+            margin: 0 0 14px;
+            color: #30251E;
+            font-family: var(
+                --font-heading,
+                Georgia,
+                serif
+            );
+            font-size: 29px;
+            font-weight: 500;
+        }
+
+        .payment-result-description {
+            margin: 0 auto 25px;
+            max-width: 530px;
+            color: #817569;
+            font-size: 16px;
+            line-height: 1.85;
+        }
+
+        .payment-result-details {
+            margin: 28px 0;
+            padding: 20px 24px;
+            border: 1px solid #E8E0D7;
+            border-radius: 12px;
+            background: #FCFAF7;
+            text-align: left;
+        }
+
+        .payment-result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 11px 0;
+        }
+
+        .payment-result-row + .payment-result-row {
+            border-top: 1px solid #E8E0D7;
+        }
+
+        .payment-result-row span {
+            color: #817569;
+            font-size: 14px;
+        }
+
+        .payment-result-row strong {
+            color: #30251E;
+            font-size: 15px;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .payment-result-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 26px;
+        }
+
+        .payment-result-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 49px;
+            padding: 12px 22px;
+            border: 1px solid #926024;
+            border-radius: 9px;
+            background: #926024;
+            color: #fff;
+            font-family: var(
+                --font-body,
+                "Times New Roman",
+                serif
+            );
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .payment-result-button:hover {
+            background: #785324;
+            color: #fff;
+        }
+
+        .payment-result-button.secondary {
+            background: #fff;
+            color: #926024;
+        }
+
+        .payment-result-button.secondary:hover {
+            background: #FAF1E5;
+        }
+
+        .payment-result-button:disabled {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        .payment-result-note {
+            margin: 24px auto 0;
+            max-width: 540px;
+            color: #817569;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 600px) {
+            .payment-result-page {
+                padding: 55px 14px 75px;
+            }
+
+            .payment-result-card {
+                padding: 32px 18px;
+            }
+
+            .payment-result-actions {
+                flex-direction: column;
+            }
+
+            .payment-result-button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
+
 <body>
+
     <div id="site-header"></div>
 
-    <main class="deposit-page">
-        <section class="deposit-container">
-            <span class="deposit-eyebrow">DNK HOTEL · VNPAY SANDBOX</span>
-            <h1>Kết quả thanh toán</h1>
+    <main class="payment-result-page">
 
-            <div class="deposit-card">
-                <h2 id="paymentTitle">Đang kiểm tra giao dịch...</h2>
-                <p id="paymentDescription"></p>
-                <p id="paymentAmount"></p>
-                <button type="button" id="checkPayment" class="deposit-pay">
-                    Kiểm tra lại trạng thái
-                </button>
-            </div>
+        <div class="payment-result-container">
 
-            <a class="deposit-back" href="/deposit.html">
-                Quay lại trang đặt cọc
-            </a>
-        </section>
+            <span class="payment-result-eyebrow">
+                DNK HOTEL · THANH TOÁN TRỰC TUYẾN
+            </span>
+
+            <h1>Kết quả <em>thanh toán</em></h1>
+
+            <p class="payment-result-intro">
+                Kiểm tra trạng thái giao dịch đặt cọc
+                và đơn đặt phòng của bạn tại DNK Hotel.
+            </p>
+
+            <section class="payment-result-card"
+                     id="paymentResultCard"
+                     data-state="checking"
+                     aria-live="polite">
+
+                <div class="payment-result-icon"
+                     id="paymentResultIcon"
+                     aria-hidden="true">
+                    …
+                </div>
+
+                <h2 id="paymentTitle">
+                    Đang kiểm tra giao dịch...
+                </h2>
+
+                <p class="payment-result-description"
+                   id="paymentDescription">
+                    Hệ thống đang đối chiếu kết quả
+                    thanh toán với dữ liệu khách sạn.
+                </p>
+
+                <div class="payment-result-details">
+
+                    <div class="payment-result-row">
+                        <span>Mã đặt phòng</span>
+                        <strong id="paymentBookingId">
+                            Đang kiểm tra
+                        </strong>
+                    </div>
+
+                    <div class="payment-result-row">
+                        <span>Số tiền cọc</span>
+                        <strong id="paymentAmount">
+                            Đang kiểm tra
+                        </strong>
+                    </div>
+
+                    <div class="payment-result-row">
+                        <span>Trạng thái giao dịch</span>
+                        <strong id="paymentStatus">
+                            Đang kiểm tra
+                        </strong>
+                    </div>
+
+                </div>
+
+                <div class="payment-result-actions">
+
+                    <button type="button"
+                            id="checkPayment"
+                            class="payment-result-button">
+                        Kiểm tra lại trạng thái
+                    </button>
+
+                    <a href="/my-bookings.html"
+                       class="payment-result-button secondary">
+                        Đơn đặt phòng của tôi
+                    </a>
+
+                    <a href="/"
+                       class="payment-result-button secondary">
+                        Về trang chủ
+                    </a>
+
+                </div>
+
+                <p class="payment-result-note">
+                    Trạng thái thanh toán được xác nhận
+                    từ hệ thống DNK Hotel. Nếu vừa thanh toán
+                    xong nhưng chưa có kết quả, vui lòng
+                    kiểm tra lại trước khi tạo giao dịch mới.
+                </p>
+
+            </section>
+
+        </div>
     </main>
 
     <div id="site-footer"></div>
+
 </body>
 </html>

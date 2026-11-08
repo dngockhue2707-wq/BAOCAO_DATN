@@ -3,56 +3,136 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Đơn đặt phòng của tôi | DNK Hotel</title>
+
     <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/profile.css">
     <link rel="stylesheet" href="/css/my-bookings.css">
+    <link rel="stylesheet" href="/css/customer-layout.css">
+
     <script src="/js/layout.js" defer></script>
     <script src="/js/account-nav.js" defer></script>
+    <script src="/js/customer-layout.js" defer></script>
     <script src="/js/my-bookings.js" defer></script>
 </head>
+
 <body>
     <div id="site-header"></div>
 
-    <main class="my-bookings-page">
-        <div class="my-bookings-container">
-            <span class="section-label">DNK HOTEL</span>
+    <main class="profile-page bookings-account-page">
 
-            <h1>Đơn đặt phòng của tôi</h1>
+        <section class="profile-heading">
+            <div class="profile-container">
 
-            <p>
-                Theo dõi lịch sử đặt phòng, trạng thái xác nhận
-                và thanh toán tiền đặt cọc.
-            </p>
+                <span class="profile-eyebrow">
+                    DNK HOTEL · TÀI KHOẢN KHÁCH HÀNG
+                </span>
 
-            <div class="booking-payment-actions">
-                <a href="/availability.html" class="booking-deposit-button">
-                    Đặt phòng mới
-                </a>
+                <h1>Không gian <em>của bạn</em></h1>
 
-                <button type="button" id="refreshBookings">
-                    Cập nhật trạng thái
-                </button>
+                <p>
+                    Quản lý thông tin tài khoản và theo dõi
+                    hành trình lưu trú của bạn tại DNK Hotel.
+                </p>
+
             </div>
+        </section>
 
-            <div class="booking-filter">
-                <label for="statusFilter">Lọc trạng thái</label>
+        <div class="profile-container profile-layout">
 
-                <select id="statusFilter">
-                    <option value="all">Tất cả</option>
-                    <option value="Chờ xác nhận">Chờ xác nhận</option>
-                    <option value="Đã xác nhận">Đã xác nhận</option>
-                    <option value="Đã đặt cọc">Đã đặt cọc</option>
-                    <option value="Đã nhận phòng">Đã nhận phòng</option>
-                    <option value="Đã trả phòng">Đã trả phòng</option>
-                    <option value="Đã hủy">Đã hủy</option>
-                </select>
+            <aside
+                id="customerSidebar"
+                class="profile-sidebar"
+                aria-label="Menu tài khoản khách hàng">
+            </aside>
+
+            <div class="profile-content">
+
+                <section class="profile-panel">
+
+                    <div class="profile-panel-header">
+
+                        <span class="profile-eyebrow">
+                            QUẢN LÝ ĐẶT PHÒNG
+                        </span>
+
+                        <h2>Đơn đặt phòng của tôi</h2>
+
+                        <p>
+                            Theo dõi trạng thái, lịch sử lưu trú
+                            và thanh toán tiền đặt cọc.
+                        </p>
+
+                    </div>
+
+                    <div class="bookings-inner">
+
+                        <div class="booking-payment-actions">
+
+                            <a href="/availability.html"
+                               class="booking-deposit-button">
+                                Đặt phòng mới
+                            </a>
+
+                            <button type="button"
+                                    id="refreshBookings">
+                                Cập nhật trạng thái
+                            </button>
+
+                        </div>
+
+                        <div class="booking-filter">
+
+                            <label for="statusFilter">
+                                Lọc trạng thái
+                            </label>
+
+                            <select id="statusFilter">
+                                <option value="all">
+                                    Tất cả
+                                </option>
+                                <option value="Chờ xác nhận">
+                                    Chờ xác nhận
+                                </option>
+                                <option value="Đã xác nhận">
+                                    Đã xác nhận
+                                </option>
+                                <option value="Đã đặt cọc">
+                                    Đã đặt cọc
+                                </option>
+                                <option value="Đã nhận phòng">
+                                    Đã nhận phòng
+                                </option>
+                                <option value="Đã trả phòng">
+                                    Đã trả phòng
+                                </option>
+                                <option value="Đã hủy">
+                                    Đã hủy
+                                </option>
+                            </select>
+
+                        </div>
+
+                        <p id="bookingsMessage"
+                           class="bookings-message"
+                           role="status"
+                           aria-live="polite">
+                        </p>
+
+                        <div id="myBookingsList"
+                             class="bookings-list">
+                        </div>
+
+                    </div>
+
+                </section>
+
             </div>
-
-            <p id="bookingsMessage" role="status" aria-live="polite"></p>
-
-            <div id="myBookingsList"></div>
         </div>
+
     </main>
 
     <div id="site-footer"></div>

@@ -65,6 +65,22 @@ public class VnPayService
             throw new InvalidOperationException(
                 "PublicBaseUrl phải là địa chỉ HTTPS hợp lệ.");
 
+        string returnUrl = _config["VnPay:ReturnUrl"]
+            ?? baseUrl + "/payment-result.html";
+
+        if (!Uri.TryCreate(
+                returnUrl,
+                UriKind.Absolute,
+                out var returnUri) ||
+            (returnUri.Scheme != Uri.UriSchemeHttps &&
+            !(returnUri.IsLoopback &&
+            returnUri.Scheme == Uri.UriSchemeHttp)))
+        {
+            throw new InvalidOperationException(
+                "VnPay:ReturnUrl phải là HTTPS hoặc HTTP localhost."
+            );
+        }
+
         var values = new SortedDictionary<string, string>(
             StringComparer.Ordinal)
         {
@@ -78,7 +94,7 @@ public class VnPayService
             ["vnp_OrderInfo"] = $"Dat coc DNK Hotel {reference}",
             ["vnp_OrderType"] = "other",
             ["vnp_Locale"] = "vn",
-            ["vnp_ReturnUrl"] = baseUrl + "/payment-result.html",
+            ["vnp_ReturnUrl"] = returnUrl,
             ["vnp_IpAddr"] = ip,
             ["vnp_CreateDate"] = now.ToString("yyyyMMddHHmmss"),
             ["vnp_ExpireDate"] = now.AddMinutes(15)

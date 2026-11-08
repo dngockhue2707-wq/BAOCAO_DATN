@@ -337,7 +337,5 @@ document.addEventListener("DOMContentLoaded", () => {
         currentContactId = null;
     });
 
-    elements.logout.addEventListener("click", logout);
-
     loadContacts();
 });

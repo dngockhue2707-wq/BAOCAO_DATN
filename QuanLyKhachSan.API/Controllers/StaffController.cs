@@ -307,6 +307,7 @@ public class StaffController : ControllerBase
             var roomIds = await _db.Set<ChiTietDatPhong>()
                 .Where(x => x.MaDatPhong == id)
                 .Select(x => x.MaPhong)
+                .Distinct()
                 .ToListAsync();
 
             if (roomIds.Count == 0)
@@ -317,6 +318,95 @@ public class StaffController : ControllerBase
                 {
                     message = "Không tìm thấy phòng của đơn đặt."
                 });
+            }
+
+            decimal tienPhong = await _db.Set<ChiTietDatPhong>()
+                .Where(x => x.MaDatPhong == id)
+                .SumAsync(x => (decimal?)x.ThanhTien) ?? 0m;
+
+            decimal tienDichVu = await _db.Set<SuDungDichVu>()
+                .Where(x => x.MaDatPhong == id)
+                .SumAsync(x => (decimal?)x.ThanhTien) ?? 0m;
+
+            decimal tienDatCoc = await _db.Set<DatCoc>()
+                .Where(x =>
+                    x.MaDatPhong == id &&
+                    (x.TrangThai == "Đã thanh toán" ||
+                    x.TrangThai == "Thành công"))
+                .SumAsync(x => (decimal?)x.SoTien) ?? 0m;
+
+            int? accountId = AccountId();
+
+            int? employeeId = null;
+
+            if (accountId.HasValue)
+            {
+                employeeId = await _db.Set<NhanVien>()
+                    .Where(x => x.MaTaiKhoan == accountId.Value)
+                    .Select(x => (int?)x.MaNhanVien)
+                    .FirstOrDefaultAsync();
+            }
+
+            var invoice = await _db.Set<HoaDon>()
+                .FirstOrDefaultAsync(x => x.MaDatPhong == id);
+
+            decimal giamGia = invoice?.GiamGia ?? 0m;
+
+            decimal tongTien = Math.Max(
+                0m,
+                tienPhong + tienDichVu - giamGia
+            );
+
+            decimal daThanhToan = 0m;
+
+            if (invoice != null)
+            {
+                daThanhToan = await _db.Set<ThanhToan>()
+                    .Where(x =>
+                        x.MaHoaDon == invoice.MaHoaDon &&
+                        x.TrangThai == "Thành công")
+                    .SumAsync(x => (decimal?)x.SoTien) ?? 0m;
+            }
+
+            decimal conLai = Math.Max(
+                0m,
+                tongTien - tienDatCoc - daThanhToan
+            );
+
+            string trangThaiHoaDon = conLai <= 0
+                ? "Đã thanh toán"
+                : (tienDatCoc + daThanhToan > 0
+                    ? "Thanh toán một phần"
+                    : "Chưa thanh toán");
+
+            if (invoice == null)
+            {
+                invoice = new HoaDon
+                {
+                    MaDatPhong = id,
+                    MaNhanVien = employeeId,
+                    NgayLap = DateTime.Now,
+                    TienPhong = tienPhong,
+                    TienDichVu = tienDichVu,
+                    TienDatCoc = tienDatCoc,
+                    GiamGia = giamGia,
+                    TongTien = tongTien,
+                    SoTienConLai = conLai,
+                    TrangThai = trangThaiHoaDon,
+                    GhiChu = "Hóa đơn được tạo tự động khi khách trả phòng."
+                };
+
+                _db.Set<HoaDon>().Add(invoice);
+            }
+            else
+            {
+                invoice.MaNhanVien = employeeId ?? invoice.MaNhanVien;
+                invoice.TienPhong = tienPhong;
+                invoice.TienDichVu = tienDichVu;
+                invoice.TienDatCoc = tienDatCoc;
+                invoice.TongTien = tongTien;
+                invoice.SoTienConLai = conLai;
+                invoice.TrangThai = trangThaiHoaDon;
             }
 
             booking.TrangThai = "Đã trả phòng";
@@ -334,7 +424,16 @@ public class StaffController : ControllerBase
             return Ok(new
             {
                 success = true,
-                message = "Trả phòng thành công. Phòng chuyển sang đang dọn."
+                message = "Trả phòng thành công. Hóa đơn đã được tạo hoặc cập nhật.",
+                invoiceId = invoice.MaHoaDon,
+                bookingId = id,
+                roomAmount = tienPhong,
+                serviceAmount = tienDichVu,
+                deposit = tienDatCoc,
+                discount = giamGia,
+                total = tongTien,
+                remaining = conLai,
+                invoiceStatus = trangThaiHoaDon
             });
         }
         catch
@@ -343,8 +442,7 @@ public class StaffController : ControllerBase
             throw;
         }
     }
-    
-    [HttpGet("operations/rooms")]
+
     private async Task<bool> HasActiveBooking(int roomId)
     {
         return await (
@@ -374,7 +472,7 @@ public class StaffController : ControllerBase
             select booking.MaDatPhong
         ).AnyAsync();
     }
-
+        
     [HttpPost("operations/rooms/{id:int}/cleaned")]
     public async Task<IActionResult> MarkRoomCleaned(int id)
     {
@@ -394,16 +492,16 @@ public class StaffController : ControllerBase
             });
         }
 
-        if (await HasUpcomingBooking(id))
-        {
-            return BadRequest(new
-            {
-                message = "Phòng đang có đơn đặt chưa hoàn tất. Vui lòng kiểm tra lịch đặt phòng trước khi đưa phòng về trạng thái trống."
-            });
-        }
-
         int affected = await _db.Set<Phong>()
-            .Where(x => x.MaPhong == id && x.TrangThai == "Đang dọn")
+            .Where(x =>
+                x.MaPhong == id &&
+                x.TrangThai == "Đang dọn" &&
+                !_db.Set<ChiTietDatPhong>()
+                    .Any(ct =>
+                        ct.MaPhong == x.MaPhong &&
+                        _db.Set<DatPhong>().Any(dp =>
+                            dp.MaDatPhong == ct.MaDatPhong &&
+                            dp.TrangThai == "Đã nhận phòng")))
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(x => x.TrangThai, "Trống"));
 
@@ -411,7 +509,7 @@ public class StaffController : ControllerBase
         {
             return BadRequest(new
             {
-                message = "Phòng không ở trạng thái đang dọn hoặc không tồn tại."
+                message = "Không thể hoàn tất dọn. Phòng không ở trạng thái đang dọn hoặc vẫn có khách lưu trú."
             });
         }
 

@@ -28,6 +28,14 @@ public class LoginDto
     public string MatKhau { get; set; } = "";
 }
 
+
+public class ChangePasswordDto
+{
+    public string CurrentPassword { get; set; } = "";
+    public string NewPassword { get; set; } = "";
+}
+
+
 [ApiController]
 [Route("api/account")]
 public class AccountController : ControllerBase
@@ -90,6 +98,14 @@ public class AccountController : ControllerBase
         string phone = dto.SoDienThoai?.Trim() ?? "";
         string password = dto.MatKhau ?? "";
 
+        if (!Regex.IsMatch(phone, @"^0[35789][0-9]{8}$"))
+        {
+            return BadRequest(new
+            {
+                message = "Số điện thoại không hợp lệ. Vui lòng nhập đúng 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09."
+            });
+        }
+
         if (fullName.Length < 2 ||
             fullName.Length > 100 ||
             username.Length < 4 ||
@@ -137,6 +153,35 @@ public class AccountController : ControllerBase
                 message = "Tên đăng nhập đã tồn tại."
             });
         }
+
+        bool phoneExists = await _db.Set<KhachHang>()
+            .AnyAsync(x => x.SoDienThoai == phone);
+
+        if (phoneExists)
+        {
+            return Conflict(new
+            {
+                message = "Số điện thoại này đã được sử dụng. Vui lòng nhập số khác."
+            });
+        }
+ 
+        bool emailExists = await _db.Set<TaiKhoan>()
+            .AnyAsync(x =>
+                x.Email != null &&
+                x.Email.Trim().ToLower() == email.ToLower());
+
+            bool customerEmailExists = await _db.Set<KhachHang>()
+                .AnyAsync(x =>
+                    x.Email != null &&
+                    x.Email.Trim().ToLower() == email.ToLower());
+
+            if (emailExists || customerEmailExists)
+            {
+                return Conflict(new
+                {
+                    message = "Email này đã được sử dụng. Vui lòng dùng email khác."
+                });
+            }
 
         string passwordHash = _hasher.HashPassword(
             new object(),
@@ -386,4 +431,101 @@ public class AccountController : ControllerBase
             message = "Đăng xuất thành công!"
         });
     }
+
+    [HttpPost("change-password")]
+    [Authorize(Roles = "Customer")]
+    public async Task<IActionResult> ChangePassword(
+        [FromBody] ChangePasswordDto dto)
+    {
+        if (!await ValidateCsrfToken())
+        {
+            return BadRequest(new
+            {
+                message = "Phiên bảo mật không hợp lệ. Hãy tải lại trang."
+            });
+        }
+
+        var accountIdValue = User.FindFirstValue(
+            ClaimTypes.NameIdentifier
+        );
+
+        if (!int.TryParse(accountIdValue, out int accountId))
+        {
+            return Unauthorized(new
+            {
+                message = "Phiên đăng nhập không hợp lệ."
+            });
+        }
+
+        string currentPassword = dto.CurrentPassword ?? "";
+        string newPassword = dto.NewPassword ?? "";
+
+        if (string.IsNullOrWhiteSpace(currentPassword) ||
+            newPassword.Length < 12 ||
+            newPassword.Length > 128)
+        {
+            return BadRequest(new
+            {
+                message = "Mật khẩu mới phải có từ 12 đến 128 ký tự."
+            });
+        }
+
+        if (currentPassword == newPassword)
+        {
+            return BadRequest(new
+            {
+                message = "Mật khẩu mới phải khác mật khẩu hiện tại."
+            });
+        }
+
+        var account = await _db.Set<TaiKhoan>()
+            .FirstOrDefaultAsync(x =>
+                x.MaTaiKhoan == accountId &&
+                x.TrangThai);
+
+        if (account == null)
+        {
+            return Unauthorized(new
+            {
+                message = "Không tìm thấy tài khoản đang hoạt động."
+            });
+        }
+
+        PasswordVerificationResult verification;
+
+        try
+        {
+            verification = _hasher.VerifyHashedPassword(
+                new object(),
+                account.MatKhau,
+                currentPassword
+            );
+        }
+        catch (FormatException)
+        {
+            verification = PasswordVerificationResult.Failed;
+        }
+
+        if (verification == PasswordVerificationResult.Failed)
+        {
+            return BadRequest(new
+            {
+                message = "Mật khẩu hiện tại không đúng."
+            });
+        }
+
+        account.MatKhau = _hasher.HashPassword(
+            new object(),
+            newPassword
+        );
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            success = true,
+            message = "Đổi mật khẩu thành công!"
+        });
+    }
+
 }

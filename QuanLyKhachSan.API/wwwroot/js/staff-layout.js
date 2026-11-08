@@ -1,9 +1,12 @@
 
 "use strict";
 
-document.addEventListener("staff-shell-ready", async () => {
+async function loadStaffLayout() {
     const container = document.getElementById("staffSidebar");
-    if (!container) return;
+
+    if (!container || container.dataset.loaded === "true") return;
+
+    container.dataset.loaded = "true";
 
     try {
         const response = await fetch("/layouts/staff-layout.html", {
@@ -12,15 +15,15 @@ document.addEventListener("staff-shell-ready", async () => {
         });
 
         if (!response.ok) {
-            throw new Error("Không tải được menu nhân viên.");
+            throw new Error("Không tải được giao diện nhân viên.");
         }
 
         container.innerHTML = await response.text();
 
-        const path = location.pathname.toLowerCase();
+        const currentPath = window.location.pathname.toLowerCase();
 
         container.querySelectorAll("nav a").forEach(link => {
-            if (link.pathname.toLowerCase() === path) {
+            if (link.pathname.toLowerCase() === currentPath) {
                 link.classList.add("active");
                 link.setAttribute("aria-current", "page");
             }
@@ -28,26 +31,58 @@ document.addEventListener("staff-shell-ready", async () => {
 
         const logout = container.querySelector("#staffLogout");
 
-        logout?.addEventListener("click", async () => {
-            if (!confirm("Bạn muốn đăng xuất?")) return;
+        if (logout) {
+            logout.addEventListener("click", async () => {
+                if (logout.disabled) return;
 
-            try {
-                const token = await Staff.csrf();
+                logout.disabled = true;
 
-                const result = await fetch("/api/account/logout", {
-                    method: "POST",
-                    credentials: "same-origin",
-                    headers: { "X-CSRF-TOKEN": token }
-                });
+                try {
+                    const tokenResponse = await fetch(
+                        "/api/account/csrf-token",
+                        { credentials: "same-origin" }
+                    );
 
-                if (!result.ok) throw new Error("Đăng xuất thất bại.");
+                    if (!tokenResponse.ok) {
+                        throw new Error("Không lấy được mã bảo vệ.");
+                    }
 
-                location.href = "/login.html";
-            } catch (error) {
-                Staff.notify(error.message, true);
-            }
-        });
+                    const tokenData = await tokenResponse.json();
+
+                    const result = await fetch("/api/account/logout", {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: {
+                            "X-CSRF-TOKEN": tokenData.csrfToken
+                        }
+                    });
+
+                    if (!result.ok) {
+                        const error = await result.json().catch(() => ({}));
+                        throw new Error(
+                            error.message || "Đăng xuất thất bại."
+                        );
+                    }
+
+                    window.location.replace("/login.html");
+                } catch (error) {
+                    logout.disabled = false;
+                    alert(error.message || "Không thể đăng xuất.");
+                }
+            });
+        }
+
+        document.dispatchEvent(new CustomEvent("staff-layout-ready"));
     } catch (error) {
-        Staff.notify(error.message, true);
+        container.dataset.loaded = "false";
+        console.error(error);
+    }
+}
+
+document.addEventListener("staff-shell-ready", loadStaffLayout);
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("staffSidebar")) {
+        loadStaffLayout();
     }
 });

@@ -1,79 +1,708 @@
 
+/* ============================================
+   DNK HOTEL - CUSTOMER PROFILE
+   ============================================ */
+
 .profile-page {
     min-height: 75vh;
-    padding: 65px 20px 100px;
+    padding-bottom: 100px;
     background: #FAF8F5;
+    color: #30251E;
+}
+
+.profile-page *,
+.profile-page *::before,
+.profile-page *::after {
+    box-sizing: border-box;
 }
 
 .profile-container {
-    max-width: 700px;
-    margin: auto;
+    width: min(1200px, calc(100% - 48px));
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.profile-container > span {
+.profile-eyebrow {
+    display: block;
     color: #926024;
-    letter-spacing: 2px;
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2.2px;
 }
 
-.profile-container h1 {
-    font-family: var(--font-heading, "Playfair Display", Georgia, serif);
-    font-size: 43px;
+/* HEADER */
+
+.profile-heading {
+    position: relative;
+    padding: 72px 0 92px;
+    background:
+        radial-gradient(
+            circle at 95% 15%,
+            rgba(190,150,90,.16),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #F6ECDF,
+            #FAF8F5 65%
+        );
+    border-bottom: 1px solid #E8E0D7;
+}
+
+.profile-heading h1 {
+    margin: 15px 0 17px;
+    color: #30251E;
+    font-family: var(--font-heading);
+    font-size: clamp(36px, 4vw, 54px);
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.profile-heading h1 em {
+    color: #926024;
     font-weight: 400;
-    color: #27272A;
-    margin: 16px 0;
 }
 
-.profile-container > p {
+.profile-heading p {
+    max-width: 620px;
+    margin: 0;
     color: #817569;
-    font-size: 14px;
+    font-size: 17px;
+    line-height: 1.85;
+}
+
+/* BỐ CỤC 2 CỘT */
+
+.profile-layout {
+    position: relative;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    align-items: start;
+    gap: 32px;
+    margin-top: -35px;
+}
+
+.profile-sidebar,
+.profile-panel,
+.profile-quick-card {
+    border: 1px solid #E8E0D7;
+    background: #fff;
+    box-shadow: 0 12px 36px rgba(48,37,30,.045);
+}
+
+.profile-sidebar {
+    position: sticky;
+    top: 20px;
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.profile-user-card {
+    padding: 32px 22px 25px;
+    text-align: center;
+    background: linear-gradient(
+        135deg,
+        #FFFFFF,
+        #FAF4EB
+    );
+    border-bottom: 1px solid #E8E0D7;
+}
+
+.profile-avatar {
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 17px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: #926024;
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 33px;
+    box-shadow: 0 7px 20px rgba(146,96,36,.18);
+}
+
+.profile-user-card h2 {
+    margin: 0 0 8px;
+    color: #30251E;
+    font-family: var(--font-heading);
+    font-size: 23px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+}
+
+.profile-user-card p {
+    margin: 0 0 15px;
+    color: #817569;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.profile-member-label {
+    display: inline-block;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: #F3E7D6;
+    color: #926024;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+}
+
+/* MENU */
+
+.profile-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 12px;
+}
+
+.profile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #655B52;
+    font-family: var(--font-body);
+    font-size: 15px;
+    text-decoration: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+}
+
+.profile-nav-item > span:first-child {
+    display: grid;
+    place-items: center;
+    width: 27px;
+    height: 27px;
+    flex: 0 0 27px;
+    color: #926024;
+    font-size: 21px;
+}
+
+.profile-nav-item:hover {
+    background: #FAF4EB;
+    color: #926024;
+}
+
+.profile-nav-item.active {
+    background: #F3E7D6;
+    color: #785324;
+    font-weight: 700;
+}
+
+.profile-nav-arrow {
+    margin-left: auto;
+    color: #926024;
+}
+
+.profile-sidebar-bottom {
+    padding: 24px;
+    border-top: 1px solid #E8E0D7;
+    background: #FCFAF7;
+}
+
+.profile-sidebar-bottom span {
+    color: #926024;
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.profile-sidebar-bottom p {
+    margin: 9px 0 0;
+    color: #817569;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* NỘI DUNG */
+
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    min-width: 0;
+}
+
+.profile-panel {
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.profile-panel[hidden] {
+    display: none !important;
+}
+
+.profile-panel-header {
+    padding: 35px 38px 25px;
+    border-bottom: 1px solid #F0E8DF;
+}
+
+.profile-panel-header h2 {
+    margin: 12px 0;
+    color: #30251E;
+    font-family: var(--font-heading);
+    font-size: clamp(28px, 3vw, 35px);
+    font-weight: 500;
+}
+
+.profile-panel-header p {
+    margin: 0;
+    color: #817569;
+    font-size: 15px;
+    line-height: 1.8;
 }
 
 .profile-card {
-    margin-top: 35px;
-    padding: 38px;
-    border: 1px solid #E5DBCF;
-    background: white;
+    margin: 0;
+    padding: 8px 38px 35px;
+    border: 0;
+    background: #fff;
 }
 
-.profile-card label {
+.profile-form-group h3 {
+    margin: 27px 0 8px;
+    color: #3D3027;
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.profile-form-group > p {
+    margin: 0 0 23px;
+    color: #817569;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.profile-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.profile-field {
+    margin-bottom: 20px;
+    min-width: 0;
+}
+
+.profile-field label {
     display: block;
-    margin: 20px 0 8px;
+    margin-bottom: 10px;
+    color: #493B30;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.profile-field label span {
+    color: #A44336;
+}
+
+.profile-field input,
+.profile-field textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 13px 15px;
+    border: 1px solid #E5DBCF;
+    border-radius: 8px;
+    background: #FFFDFB;
+    color: #30251E;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.profile-field input {
+    min-height: 49px;
+}
+
+.profile-field textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.profile-field input:focus,
+.profile-field textarea:focus {
+    outline: none;
+    border-color: #926024;
+    box-shadow: 0 0 0 3px rgba(146,96,36,.11);
+}
+
+.profile-field input:read-only {
+    background: #F4F1ED;
+    color: #817569;
+    cursor: default;
+}
+
+.profile-form-divider {
+    height: 1px;
+    margin: 10px 0;
+    background: #E8E0D7;
+}
+
+.profile-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding-top: 10px;
+}
+
+.profile-message {
+    flex: 1 1 200px;
+    min-width: 0;
+    margin: 0;
+    color: #817569;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.profile-message.success {
+    color: #28714C;
+}
+
+.profile-message.error {
+    color: #B13D37;
+}
+
+.profile-primary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    min-height: 50px;
+    padding: 13px 26px;
+    border: 1px solid #926024;
+    border-radius: 6px;
+    background: #926024;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+.profile-primary-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: #785324;
+}
+
+.profile-primary-button:disabled {
+    opacity: .65;
+    cursor: wait;
+}
+
+/* ĐỔI MẬT KHẨU */
+
+.profile-show-password {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 20px;
+    color: #5A4A3D;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.profile-show-password input {
+    width: 17px;
+    height: 17px;
+    accent-color: #926024;
+}
+
+.profile-security-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin: 0 0 24px;
+    padding: 17px 20px;
+    border: 1px solid #EBDCC8;
+    border-radius: 8px;
+    background: #FAF4EC;
+}
+
+.profile-security-note > span {
+    color: #926024;
+    font-size: 21px;
+}
+
+.profile-security-note p {
+    margin: 0;
+    color: #756659;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* TIỆN ÍCH NHANH */
+
+.profile-quick-heading h2 {
+    margin: 9px 0 0;
+    font-family: var(--font-heading);
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.profile-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.profile-quick-card {
+    display: block;
+    padding: 23px 19px;
+    border-radius: 13px;
+    color: inherit;
+    text-decoration: none;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.profile-quick-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(48,37,30,.08);
+}
+
+.profile-quick-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    background: #F3E7D6;
+    color: #926024;
+    font-size: 25px;
+}
+
+.profile-quick-card h3 {
+    margin: 0 0 10px;
+    color: #30251E;
+    font-family: var(--font-heading);
+    font-size: 19px;
+    font-weight: 500;
+}
+
+.profile-quick-card p {
+    min-height: 72px;
+    margin: 0 0 15px;
+    color: #817569;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.profile-quick-link {
+    color: #926024;
     font-size: 13px;
     font-weight: 600;
 }
 
-.profile-card input,
-.profile-card textarea {
-    display: block;
+/* RESPONSIVE */
+
+@media (max-width: 1080px) {
+    .profile-layout {
+        grid-template-columns: 245px minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .profile-quick-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-quick-card p {
+        min-height: 0;
+    }
+}
+
+@media (max-width: 800px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+        margin-top: -25px;
+    }
+
+    .profile-sidebar {
+        position: static;
+    }
+
+    .profile-navigation {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .profile-sidebar-bottom {
+        display: none;
+    }
+
+    .profile-content {
+        gap: 25px;
+    }
+}
+
+@media (max-width: 560px) {
+    .profile-container {
+        width: calc(100% - 28px);
+    }
+
+    .profile-page {
+        padding-bottom: 60px;
+    }
+
+    .profile-heading {
+        padding: 53px 0 74px;
+    }
+
+    .profile-heading p {
+        font-size: 15px;
+    }
+
+    .profile-user-card {
+        padding: 23px 18px;
+    }
+
+    .profile-navigation {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-panel-header {
+        padding: 27px 22px 22px;
+    }
+
+    .profile-card {
+        padding: 5px 22px 27px;
+    }
+
+    .profile-form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .profile-form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profile-primary-button {
+        width: 100%;
+    }
+
+    .profile-quick-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .profile-page *,
+    .profile-page *::before,
+    .profile-page *::after {
+        transition: none !important;
+    }
+}
+
+/* ====================================
+   SỞ THÍCH LƯU TRÚ - DNK HOTEL
+   ==================================== */
+
+.profile-field select {
     width: 100%;
-    padding: 13px;
-    border: 1px solid #E4DBCF;
-    border-radius: 3px;
-    font: inherit;
+    min-height: 49px;
+    padding: 12px 15px;
+    border: 1px solid #E5DBCF;
+    border-radius: 8px;
+    background: #FFFDFB;
+    color: #30251E;
+    font-family: var(--font-body);
+    font-size: 16px;
 }
 
-.profile-card input:read-only {
-    background: #F4F1ED;
-    color: #82786D;
+.profile-field select:focus {
+    outline: none;
+    border-color: #926024;
+    box-shadow: 0 0 0 3px rgba(146, 96, 36, .1);
 }
 
-#saveProfile {
-    margin-top: 20px;
-    padding: 14px 25px;
-    border: 0;
-    background: #926024;
-    color: white;
+.preference-hint {
+    margin: 10px 0 0;
+    color: #926024;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.preference-amenities {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0 25px;
+}
+
+.preference-amenity {
+    padding: 17px;
+    border: 1px solid #E8E0D7;
+    border-radius: 12px;
+    background: #FFFDFB;
+    transition: border-color .2s, background .2s;
+}
+
+.preference-amenity.selected {
+    border-color: #926024;
+    background: #FAF2E7;
+}
+
+.preference-amenity label {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin: 0;
+    color: #3E3229;
+    font-size: 15px;
     cursor: pointer;
 }
 
-#profileMessage {
-    font-size: 13px;
-    color: #926024;
+.preference-amenity input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    accent-color: #926024;
 }
 
-@media (max-width: 550px) {
-    .profile-card {
-        padding: 23px;
+.preference-amenity select {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px 12px;
+    border: 1px solid #E5DBCF;
+    border-radius: 7px;
+    background: #fff;
+    color: #30251E;
+    font: inherit;
+}
+
+.preference-amenity select:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.preference-amenity small {
+    display: block;
+    margin: 9px 0 0 29px;
+    color: #817569;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+@media (max-width: 650px) {
+    .preference-amenities {
+        grid-template-columns: 1fr;
     }
 }

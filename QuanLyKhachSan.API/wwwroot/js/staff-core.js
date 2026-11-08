@@ -14,7 +14,8 @@ window.Staff = {
         rooms: "Tình trạng phòng",
         services: "Dịch vụ khách sử dụng",
         invoices: "Hóa đơn",
-        requests: "Yêu cầu khách hàng"
+        requests: "Yêu cầu khách hàng",
+        account: "Tài khoản nhân viên"
     },
 
     el(tag, value = "", className = "") {

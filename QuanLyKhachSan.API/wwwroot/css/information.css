@@ -495,3 +495,1171 @@
     display: block;
     object-fit: cover;
 }
+
+/* ==========================================
+   DNK HOTEL - ABOUT PAGE LUXURY
+   ========================================== */
+
+.about-page {
+    overflow: hidden;
+    background: #FAF8F5;
+}
+
+/* BANNER - THAY ẢNH TẠI ĐÂY */
+
+.about-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 620px;
+    padding: 100px 7%;
+    background-image: url("/images/about/banner.png");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: #fff;
+    text-align: center;
+}
+
+.about-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(30, 23, 17, .42),
+        rgba(30, 23, 17, .20),
+        rgba(30, 23, 17, .35)
+    );
+}
+
+.about-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 850px;
+}
+
+.about-hero-eyebrow {
+    display: inline-block;
+    color: #E9C68F;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 4px;
+}
+
+.about-hero-line {
+    width: 65px;
+    height: 1px;
+    margin: 23px auto;
+    background: #E9C68F;
+}
+
+.about-hero h1 {
+    margin: 0 0 25px;
+    color: #fff;
+    font-size: clamp(42px, 5vw, 70px);
+    font-weight: 500;
+    line-height: 1.22;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+}
+
+.about-hero h1 em {
+    display: block;
+    color: #E9C68F;
+    font-weight: 400;
+}
+
+.about-hero p {
+    max-width: 630px;
+    margin: 0 auto 35px;
+    color: #F9F4EE;
+    font-size: 19px;
+    line-height: 1.85;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.18);
+}
+
+.about-hero-bottom {
+    position: absolute;
+    right: 7%;
+    bottom: 25px;
+    left: 7%;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    color: #E9D9C4;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+/* NÚT BẤM */
+
+.about-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    min-height: 52px;
+    padding: 15px 30px;
+    border: 1px solid #926024;
+    border-radius: 3px;
+    background: #926024;
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background .25s, transform .25s;
+}
+
+.about-btn:hover {
+    transform: translateY(-3px);
+    background: #785324;
+    color: #fff;
+}
+
+.about-btn-dark {
+    margin-top: 18px;
+}
+
+/* BỐ CỤC CHUNG */
+
+.about-section {
+    padding: 110px 0;
+}
+
+.about-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 85px;
+}
+
+.about-content {
+    min-width: 0;
+}
+
+.about-eyebrow {
+    display: block;
+    margin-bottom: 18px;
+    color: #926024;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+}
+
+.about-content h2,
+.about-heading h2 {
+    margin: 0 0 25px;
+    color: #30251E;
+    font-size: clamp(32px, 3.4vw, 47px);
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.about-content h2 em,
+.about-heading h2 em {
+    color: #926024;
+    font-weight: 400;
+}
+
+.about-content p {
+    margin: 0 0 18px;
+    color: #71675E;
+    font-size: 17px;
+    line-height: 1.95;
+}
+
+.about-small-line {
+    width: 65px;
+    height: 2px;
+    margin-bottom: 28px;
+    background: #B88B55;
+}
+
+.about-text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 18px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #926024;
+    color: #926024;
+    font-size: 17px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: gap .25s, color .25s;
+}
+
+.about-text-link:hover {
+    gap: 24px;
+    color: #785324;
+}
+
+/* HÌNH ẢNH */
+
+.about-image-wrap {
+    position: relative;
+    min-height: 480px;
+}
+
+.about-image-wrap > img {
+    display: block;
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 3px;
+}
+
+.about-image-label {
+    position: absolute;
+    right: -22px;
+    bottom: -22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 145px;
+    height: 130px;
+    background: #926024;
+    color: #fff;
+    box-shadow: 0 15px 35px rgba(0,0,0,.12);
+}
+
+.about-image-label span {
+    font-family: var(--font-heading);
+    font-size: 36px;
+    letter-spacing: 3px;
+}
+
+.about-image-label small {
+    font-size: 12px;
+    letter-spacing: 4px;
+}
+
+/* 3 GIÁ TRỊ NỔI BẬT */
+
+.about-values {
+    padding: 105px 0 115px;
+    background: #fff;
+}
+
+.about-heading {
+    max-width: 730px;
+    margin: 0 auto 55px;
+    text-align: center;
+}
+
+.about-heading p {
+    margin: 0;
+    color: #817569;
+    font-size: 17px;
+    line-height: 1.85;
+}
+
+.about-values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+}
+
+.about-value-card {
+    position: relative;
+    min-height: 300px;
+    padding: 40px 32px;
+    border: 1px solid #E8E0D7;
+    border-radius: 3px;
+    background: #FAF8F5;
+    transition: transform .3s, box-shadow .3s;
+}
+
+.about-value-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 18px 40px rgba(48,37,30,.10);
+}
+
+.about-value-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    margin-bottom: 26px;
+    border-radius: 50%;
+    background: #F3E7D6;
+    color: #926024;
+    font-size: 30px;
+}
+
+.about-value-number {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    color: #DDCCB7;
+    font-family: var(--font-heading);
+    font-size: 34px;
+}
+
+.about-value-card h3 {
+    margin: 0 0 15px;
+    color: #30251E;
+    font-size: 24px;
+}
+
+.about-value-card p {
+    margin: 0;
+    color: #817569;
+    font-size: 16px;
+    line-height: 1.85;
+}
+
+/* TRẢI NGHIỆM LƯU TRÚ */
+
+.about-experience {
+    background: #FAF8F5;
+}
+
+.about-check-list {
+    padding: 0;
+    margin: 27px 0;
+    list-style: none;
+}
+
+.about-check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    margin-bottom: 17px;
+    color: #62584F;
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+.about-check-list li span {
+    display: flex;
+    flex: 0 0 26px;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #F3E7D6;
+    color: #926024;
+    font-size: 14px;
+}
+
+.about-image-corner {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 22px;
+    background: rgba(48,37,30,.88);
+    color: #fff;
+}
+
+.about-image-corner span {
+    font-family: var(--font-heading);
+    font-size: 25px;
+}
+
+.about-image-corner small {
+    color: #E9C68F;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+/* LỜI NHẮN */
+
+.about-quote {
+    padding: 85px 20px;
+    background: #F0E7DC;
+    text-align: center;
+}
+
+.about-quote-symbol {
+    display: block;
+    height: 75px;
+    color: #926024;
+    font-family: Georgia, serif;
+    font-size: 110px;
+    line-height: 1;
+}
+
+.about-quote p {
+    max-width: 850px;
+    margin: 0 auto;
+    color: #45382E;
+    font-family: var(--font-heading);
+    font-size: clamp(23px, 3vw, 33px);
+    font-style: italic;
+    line-height: 1.7;
+}
+
+.about-quote-line {
+    width: 55px;
+    height: 2px;
+    margin: 30px auto 18px;
+    background: #926024;
+}
+
+.about-quote strong {
+    color: #926024;
+    font-size: 13px;
+    letter-spacing: 3px;
+}
+
+/* BANNER CUỐI TRANG */
+
+.about-bottom-cta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 80px 20px;
+    background-color: #30251E;
+    background-image: url("/images/about/banner.png");
+    background-size: cover;
+    background-position: center 65%;
+    text-align: center;
+}
+
+.about-bottom-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(35,26,20,.78);
+}
+
+.about-bottom-content {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+}
+
+.about-bottom-content h2 {
+    margin: 20px 0;
+    color: #fff;
+    font-size: clamp(33px, 4vw, 49px);
+}
+
+.about-bottom-content h2 em {
+    display: block;
+    color: #E9C68F;
+    font-weight: 400;
+}
+
+.about-bottom-content p {
+    margin: 0 0 28px;
+    color: #EEE5DA;
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+    .about-split {
+        gap: 35px;
+    }
+
+    .about-section {
+        padding: 75px 0;
+    }
+
+    .about-value-card {
+        padding: 30px 22px;
+    }
+}
+
+@media (max-width: 700px) {
+    .about-hero {
+        min-height: 540px;
+        padding: 90px 6%;
+    }
+
+    .about-hero h1 {
+        font-size: 42px;
+    }
+
+    .about-hero p {
+        font-size: 16px;
+    }
+
+    .about-hero-bottom {
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    .about-split {
+        grid-template-columns: 1fr;
+        gap: 45px;
+    }
+
+    .about-section {
+        padding: 65px 0;
+    }
+
+    .about-image-wrap {
+        min-height: 330px;
+    }
+
+    .about-image-wrap > img {
+        height: 350px;
+    }
+
+    .about-image-label {
+        right: 10px;
+        bottom: -18px;
+        width: 110px;
+        height: 95px;
+    }
+
+    .about-image-label span {
+        font-size: 27px;
+    }
+
+    .about-values {
+        padding: 70px 0;
+    }
+
+    .about-values-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .about-value-card {
+        min-height: unset;
+    }
+
+    .about-heading {
+        margin-bottom: 35px;
+    }
+
+    .about-content h2,
+    .about-heading h2 {
+        font-size: 32px;
+    }
+
+    .about-quote {
+        padding: 65px 20px;
+    }
+
+    .about-quote p {
+        font-size: 24px;
+    }
+
+    .about-bottom-cta {
+        min-height: 370px;
+    }
+
+    .about-bottom-content h2 {
+        font-size: 33px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-page *,
+    .about-page *::before,
+    .about-page *::after {
+        transition-duration: 0.01ms !important;
+    }
+}
+
+
+/* =======================================
+   DNK HOTEL - TRANG TƯ VẤN & HỖ TRỢ
+   ======================================= */
+
+.dnk-contact-page {
+    background: #FAF8F5;
+    overflow: hidden;
+}
+
+.dnk-contact-page em {
+    color: #926024;
+    font-weight: 400;
+}
+
+/* BANNER ĐẦU TRANG */
+
+.dnk-contact-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 540px;
+    padding: 100px 6%;
+    background: #776552
+        url("/images/about/banner.png")
+        center / cover no-repeat;
+    color: #fff;
+    text-align: center;
+}
+
+.dnk-contact-hero-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(40,30,24,.42),
+        rgba(40,30,24,.20),
+        rgba(40,30,24,.35)
+    );
+}
+
+.dnk-contact-hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 790px;
+}
+
+.dnk-contact-kicker {
+    display: block;
+    color: #F5D7A3;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2.8px;
+}
+
+.dnk-contact-rule {
+    display: block;
+    width: 55px;
+    height: 1px;
+    margin: 23px auto;
+    background: #F1D4A0;
+}
+
+.dnk-contact-hero h1 {
+    margin: 0 0 22px;
+    color: #fff;
+    font-size: clamp(40px, 5vw, 68px);
+    font-weight: 500;
+    line-height: 1.2;
+    text-shadow: 0 2px 12px rgba(0,0,0,.2);
+}
+
+.dnk-contact-hero h1 em,
+.dnk-contact-cta h2 em {
+    color: #F1D4A0;
+}
+
+.dnk-contact-hero p {
+    max-width: 650px;
+    margin: 0 auto 32px;
+    color: #FFF9F1;
+    font-size: 18px;
+    line-height: 1.85;
+    text-shadow: 0 2px 7px rgba(0,0,0,.25);
+}
+
+.dnk-contact-hero-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 52px;
+    padding: 13px 27px;
+    border: 1px solid #B38A58;
+    border-radius: 4px;
+    background: #926024;
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background .25s, transform .25s;
+}
+
+.dnk-contact-hero-button:hover {
+    transform: translateY(-3px);
+    background: #785324;
+    color: #fff;
+}
+
+.dnk-contact-hero-caption {
+    position: absolute;
+    right: 5%;
+    bottom: 22px;
+    left: 5%;
+    z-index: 1;
+    color: #F9E7CE;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+/* GIỚI THIỆU */
+
+.dnk-contact-eyebrow {
+    display: block;
+    margin-bottom: 17px;
+    color: #926024;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.dnk-contact-intro {
+    padding: 85px 0 65px;
+}
+
+.dnk-contact-intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 65px;
+}
+
+.dnk-contact-intro h2,
+.dnk-contact-aside h2,
+.dnk-contact-faq h2 {
+    margin: 0;
+    color: #30251E;
+    font-size: clamp(30px, 3.2vw, 43px);
+    line-height: 1.3;
+}
+
+.dnk-contact-intro p,
+.dnk-contact-aside-intro,
+.dnk-contact-faq-grid > div > p {
+    margin: 0;
+    color: #72675E;
+    font-size: 17px;
+    line-height: 1.9;
+}
+
+/* BA THẺ HỖ TRỢ */
+
+.dnk-contact-help {
+    padding: 0 0 90px;
+}
+
+.dnk-contact-help-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.dnk-contact-help-card {
+    padding: 32px 28px;
+    border: 1px solid #E8E0D7;
+    border-radius: 8px;
+    background: #fff;
+    transition: transform .25s, box-shadow .25s;
+}
+
+.dnk-contact-help-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(48,37,30,.09);
+}
+
+.dnk-contact-help-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #F3E7D6;
+    color: #926024;
+    font-size: 29px;
+}
+
+.dnk-contact-help-card h3 {
+    margin: 20px 0 10px;
+    color: #30251E;
+    font-size: 23px;
+}
+
+.dnk-contact-help-card p {
+    margin: 0;
+    color: #817569;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+/* KHU VỰC LIÊN HỆ */
+
+.dnk-contact-main {
+    padding: 90px 0 100px;
+    background: #F2ECE4;
+    scroll-margin-top: 20px;
+}
+
+.dnk-contact-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .85fr)
+                           minmax(0, 1.15fr);
+    align-items: start;
+    gap: 45px;
+}
+
+.dnk-contact-aside {
+    padding-top: 12px;
+}
+
+.dnk-contact-aside h2 {
+    margin-bottom: 22px;
+}
+
+.dnk-contact-aside-intro {
+    margin-bottom: 25px;
+}
+
+.dnk-contact-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid #D8CFC3;
+}
+
+.dnk-contact-info-icon {
+    display: flex;
+    flex: 0 0 43px;
+    align-items: center;
+    justify-content: center;
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    background: #fff;
+    color: #926024;
+    font-size: 23px;
+}
+
+.dnk-contact-info-item h3 {
+    margin: 0 0 6px;
+    color: #382E27;
+    font-size: 19px;
+}
+
+.dnk-contact-info-item p {
+    margin: 0;
+    color: #817569;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* ẢNH SẢNH KHÁCH SẠN */
+
+.dnk-contact-photo {
+    position: relative;
+    height: 255px;
+    margin-top: 35px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #D8C6B0;
+}
+
+.dnk-contact-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s;
+}
+
+.dnk-contact-photo:hover img {
+    transform: scale(1.05);
+}
+
+.dnk-contact-photo-caption {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 28px 22px 20px;
+    background: linear-gradient(
+        transparent,
+        rgba(35,26,20,.85)
+    );
+    color: #fff;
+}
+
+.dnk-contact-photo-caption strong {
+    font-family: var(--font-heading);
+    font-size: 23px;
+    font-weight: 500;
+    letter-spacing: 2px;
+}
+
+.dnk-contact-photo-caption span {
+    color: #F1E6D8;
+    font-size: 14px;
+}
+
+/* BIỂU MẪU LIÊN HỆ */
+
+.dnk-contact-form-panel {
+    padding: 43px;
+    border: 1px solid #E8E0D7;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 18px 45px rgba(48,37,30,.06);
+}
+
+.dnk-contact-form-panel h2 {
+    margin: 0 0 14px;
+    color: #30251E;
+    font-size: clamp(28px, 3vw, 37px);
+}
+
+.dnk-contact-form-desc {
+    margin: 0 0 30px;
+    color: #817569;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.dnk-contact-form-panel .contact-field label {
+    color: #44362D;
+    font-weight: 600;
+}
+
+.dnk-contact-form-panel .contact-field input,
+.dnk-contact-form-panel .contact-field textarea {
+    background: #FDFBF8;
+    border-radius: 5px;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.dnk-contact-form-panel .contact-field input:focus,
+.dnk-contact-form-panel .contact-field textarea:focus {
+    border-color: #926024;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(146,96,36,.12);
+}
+
+.dnk-contact-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    min-height: 50px;
+    padding: 13px 27px;
+    border: 1px solid #926024;
+    border-radius: 4px;
+    background: #926024;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .25s, transform .25s;
+}
+
+.dnk-contact-submit:hover {
+    transform: translateY(-2px);
+    background: #785324;
+}
+
+.dnk-contact-form-panel .contact-note {
+    margin-top: 24px;
+    padding: 13px 16px;
+    border-left: 3px solid #B88B55;
+    background: #FAF5ED;
+    color: #817569;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* CÂU HỎI THƯỜNG GẶP */
+
+.dnk-contact-faq {
+    padding: 100px 0;
+    background: #fff;
+}
+
+.dnk-contact-faq-grid {
+    display: grid;
+    grid-template-columns: .8fr 1.2fr;
+    align-items: start;
+    gap: 75px;
+}
+
+.dnk-contact-faq-grid > div > p {
+    margin-top: 23px;
+}
+
+.dnk-contact-faq-list details {
+    padding: 20px 0;
+    border-bottom: 1px solid #E8E0D7;
+}
+
+.dnk-contact-faq-list details:first-child {
+    border-top: 1px solid #E8E0D7;
+}
+
+.dnk-contact-faq-list summary {
+    position: relative;
+    padding-right: 30px;
+    color: #362C24;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.6;
+    cursor: pointer;
+    list-style: none;
+}
+
+.dnk-contact-faq-list summary::-webkit-details-marker {
+    display: none;
+}
+
+.dnk-contact-faq-list summary::after {
+    content: "+";
+    position: absolute;
+    top: 0;
+    right: 4px;
+    color: #926024;
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.dnk-contact-faq-list details[open] summary::after {
+    content: "−";
+}
+
+.dnk-contact-faq-list summary:focus-visible {
+    outline: 2px solid #926024;
+    outline-offset: 4px;
+}
+
+.dnk-contact-faq-list details p {
+    margin: 15px 0 0;
+    color: #817569;
+    font-size: 16px;
+    line-height: 1.85;
+}
+
+/* BANNER CUỐI TRANG */
+
+.dnk-contact-cta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 390px;
+    padding: 80px 20px;
+    background: #30251E
+        url("/images/contact/room.png")
+        center / cover no-repeat;
+    color: #fff;
+    text-align: center;
+}
+
+.dnk-contact-cta-shade {
+    position: absolute;
+    inset: 0;
+    background: rgba(35,26,20,.60);
+}
+
+.dnk-contact-cta-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+}
+
+.dnk-contact-cta h2 {
+    margin: 20px 0;
+    color: #fff;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1.3;
+}
+
+.dnk-contact-cta p {
+    margin: 0 0 28px;
+    color: #F4E9DC;
+    font-size: 17px;
+    line-height: 1.85;
+}
+
+/* MÁY TÍNH BẢNG */
+
+@media (max-width: 950px) {
+    .dnk-contact-intro-grid,
+    .dnk-contact-layout,
+    .dnk-contact-faq-grid {
+        grid-template-columns: 1fr;
+        gap: 35px;
+    }
+
+    .dnk-contact-form-panel {
+        padding: 35px;
+    }
+
+    .dnk-contact-help-grid {
+        gap: 15px;
+    }
+}
+
+/* ĐIỆN THOẠI */
+
+@media (max-width: 700px) {
+    .dnk-contact-hero {
+        min-height: 480px;
+        padding: 85px 6%;
+    }
+
+    .dnk-contact-hero h1 {
+        font-size: 41px;
+    }
+
+    .dnk-contact-hero p {
+        font-size: 16px;
+    }
+
+    .dnk-contact-hero-caption {
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    .dnk-contact-intro {
+        padding: 60px 0 45px;
+    }
+
+    .dnk-contact-help {
+        padding-bottom: 65px;
+    }
+
+    .dnk-contact-help-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dnk-contact-help-card {
+        padding: 27px;
+    }
+
+    .dnk-contact-main,
+    .dnk-contact-faq {
+        padding: 65px 0;
+    }
+
+    .dnk-contact-form-panel {
+        padding: 27px 20px;
+    }
+
+    .dnk-contact-aside {
+        padding: 0;
+    }
+
+    .dnk-contact-photo {
+        height: 230px;
+    }
+
+    .dnk-contact-faq-grid {
+        gap: 25px;
+    }
+
+    .dnk-contact-cta {
+        min-height: 350px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dnk-contact-page *,
+    .dnk-contact-page *::before,
+    .dnk-contact-page *::after {
+        transition: none !important;
+    }
+}

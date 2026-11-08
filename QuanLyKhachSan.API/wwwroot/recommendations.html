@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Phòng dành cho bạn | DNK Hotel</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="/css/recommendations.css">
+    <link rel="stylesheet" href="/css/customer-layout.css">
+
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+    <script src="/js/customer-layout.js" defer></script>
+    <script src="/js/recommendations.js" defer></script>
+</head>
+
+<body>
+
+    <div id="site-header"></div>
+
+    <main class="profile-page customer-recommendations-page">
+
+        <section class="profile-heading">
+            <div class="profile-container">
+
+                <span class="profile-eyebrow">
+                    DNK HOTEL · TÀI KHOẢN KHÁCH HÀNG
+                </span>
+
+                <h1>
+                    Không gian <em>của bạn</em>
+                </h1>
+
+                <p>
+                    Khám phá những phòng nghỉ phù hợp
+                    với nhu cầu và sở thích lưu trú của bạn.
+                </p>
+
+            </div>
+        </section>
+
+        <div class="profile-container profile-layout">
+
+            <aside id="customerSidebar"
+                   class="profile-sidebar"
+                   aria-label="Menu tài khoản khách hàng">
+            </aside>
+
+            <div class="profile-content">
+
+                <section class="profile-panel">
+
+                    <div class="profile-panel-header">
+
+                        <span class="profile-eyebrow">
+                            DNK HOTEL · GỢI Ý CÁ NHÂN HÓA
+                        </span>
+
+                        <h2>Phòng dành riêng cho bạn</h2>
+
+                        <p>
+                            Hệ thống phân tích sở thích,
+                            ngân sách và nhu cầu lưu trú
+                            để đề xuất loại phòng phù hợp.
+                        </p>
+
+                    </div>
+
+                    <div class="customer-recommendations-content">
+
+                        <div class="recommendations-page">
+
+                            <section class="recommendations-content">
+
+                                <div class="recommendations-container">
+
+                                    <div class="recommendations-search">
+
+                                        <div class="recommendations-search-header">
+
+                                            <span class="recommendations-eyebrow">
+                                                TÌM KIẾM CÁ NHÂN HÓA
+                                            </span>
+
+                                            <h2>
+                                                Chọn thời gian lưu trú
+                                            </h2>
+
+                                        </div>
+
+                                        <form id="recommendationForm"
+                                              class="recommendations-search-form">
+
+                                            <div class="recommendations-form-field">
+
+                                                <label for="recCheckIn">
+                                                    Ngày nhận phòng
+                                                </label>
+
+                                                <input type="date"
+                                                       id="recCheckIn"
+                                                       required>
+
+                                            </div>
+
+                                            <div class="recommendations-form-field">
+
+                                                <label for="recCheckOut">
+                                                    Ngày trả phòng
+                                                </label>
+
+                                                <input type="date"
+                                                       id="recCheckOut"
+                                                       required>
+
+                                            </div>
+
+                                            <button type="submit"
+                                                    id="findRecommendations">
+                                                Tìm phòng phù hợp
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                    <div id="recommendationNotice"
+                                         class="recommendations-notice"
+                                         role="status"
+                                         aria-live="polite">
+                                    </div>
+
+                                    <div class="recommendations-heading">
+
+                                        <div>
+
+                                            <span class="recommendations-eyebrow">
+                                                ĐỀ XUẤT DÀNH CHO BẠN
+                                            </span>
+
+                                            <h2>
+                                                Khám phá phòng nghỉ
+                                            </h2>
+
+                                            <p>
+                                                Các loại phòng được sắp xếp
+                                                theo mức độ phù hợp với
+                                                nhu cầu của bạn.
+                                            </p>
+
+                                        </div>
+
+                                        <a href="/profile.html?tab=preferences"
+                                           class="recommendations-preferences-link">
+                                            Cập nhật sở thích
+                                        </a>
+
+                                    </div>
+
+                                    <div id="recommendationsList"
+                                         class="recommendations-grid">
+                                    </div>
+
+                                    <div class="recommendations-footer">
+
+                                        <p>
+                                            Điểm phù hợp được tính toán
+                                            bởi hệ thống gợi ý DNK Hotel,
+                                            không phải điểm đánh giá
+                                            chất lượng phòng.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <div id="site-footer"></div>
+
+</body>
+</html>

@@ -12,5 +12,127 @@
 </head>
 <body data-page="invoices">
     <div id="staffApp"></div>
+
+    <div id="invoiceDetailModal" class="invoice-modal-overlay" hidden>
+        <div class="invoice-modal">
+            <div class="invoice-modal-header">
+                <h2>Chi tiết hóa đơn</h2>
+                <button type="button" id="closeInvoiceModal" class="invoice-modal-close">×</button>
+            </div>
+
+            <div id="invoicePrintArea" class="invoice-modal-content">
+                <div class="invoice-print-heading">
+                    <h2>DNK HOTEL</h2>
+                    <p>HÓA ĐƠN THANH TOÁN</p>
+                </div>
+
+                <div class="invoice-detail-section">
+                    <h3>Thông tin hóa đơn</h3>
+                    <div class="invoice-detail-grid">
+                        <div><span>Mã hóa đơn</span><strong id="detailInvoiceId">—</strong></div>
+                        <div><span>Mã đặt phòng</span><strong id="detailBookingId">—</strong></div>
+                        <div><span>Ngày lập</span><strong id="detailDate">—</strong></div>
+                        <div><span>Trạng thái</span><strong id="detailStatus">—</strong></div>
+                    </div>
+                </div>
+
+                <div class="invoice-detail-section">
+                    <h3>Thông tin khách hàng</h3>
+                    <div class="invoice-detail-grid">
+                        <div><span>Họ tên</span><strong id="detailCustomer">—</strong></div>
+                        <div><span>Số phòng</span><strong id="detailRoom">—</strong></div>
+                        <div><span>Ngày nhận phòng</span><strong id="detailCheckIn">—</strong></div>
+                        <div><span>Ngày trả phòng</span><strong id="detailCheckOut">—</strong></div>
+                    </div>
+                </div>
+                
+                <div class="invoice-detail-section">
+                    <h3>Phòng đã đặt</h3>
+                    <div class="invoice-table-wrapper">
+                        <table class="invoice-payment-table">
+                            <thead>
+                                <tr>
+                                    <th>Số phòng</th>
+                                    <th>Tầng</th>
+                                    <th>Số đêm</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoiceRoomDetails">
+                                <tr>
+                                    <td colspan="4">Chưa có dữ liệu.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="invoice-detail-section">
+                    <h3>Dịch vụ đã sử dụng</h3>
+                    <div class="invoice-table-wrapper">
+                        <table class="invoice-payment-table">
+                            <thead>
+                                <tr>
+                                    <th>Dịch vụ</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                    <th>Thời gian</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoiceServiceDetails">
+                                <tr>
+                                    <td colspan="5">Chưa có dịch vụ.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="invoice-detail-section">
+                    <h3>Chi tiết thanh toán</h3>
+                    <div class="invoice-detail-grid">
+                        <div><span>Tiền phòng</span><strong id="detailRoomAmount">—</strong></div>
+                        <div><span>Tiền dịch vụ</span><strong id="detailServiceAmount">—</strong></div>
+                        <div><span>Tiền đặt cọc</span><strong id="detailDeposit">—</strong></div>
+                        <div><span>Giảm giá</span><strong id="detailDiscount">—</strong></div>
+                        <div><span>Tổng tiền</span><strong id="detailTotal">—</strong></div>
+                        <div><span>Đã thanh toán</span><strong id="detailPaid">—</strong></div>
+                        <div><span>Còn phải trả</span><strong id="detailRemaining">—</strong></div>
+                    </div>
+                </div>
+
+                <div class="invoice-detail-section">
+                    <h3>Lịch sử thanh toán</h3>
+                    <div class="invoice-table-wrapper">
+                        <table class="invoice-payment-table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày thanh toán</th>
+                                    <th>Phương thức</th>
+                                    <th>Số tiền</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoicePaymentHistory">
+                                <tr>
+                                    <td colspan="4">Chưa có dữ liệu thanh toán.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="invoice-modal-footer">
+                <button type="button" id="printInvoiceButton" class="staff-primary-button">
+                    In hóa đơn
+                </button>
+                <button type="button" id="closeInvoiceModalFooter" class="staff-secondary-button">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

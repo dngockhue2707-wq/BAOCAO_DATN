@@ -1,6 +1,143 @@
 
 "use strict";
 
+
+async function loadRoomReviews(roomTypeId) {
+    const averageElement =
+        document.getElementById("roomReviewAverage");
+
+    const starsElement =
+        document.getElementById("roomReviewStars");
+
+    const totalElement =
+        document.getElementById("roomReviewTotal");
+
+    const listElement =
+        document.getElementById("roomReviewsList");
+
+    if (!averageElement || !starsElement ||
+        !totalElement || !listElement) {
+        return;
+    }
+
+    function createElement(tag, text, className = "") {
+        const element = document.createElement(tag);
+        element.textContent = String(text ?? "");
+        if (className) element.className = className;
+        return element;
+    }
+
+    try {
+        const response = await fetch(
+            `/api/reviews/room-type/${roomTypeId}`,
+            {
+                credentials: "same-origin",
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Không thể tải đánh giá.");
+        }
+
+        const data = await response.json();
+        const reviews = data.danhSach || [];
+
+        listElement.replaceChildren();
+
+        if (!reviews.length) {
+            averageElement.textContent = "—";
+            starsElement.textContent = "☆☆☆☆☆";
+            totalElement.textContent = "Chưa có đánh giá";
+
+            listElement.appendChild(
+                createElement(
+                    "p",
+                    "Chưa có nhận xét nào cho loại phòng này.",
+                    "detail-review-empty"
+                )
+            );
+            return;
+        }
+
+        const average = Number(data.diemTrungBinh) || 0;
+
+        averageElement.textContent =
+            average.toFixed(1);
+
+        const rounded = Math.round(average);
+
+        starsElement.textContent =
+            "★".repeat(rounded) +
+            "☆".repeat(5 - rounded);
+
+        totalElement.textContent =
+            `${data.tongDanhGia} đánh giá từ khách lưu trú`;
+
+        reviews.forEach(review => {
+            const card = createElement(
+                "article",
+                "",
+                "detail-review-card"
+            );
+
+            const header = createElement(
+                "div",
+                "",
+                "detail-review-card-header"
+            );
+
+            const name = createElement(
+                "strong",
+                review.hoTen || "Khách lưu trú"
+            );
+
+            const rating = Math.max(
+                0,
+                Math.min(5, Number(review.soSao) || 0)
+            );
+
+            const stars = createElement(
+                "span",
+                "★".repeat(rating) +
+                "☆".repeat(5 - rating),
+                "detail-review-card-stars"
+            );
+
+            header.append(name, stars);
+
+            const date = createElement(
+                "p",
+                review.ngayDanhGia
+                    ? new Date(review.ngayDanhGia)
+                        .toLocaleDateString("vi-VN")
+                    : "",
+                "detail-review-date"
+            );
+
+            const content = createElement(
+                "p",
+                review.noiDung || "Không có nhận xét.",
+                "detail-review-content"
+            );
+
+            card.append(header, date, content);
+            listElement.appendChild(card);
+        });
+
+    } catch (error) {
+        totalElement.textContent = "Không thể tải đánh giá";
+
+        listElement.replaceChildren(
+            createElement(
+                "p",
+                error.message,
+                "detail-review-empty"
+            )
+        );
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
     const id = Number(params.get("id"));
@@ -99,6 +236,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         document.getElementById("bookRoomButton").href =
             `/booking.html?roomId=${room.maLoaiPhong}`;
+
+        await loadRoomReviews(room.maLoaiPhong);
 
     } catch (error) {
         setText("roomMessage", error.message);

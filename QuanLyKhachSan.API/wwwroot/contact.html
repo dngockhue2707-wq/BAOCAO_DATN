@@ -4,10 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Tư vấn phòng nghỉ, hỗ trợ đặt phòng và giải đáp thắc mắc tại DNK Hotel.">
     <title>Tư vấn & Hỗ trợ | DNK Hotel</title>
-    <meta name="description" content="Liên hệ và gửi yêu cầu hỗ trợ đến DNK Hotel.">
+
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/information.css">
+
     <script src="/js/layout.js" defer></script>
     <script src="/js/account-nav.js" defer></script>
     <script src="/js/contact.js" defer></script>
@@ -15,126 +18,398 @@
 <body>
     <div id="site-header"></div>
 
-    <main class="info-page">
-        <section class="info-hero">
-            <div class="info-container">
-                <span class="info-eyebrow">KẾT NỐI VỚI CHÚNG TÔI</span>
-                <h1>Tư vấn <em>& Hỗ trợ</em></h1>
+    <main class="info-page dnk-contact-page">
+
+        <!-- BANNER -->
+        <section class="dnk-contact-hero">
+            <div class="dnk-contact-hero-shade"></div>
+
+            <div class="info-container dnk-contact-hero-inner">
+                <span class="dnk-contact-kicker">
+                    DNK HOTEL · ĐỒNG HÀNH CÙNG BẠN
+                </span>
+
+                <span class="dnk-contact-rule"></span>
+
+                <h1>
+                    Tư vấn & <em>Hỗ trợ</em>
+                </h1>
+
                 <p>
-                    Bạn cần tư vấn phòng nghỉ, dịch vụ
-                    hoặc hỗ trợ đặt phòng? Hãy liên hệ với chúng tôi.
+                    Chúng tôi sẵn sàng tiếp nhận những thắc mắc
+                    về phòng nghỉ, dịch vụ và hành trình lưu trú
+                    của bạn.
+                </p>
+
+                <a href="#lien-he"
+                   class="dnk-contact-hero-button">
+                    Gửi thông tin cần hỗ trợ
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+
+            <span class="dnk-contact-hero-caption">
+                DNK HOTEL · TẬN TÂM TRONG TỪNG TRẢI NGHIỆM
+            </span>
+        </section>
+
+        <!-- GIỚI THIỆU -->
+        <section class="dnk-contact-intro">
+            <div class="info-container dnk-contact-intro-grid">
+
+                <div>
+                    <span class="dnk-contact-eyebrow">
+                        KẾT NỐI VỚI CHÚNG TÔI
+                    </span>
+
+                    <h2>
+                        Mọi thắc mắc đều
+                        <em>đáng được lắng nghe</em>
+                    </h2>
+                </div>
+
+                <p>
+                    Từ việc lựa chọn loại phòng phù hợp
+                    đến tìm hiểu dịch vụ và thông tin đặt phòng,
+                    DNK Hotel mong muốn giúp bạn chuẩn bị
+                    chuyến đi thuận tiện hơn.
+                    Hãy chia sẻ nội dung cần hỗ trợ
+                    qua biểu mẫu bên dưới.
                 </p>
             </div>
         </section>
 
-        <section class="info-section">
-            <div class="info-container contact-grid">
-                <aside class="contact-details">
-                    <span class="info-eyebrow">THÔNG TIN KHÁCH SẠN</span>
-                    <h2>Thông tin hỗ trợ</h2>
+        <!-- NHỮNG NỘI DUNG HỖ TRỢ -->
+        <section class="dnk-contact-help">
+            <div class="info-container dnk-contact-help-grid">
 
-                    <div class="contact-item">
-                        <h3>Địa chỉ</h3>
-                        <p>Đang cập nhật địa chỉ khách sạn.</p>
-                    </div>
+                <article class="dnk-contact-help-card">
+                    <span class="dnk-contact-help-icon"
+                          aria-hidden="true">✧</span>
 
-                    <div class="contact-item">
-                        <h3>Số điện thoại</h3>
-                        <p>Đang cập nhật số điện thoại.</p>
-                    </div>
+                    <h3>Tư vấn phòng nghỉ</h3>
 
-                    <div class="contact-item">
-                        <h3>Email</h3>
-                        <p>Đang cập nhật email liên hệ.</p>
-                    </div>
+                    <p>
+                        Tìm hiểu các loại phòng, tiện nghi
+                        và lựa chọn phù hợp với
+                        nhu cầu lưu trú.
+                    </p>
+                </article>
 
-                    <div class="contact-item">
-                        <h3>Hỗ trợ khách hàng</h3>
-                        <p>
-                            Thông tin về phòng nghỉ, đặt phòng,
-                            dịch vụ và các yêu cầu trong thời gian lưu trú.
+                <article class="dnk-contact-help-card">
+                    <span class="dnk-contact-help-icon"
+                          aria-hidden="true">◇</span>
+
+                    <h3>Hỗ trợ đặt phòng</h3>
+
+                    <p>
+                        Giải đáp thắc mắc về việc
+                        tìm phòng, đặt phòng
+                        và theo dõi đơn của bạn.
+                    </p>
+                </article>
+
+                <article class="dnk-contact-help-card">
+                    <span class="dnk-contact-help-icon"
+                          aria-hidden="true">♡</span>
+
+                    <h3>Thông tin dịch vụ</h3>
+
+                    <p>
+                        Tìm hiểu các dịch vụ bổ sung
+                        và những thông tin hữu ích
+                        trong thời gian lưu trú.
+                    </p>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- THÔNG TIN & BIỂU MẪU -->
+        <section class="dnk-contact-main" id="lien-he">
+            <div class="info-container dnk-contact-layout">
+
+                <!-- CỘT TRÁI -->
+                <aside class="dnk-contact-aside">
+
+                    <span class="dnk-contact-eyebrow">
+                        THÔNG TIN LIÊN HỆ
+                    </span>
+
+                    <h2>Chúng tôi luôn mong được lắng nghe</h2>
+             
+                        <p class="dnk-contact-aside-intro">
+                            DNK Hotel luôn mong muốn mang đến cho
+                            quý khách trải nghiệm lưu trú thoải mái
+                            và thuận tiện. Đội ngũ hỗ trợ sẵn sàng
+                            tư vấn thông tin phòng nghỉ, hướng dẫn
+                            đặt phòng và giải đáp những thắc mắc
+                            trong quá trình sử dụng dịch vụ.
                         </p>
+
+                    <div class="dnk-contact-info-list">
+
+                        <div class="dnk-contact-info-item">
+                            <div class="dnk-contact-info-icon"
+                                aria-hidden="true">⌖</div>
+
+                            <div>
+                                <h3>Địa chỉ khách sạn</h3>
+                                <p>
+                                    Thành phố Hồ Chí Minh.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="dnk-contact-info-item">
+                            <div class="dnk-contact-info-icon"
+                                aria-hidden="true">☎</div>
+
+                            <div>
+                                <h3>Số điện thoại</h3>
+                                <p>
+                                    0900 123 456
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="dnk-contact-info-item">
+                            <div class="dnk-contact-info-icon"
+                                aria-hidden="true">✉</div>
+
+                            <div>
+                                <h3>Thư điện tử</h3>
+                                <p>
+                                    lienhe@dnkhotel.example
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="dnk-contact-info-item">
+                            <div class="dnk-contact-info-icon"
+                                aria-hidden="true">◷</div>
+
+                            <div>
+                                <h3>Thời gian hỗ trợ</h3>
+                                <p>
+                                    Từ 07:00 đến 22:00 mỗi ngày,
+                                    bao gồm cuối tuần và ngày lễ.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="dnk-contact-photo">
+                        <img src="/images/about/lobby.png"
+                             alt="Không gian sảnh DNK Hotel"
+                             loading="lazy">
+
+                        <div class="dnk-contact-photo-caption">
+                            <strong>DNK HOTEL</strong>
+                            <span>
+                                Trải nghiệm lưu trú thoải mái
+                                và tiện nghi
+                            </span>
+                        </div>
                     </div>
                 </aside>
 
-                <section class="contact-form">
-                    <span class="info-eyebrow">GỬI YÊU CẦU</span>
+                <!-- CỘT PHẢI -->
+                <section class="dnk-contact-form-panel">
+
+                    <span class="dnk-contact-eyebrow">
+                        CHIA SẺ VỚI CHÚNG TÔI
+                    </span>
+
                     <h2>Gửi yêu cầu hỗ trợ</h2>
 
+                    <p class="dnk-contact-form-desc">
+                        Vui lòng điền đầy đủ những thông tin
+                        dưới đây để chuẩn bị nội dung liên hệ
+                        với khách sạn.
+                    </p>
+
                     <form id="contactForm">
+
                         <div class="contact-fields">
+
                             <div class="contact-field">
-                                <label for="contactName">Họ và tên *</label>
+                                <label for="contactName">
+                                    Họ và tên *
+                                </label>
+
                                 <input
                                     type="text"
                                     id="contactName"
                                     maxlength="100"
                                     autocomplete="name"
-                                    placeholder="Nhập họ và tên"
-                                    required
-                                >
+                                    placeholder="Nhập họ và tên của bạn"
+                                    required>
                             </div>
 
                             <div class="contact-field">
-                                <label for="contactEmail">Email *</label>
+                                <label for="contactEmail">
+                                    Thư điện tử *
+                                </label>
+
                                 <input
                                     type="email"
                                     id="contactEmail"
                                     maxlength="254"
                                     autocomplete="email"
-                                    placeholder="Nhập email"
-                                    required
-                                >
+                                    placeholder="Nhập địa chỉ thư điện tử"
+                                    required>
                             </div>
                         </div>
 
                         <div class="contact-field">
-                            <label for="contactSubject">Chủ đề *</label>
+                            <label for="contactSubject">
+                                Chủ đề cần hỗ trợ *
+                            </label>
+
                             <input
                                 type="text"
                                 id="contactSubject"
                                 maxlength="150"
-                                placeholder="Nhập chủ đề cần hỗ trợ"
-                                required
-                            >
+                                placeholder="Ví dụ: Tư vấn đặt phòng"
+                                required>
                         </div>
 
                         <div class="contact-field">
-                            <label for="contactContent">Nội dung *</label>
+                            <label for="contactContent">
+                                Nội dung yêu cầu *
+                            </label>
+
                             <textarea
                                 id="contactContent"
                                 maxlength="3000"
-                                placeholder="Nhập nội dung yêu cầu của bạn"
-                                required
-                            ></textarea>
+                                placeholder="Hãy mô tả chi tiết nội dung bạn cần hỗ trợ..."
+                                required></textarea>
                         </div>
 
-                        <button type="submit" class="info-button">
+                        <button type="submit"
+                                class="dnk-contact-submit">
                             Gửi yêu cầu
+                            <span aria-hidden="true">→</span>
                         </button>
 
-                        <p class="contact-note">
-                            Biểu mẫu hiện hỗ trợ soạn và sao chép
-                            nội dung. Yêu cầu chưa được gửi đến
-                            khách sạn hoặc lưu vào hệ thống.
-                        </p>
-
-                        <p id="contactMessage" role="status" aria-live="polite"></p>
+                        <p id="contactMessage"
+                           role="status"
+                           aria-live="polite"></p>
                     </form>
+
                 </section>
             </div>
         </section>
 
-        <section class="info-cta">
-            <h2>Bạn đang tìm phòng nghỉ?</h2>
-            <p>
-                Khám phá các loại phòng và tìm kiếm phòng trống
-                phù hợp với lịch trình của bạn.
-            </p>
-            <a href="/rooms.html" class="info-button">
-                Xem phòng nghỉ →
-            </a>
+        <!-- CÂU HỎI THƯỜNG GẶP -->
+        <section class="dnk-contact-faq">
+            <div class="info-container dnk-contact-faq-grid">
+
+                <div>
+                    <span class="dnk-contact-eyebrow">
+                        GIẢI ĐÁP THẮC MẮC
+                    </span>
+
+                    <h2>
+                        Câu hỏi
+                        <em>thường gặp</em>
+                    </h2>
+
+                    <p>
+                        Những thông tin hữu ích
+                        giúp bạn tìm hiểu và sử dụng
+                        dịch vụ đặt phòng tại DNK Hotel
+                        thuận tiện hơn.
+                    </p>
+                </div>
+
+                <div class="dnk-contact-faq-list">
+
+                    <details>
+                        <summary>
+                            Làm thế nào để tìm phòng còn trống?
+                        </summary>
+                        <p>
+                            Bạn truy cập mục Tìm phòng,
+                            chọn ngày nhận phòng, ngày trả phòng
+                            và số lượng khách để kiểm tra
+                            các phòng phù hợp.
+                        </p>
+                    </details>
+
+                    <details>
+                        <summary>
+                            Tôi có thể xem lại đơn đặt phòng ở đâu?
+                        </summary>
+                        <p>
+                            Sau khi đăng nhập tài khoản,
+                            bạn vào mục Đơn của tôi
+                            để theo dõi các đơn đặt phòng
+                            và thông tin liên quan.
+                        </p>
+                    </details>
+
+                    <details>
+                        <summary>
+                            Khách sạn có những loại phòng nào?
+                        </summary>
+                        <p>
+                            DNK Hotel có các loại phòng
+                            Tiêu Chuẩn, Cao Cấp, Gia Đình,
+                            Suite và Tổng Thống.
+                            Bạn có thể xem thông tin chi tiết
+                            trong mục Phòng nghỉ.
+                        </p>
+                    </details>
+
+                    <details>
+                        <summary>
+                            Tôi có thể tìm hiểu dịch vụ ở đâu?
+                        </summary>
+                        <p>
+                            Bạn có thể truy cập mục Dịch vụ
+                            trên website để tham khảo
+                            các dịch vụ hiện có,
+                            mô tả và thông tin liên quan.
+                        </p>
+                    </details>
+
+                </div>
+            </div>
         </section>
+
+        <!-- BANNER CUỐI -->
+        <section class="dnk-contact-cta">
+            <div class="dnk-contact-cta-shade"></div>
+
+            <div class="dnk-contact-cta-inner">
+
+                <span class="dnk-contact-kicker">
+                    KHÁM PHÁ DNK HOTEL
+                </span>
+
+                <h2>
+                    Sẵn sàng cho
+                    <em>kỳ nghỉ tiếp theo?</em>
+                </h2>
+
+                <p>
+                    Khám phá hệ thống phòng nghỉ
+                    và lựa chọn không gian lưu trú
+                    phù hợp với kế hoạch của bạn.
+                </p>
+
+                <a href="/rooms.html"
+                   class="dnk-contact-hero-button">
+                    Khám phá phòng nghỉ
+                    <span aria-hidden="true">→</span>
+                </a>
+
+            </div>
+        </section>
+
     </main>
 
     <div id="site-footer"></div>

@@ -106,14 +106,83 @@ public class RoomAvailabilityController : ControllerBase
             })
             .ToListAsync();
 
+        var roomImages = await _db.Set<HinhAnhChiTietPhong>()
+            .AsNoTracking()
+            .OrderByDescending(x => x.AnhDaiDien)
+            .ThenBy(x => x.ThuTuHienThi)
+            .Select(x => new
+            {
+                x.MaPhong,
+                x.DuongDan
+            })
+            .ToListAsync();
+
+        var roomImageLookup = roomImages
+            .Where(x => !string.IsNullOrWhiteSpace(x.DuongDan))
+            .GroupBy(x => x.MaPhong)
+            .ToDictionary(
+                x => x.Key,
+                x => x.First().DuongDan
+            );
+
+        var typeImages = await _db.Set<HinhAnhPhong>()
+            .AsNoTracking()
+            .OrderByDescending(x => x.AnhDaiDien)
+            .ThenBy(x => x.MaHinhAnh)
+            .Select(x => new
+            {
+                x.MaLoaiPhong,
+                x.DuongDan
+            })
+            .ToListAsync();
+
+        var typeImageLookup = typeImages
+            .Where(x => !string.IsNullOrWhiteSpace(x.DuongDan))
+            .GroupBy(x => x.MaLoaiPhong)
+            .ToDictionary(
+                x => x.Key,
+                x => x.First().DuongDan
+            );
+
+        var result = rooms.Select(room =>
+        {
+            roomImageLookup.TryGetValue(
+                room.id,
+                out var roomImage
+            );
+
+            typeImageLookup.TryGetValue(
+                room.roomTypeId,
+                out var typeImage
+            );
+
+            return new
+            {
+                room.id,
+                room.roomNumber,
+                room.floor,
+                room.roomTypeId,
+                room.roomTypeName,
+                room.pricePerNight,
+                room.adultCapacity,
+                room.childCapacity,
+                room.area,
+                room.description,
+                room.nights,
+                room.estimatedTotal,
+                hinhAnh = roomImage ?? typeImage ?? ""
+            };
+        }).ToList();
+
         return Ok(new
         {
             success = true,
             checkIn,
             checkOut,
             nights,
-            availableCount = rooms.Count,
-            rooms
+            availableCount = result.Count,
+            rooms = result
         });
+
     }
 }

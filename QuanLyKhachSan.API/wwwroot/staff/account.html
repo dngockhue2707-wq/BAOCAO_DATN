@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài khoản nhân viên | DNK Hotel</title>
+    <link rel="stylesheet" href="/css/staff.css">
+    <link rel="stylesheet" href="/css/staff-account.css">
+
+    <script src="/js/staff-layout.js" defer></script>
+    <script src="/js/staff-core.js" defer></script>
+    <script src="/js/staff-account.js" defer></script>
+</head>
+<body data-page="account">
+    <div id="staffApp"></div>
+
+    <div id="staffAccountPage" class="staff-account-page" hidden>
+        <div class="staff-account-intro">
+            <h2>Thông tin tài khoản</h2>
+            <p>Quản lý hồ sơ cá nhân và bảo mật tài khoản nhân viên DNK Hotel.</p>
+        </div>
+
+        <div id="staffAccountMessage"
+             class="staff-account-message"
+             role="status"
+             aria-live="polite"
+             hidden></div>
+
+        <section class="staff-account-card">
+            <div class="staff-account-card-header">
+                <h3>Hồ sơ nhân viên</h3>
+                <p>Thông tin quản lý được hiển thị theo tài khoản đang đăng nhập.</p>
+            </div>
+
+            <div class="staff-account-grid">
+                <div class="staff-account-field">
+                    <span>Mã nhân viên</span>
+                    <strong id="staffAccountId">—</strong>
+                </div>
+
+                <div class="staff-account-field">
+                    <span>Tên đăng nhập</span>
+                    <strong id="staffAccountUsername">—</strong>
+                </div>
+
+                <div class="staff-account-field">
+                    <span>Chức vụ</span>
+                    <strong id="staffAccountPosition">—</strong>
+                </div>
+
+                <div class="staff-account-field">
+                    <span>Ngày vào làm</span>
+                    <strong id="staffAccountStartDate">—</strong>
+                </div>
+
+                <div class="staff-account-field">
+                    <span>Trạng thái</span>
+                    <strong id="staffAccountStatus">—</strong>
+                </div>
+
+                <div class="staff-account-field">
+                    <span>Ngày tạo tài khoản</span>
+                    <strong id="staffAccountCreatedAt">—</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="staff-account-card">
+            <div class="staff-account-card-header">
+                <h3>Cập nhật thông tin cá nhân</h3>
+                <p>Bạn có thể chỉnh sửa thông tin liên hệ của mình.</p>
+            </div>
+
+            <form id="staffProfileForm" class="staff-account-form">
+                <div class="staff-account-form-grid">
+                    <div class="staff-account-input-group">
+                        <label for="staffFullName">Họ và tên</label>
+                        <input id="staffFullName"
+                               type="text"
+                               maxlength="100"
+                               autocomplete="name"
+                               required>
+                    </div>
+
+                    <div class="staff-account-input-group">
+                        <label for="staffPhone">Số điện thoại</label>
+                        <input id="staffPhone"
+                               type="tel"
+                               maxlength="20"
+                               autocomplete="tel"
+                               placeholder="Nhập số điện thoại">
+                    </div>
+
+                    <div class="staff-account-input-group">
+                        <label for="staffEmail">Email</label>
+                        <input id="staffEmail"
+                               type="email"
+                               maxlength="150"
+                               autocomplete="email"
+                               placeholder="Nhập email">
+                    </div>
+
+                    <div class="staff-account-input-group">
+                        <label for="staffAddress">Địa chỉ</label>
+                        <input id="staffAddress"
+                               type="text"
+                               maxlength="255"
+                               autocomplete="street-address"
+                               placeholder="Nhập địa chỉ">
+                    </div>
+                </div>
+
+                <div class="staff-account-actions">
+                    <button type="button"
+                            id="staffResetProfile"
+                            class="staff-account-button staff-account-button-outline">
+                        Khôi phục
+                    </button>
+
+                    <button type="submit"
+                            id="staffSaveProfile"
+                            class="staff-account-button staff-account-button-primary">
+                        Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="staff-account-card">
+            <div class="staff-account-card-header">
+                <h3>Đổi mật khẩu</h3>
+                <p>Mật khẩu mới phải có ít nhất 12 ký tự.</p>
+            </div>
+
+            <form id="staffPasswordForm" class="staff-account-form">
+                <div class="staff-account-password-grid">
+                    <div class="staff-account-input-group">
+                        <label for="staffOldPassword">Mật khẩu hiện tại</label>
+                        <input id="staffOldPassword"
+                               type="password"
+                               autocomplete="current-password"
+                               required>
+                    </div>
+
+                    <div class="staff-account-input-group">
+                        <label for="staffNewPassword">Mật khẩu mới</label>
+                        <input id="staffNewPassword"
+                               type="password"
+                               minlength="12"
+                               maxlength="128"
+                               autocomplete="new-password"
+                               required>
+                    </div>
+
+                    <div class="staff-account-input-group">
+                        <label for="staffConfirmPassword">Xác nhận mật khẩu mới</label>
+                        <input id="staffConfirmPassword"
+                               type="password"
+                               minlength="12"
+                               maxlength="128"
+                               autocomplete="new-password"
+                               required>
+                    </div>
+                </div>
+
+                <label class="staff-account-show-password">
+                    <input type="checkbox" id="staffShowPassword">
+                    <span>Hiện mật khẩu</span>
+                </label>
+
+                <div class="staff-account-actions">
+                    <button type="submit"
+                            id="staffChangePassword"
+                            class="staff-account-button staff-account-button-primary">
+                        Đổi mật khẩu
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+</body>
+</html>

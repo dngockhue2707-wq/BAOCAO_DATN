@@ -129,3 +129,89 @@
         padding: 28px 20px;
     }
 }
+
+/* =====================================
+   DNK HOTEL - NEN TRANG DANG KY
+===================================== */
+
+.register-page {
+    position: relative;
+    isolation: isolate;
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 65px 20px;
+
+    background-image:
+        linear-gradient(
+            rgba(30, 22, 16, 0.48),
+            rgba(30, 22, 16, 0.58)
+        ),
+        url("/images/register.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Form dang ky */
+.register-page .register-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 520px;
+    padding: 40px;
+
+    background: rgba(255, 253, 249, 0.97);
+    border: 1px solid rgba(232, 224, 215, 0.8);
+    border-radius: 16px;
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20);
+}
+
+/* Tieu de */
+.register-heading h1 {
+    color: #30251E;
+}
+
+.register-heading > span {
+    color: #926024;
+}
+
+/* O nhap */
+.register-page .register-field input {
+    background: #FFFFFF;
+    border: 1px solid #E8E0D7;
+    border-radius: 7px;
+}
+
+.register-page .register-field input:focus {
+    border-color: #926024;
+    outline: 2px solid rgba(146, 96, 36, 0.15);
+}
+
+/* Nut dang ky */
+.register-page #registerButton {
+    background: #926024;
+    border-radius: 7px;
+    color: white;
+    transition: background 0.2s ease;
+}
+
+.register-page #registerButton:hover {
+    background: #785324;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .register-page {
+        padding: 35px 15px;
+        background-position: center;
+    }
+
+    .register-page .register-card {
+        padding: 28px 22px;
+        border-radius: 12px;
+    }
+}

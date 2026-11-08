@@ -59,7 +59,7 @@ public class StaffOperationsController : ControllerBase
     {
         return (SqlConnection)_db.Database.GetDbConnection();
     }
-
+    
     [HttpGet("rooms")]
     public async Task<IActionResult> Rooms()
     {
@@ -67,51 +67,18 @@ public class StaffOperationsController : ControllerBase
             from room in _db.Set<Phong>()
             join type in _db.Set<LoaiPhong>()
                 on room.MaLoaiPhong equals type.MaLoaiPhong
-            orderby room.SoPhong
+            orderby room.Tang, room.SoPhong
             select new
             {
                 id = room.MaPhong,
                 number = room.SoPhong,
+                floor = room.Tang,
                 type = type.TenLoaiPhong,
                 status = room.TrangThai
             }
         ).AsNoTracking().ToListAsync();
 
         return Ok(new { items });
-    }
-
-    [HttpPost("rooms/{id:int}/cleaned")]
-    public async Task<IActionResult> MarkCleaned(int id)
-    {
-        if (!await ValidCsrf())
-            return BadRequest(new { message = "Mã bảo vệ không hợp lệ." });
-
-        await using var tx = await _db.Database.BeginTransactionAsync(
-            IsolationLevel.Serializable);
-
-        var room = await _db.Set<Phong>()
-            .FirstOrDefaultAsync(x => x.MaPhong == id);
-
-        if (room == null || room.TrangThai != "Đang dọn")
-            return BadRequest(new { message = "Phòng không ở trạng thái đang dọn." });
-
-        bool occupied = await (
-            from detail in _db.Set<ChiTietDatPhong>()
-            join booking in _db.Set<DatPhong>()
-                on detail.MaDatPhong equals booking.MaDatPhong
-            where detail.MaPhong == id &&
-                  booking.TrangThai == "Đã nhận phòng"
-            select booking.MaDatPhong
-        ).AnyAsync();
-
-        if (occupied)
-            return Conflict(new { message = "Phòng vẫn có khách đang lưu trú." });
-
-        room.TrangThai = "Trống";
-        await _db.SaveChangesAsync();
-        await tx.CommitAsync();
-
-        return Ok(new { message = "Đã hoàn tất dọn phòng." });
     }
 
     [HttpGet("services")]
@@ -283,6 +250,116 @@ public class StaffOperationsController : ControllerBase
         }
     }
 
+    [HttpGet("invoices/{id:int}/detail")]
+    public async Task<IActionResult> InvoiceDetail(int id)
+    {
+        var invoice = await (
+            from hd in _db.Set<HoaDon>()
+            join dp in _db.Set<DatPhong>()
+                on hd.MaDatPhong equals dp.MaDatPhong
+            join kh in _db.Set<KhachHang>()
+                on dp.MaKhachHang equals kh.MaKhachHang
+            where hd.MaHoaDon == id
+            select new
+            {
+                id = hd.MaHoaDon,
+                bookingId = hd.MaDatPhong,
+                customer = kh.HoTen,
+                phone = kh.SoDienThoai,
+                email = kh.Email,
+                date = hd.NgayLap,
+                checkIn = dp.NgayNhanPhong,
+                checkOut = dp.NgayTraPhong,
+                bookingStatus = dp.TrangThai,
+                roomAmount = hd.TienPhong,
+                serviceAmount = hd.TienDichVu,
+                deposit = hd.TienDatCoc,
+                discount = hd.GiamGia,
+                total = hd.TongTien,
+                remaining = hd.SoTienConLai,
+                status = hd.TrangThai,
+                note = hd.GhiChu
+            }
+        ).AsNoTracking().FirstOrDefaultAsync();
+
+        if (invoice == null)
+        {
+            return NotFound(new
+            {
+                message = "Không tìm thấy hóa đơn."
+            });
+        }
+
+        var rooms = await (
+            from detail in _db.Set<ChiTietDatPhong>()
+            join room in _db.Set<Phong>()
+                on detail.MaPhong equals room.MaPhong
+            where detail.MaDatPhong == invoice.bookingId
+            select new
+            {
+                roomNumber = room.SoPhong,
+                floor = room.Tang,
+                quantity = detail.SoDem,
+                amount = detail.ThanhTien
+            }
+        ).AsNoTracking().ToListAsync();
+
+        var services = await (
+            from used in _db.Set<SuDungDichVu>()
+            join service in _db.Set<DichVu>()
+                on used.MaDichVu equals service.MaDichVu
+            where used.MaDatPhong == invoice.bookingId
+            orderby used.ThoiGianSuDung
+            select new
+            {
+                name = service.TenDichVu,
+                quantity = used.SoLuong,
+                unitPrice = used.DonGia,
+                amount = used.ThanhTien,
+                date = used.ThoiGianSuDung
+            }
+        ).AsNoTracking().ToListAsync();
+
+        var payments = await _db.Set<ThanhToan>()
+            .AsNoTracking()
+            .Where(x => x.MaHoaDon == id)
+            .OrderByDescending(x => x.NgayThanhToan)
+            .Select(x => new
+            {
+                id = x.MaThanhToan,
+                amount = x.SoTien,
+                method = x.PhuongThuc,
+                date = x.NgayThanhToan,
+                transactionCode = x.MaGiaoDich,
+                status = x.TrangThai
+            })
+            .ToListAsync();
+
+        var deposits = await _db.Set<DatCoc>()
+            .AsNoTracking()
+            .Where(x => x.MaDatPhong == invoice.bookingId)
+            .OrderByDescending(x => x.NgayDatCoc)
+            .Select(x => new
+            {
+                id = x.MaDatCoc,
+                amount = x.SoTien,
+                method = x.PhuongThuc,
+                date = x.NgayDatCoc,
+                transactionCode = x.MaGiaoDich,
+                status = x.TrangThai
+            })
+            .ToListAsync();
+
+        return Ok(new
+        {
+            invoice,
+            rooms,
+            services,
+            payments,
+            deposits
+        });
+    }
+
     [HttpGet("invoices")]
     public async Task<IActionResult> Invoices()
     {
@@ -436,4 +513,113 @@ public class StaffOperationsController : ControllerBase
             await conn.CloseAsync();
         }
     }
+
+    public sealed class CashPaymentInput
+    {
+        public decimal Amount { get; set; }
+        public string? Note { get; set; }
+    }
+
+    [HttpGet("invoices/{id:int}/payments")]
+    public async Task<IActionResult> InvoicePayments(int id)
+    {
+        var exists = await _db.Set<HoaDon>()
+            .AsNoTracking()
+            .AnyAsync(x => x.MaHoaDon == id);
+
+        if (!exists)
+            return NotFound(new { message = "Không tìm thấy hóa đơn." });
+
+        var items = await _db.Set<ThanhToan>()
+            .AsNoTracking()
+            .Where(x => x.MaHoaDon == id)
+            .OrderByDescending(x => x.NgayThanhToan)
+            .Select(x => new
+            {
+                id = x.MaThanhToan,
+                amount = x.SoTien,
+                method = x.PhuongThuc,
+                date = x.NgayThanhToan,
+                transactionCode = x.MaGiaoDich,
+                status = x.TrangThai
+            })
+            .ToListAsync();
+
+        return Ok(new { items });
+    }
+
+    [HttpPost("invoices/{id:int}/cash-payment")]
+    public async Task<IActionResult> CashPayment(
+        int id,
+        [FromBody] CashPaymentInput input)
+    {
+        if (!await ValidCsrf())
+            return BadRequest(new { message = "Mã bảo vệ không hợp lệ." });
+
+        if (input.Amount <= 0 || input.Amount > 1000000000)
+            return BadRequest(new { message = "Số tiền thanh toán không hợp lệ." });
+
+        if (input.Amount != Math.Round(input.Amount, 2))
+            return BadRequest(new { message = "Số tiền chỉ được có tối đa 2 chữ số thập phân." });
+
+        int? employeeId = await EmployeeId();
+
+        if (!employeeId.HasValue)
+            return BadRequest(new { message = "Không tìm thấy hồ sơ nhân viên." });
+
+        await using var tx = await _db.Database.BeginTransactionAsync(
+            IsolationLevel.Serializable);
+
+        var invoice = await _db.Set<HoaDon>()
+            .FirstOrDefaultAsync(x => x.MaHoaDon == id);
+
+        if (invoice == null)
+            return NotFound(new { message = "Không tìm thấy hóa đơn." });
+
+        if (invoice.TrangThai == "Đã thanh toán" || invoice.SoTienConLai <= 0)
+            return BadRequest(new { message = "Hóa đơn đã được thanh toán đầy đủ." });
+
+        decimal remaining = invoice.SoTienConLai;
+
+        if (input.Amount > remaining)
+            return BadRequest(new
+            {
+                message = $"Số tiền thu không được vượt quá {remaining:N0} VNĐ."
+            });
+
+        var payment = new ThanhToan
+        {
+            MaHoaDon = id,
+            SoTien = input.Amount,
+            PhuongThuc = "Tiền mặt",
+            NgayThanhToan = DateTime.Now,
+            MaGiaoDich = $"CASH-{DateTime.Now:yyyyMMddHHmmss}-{Guid.NewGuid():N}"[..32],
+            TrangThai = "Thành công"
+        };
+
+        invoice.SoTienConLai = remaining - input.Amount;
+        invoice.TrangThai = invoice.SoTienConLai == 0
+            ? "Đã thanh toán"
+            : "Thanh toán một phần";
+
+        invoice.MaNhanVien = employeeId.Value;
+
+        _db.Set<ThanhToan>().Add(payment);
+
+        await _db.SaveChangesAsync();
+        await tx.CommitAsync();
+
+        return Ok(new
+        {
+            success = true,
+            message = invoice.SoTienConLai == 0
+                ? "Đã thanh toán đầy đủ hóa đơn."
+                : "Đã ghi nhận thanh toán một phần.",
+            paymentId = payment.MaThanhToan,
+            amountPaid = input.Amount,
+            remaining = invoice.SoTienConLai,
+            status = invoice.TrangThai
+        });
+    }
+
 }

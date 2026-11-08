@@ -1,0 +1,227 @@
+
+/* DNK HOTEL - CUSTOMER SHARED LAYOUT */
+
+.profile-layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 25px;
+}
+
+.profile-sidebar {
+    min-width: 0;
+}
+
+.profile-navigation {
+    gap: 5px;
+}
+
+.profile-nav-item {
+    line-height: 1.45;
+}
+
+.profile-nav-item span:last-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.customer-reviews-content {
+    padding: 28px 30px 35px;
+}
+
+.customer-reviews-content .reviews-toolbar h2 {
+    margin: 0;
+}
+
+.customer-reviews-content .reviews-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.customer-reviews-content .review-card {
+    padding: 22px;
+}
+
+.customer-reviews-content .review-card h3 {
+    font-size: 22px;
+}
+
+.bookings-account-page .profile-layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+}
+
+.bookings-account-page .profile-panel {
+    min-width: 0;
+}
+
+@media (max-width: 1080px) {
+    .profile-layout,
+    .bookings-account-page .profile-layout {
+        grid-template-columns: 225px minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .customer-reviews-content .reviews-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 800px) {
+    .profile-layout,
+    .bookings-account-page .profile-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .customer-reviews-content {
+        padding: 24px 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    .customer-reviews-content .reviews-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* ============================================
+   DNK HOTEL - CUSTOMER RECOMMENDATIONS
+   ============================================ */
+
+.customer-recommendations-page .profile-content {
+    min-width: 0;
+}
+
+.customer-recommendations-page .profile-panel {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.customer-recommendations-content {
+    padding: 28px 30px 35px;
+}
+
+.customer-recommendations-page .recommendations-page {
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+}
+
+.customer-recommendations-page .recommendations-content {
+    margin: 0;
+    padding: 0;
+    position: static;
+}
+
+.customer-recommendations-page .recommendations-container {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+.customer-recommendations-page .recommendations-search {
+    padding: 25px;
+    border: 1px solid #E8E0D7;
+    border-radius: 13px;
+    background: #FCFAF7;
+    box-shadow: none;
+}
+
+.customer-recommendations-page .recommendations-search-header h2 {
+    margin: 10px 0 22px;
+    font-size: 26px;
+}
+
+.customer-recommendations-page .recommendations-search-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.customer-recommendations-page #findRecommendations {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 48px;
+}
+
+.customer-recommendations-page .recommendations-heading {
+    margin: 35px 0 22px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.customer-recommendations-page .recommendations-heading h2 {
+    font-size: 28px;
+}
+
+.customer-recommendations-page .recommendations-heading p {
+    font-size: 14px;
+}
+
+.customer-recommendations-page .recommendations-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.customer-recommendations-page .recommendation-card {
+    border-radius: 13px;
+    box-shadow: none;
+}
+
+.customer-recommendations-page .recommendation-card h3 {
+    font-size: 26px;
+}
+
+.customer-recommendations-page .recommendation-card-info {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.customer-recommendations-page .recommendation-card-bottom {
+    flex-wrap: wrap;
+}
+
+.customer-recommendations-page .recommendations-footer {
+    margin-top: 25px;
+}
+
+@media (max-width: 1080px) {
+    .customer-recommendations-content {
+        padding: 24px 20px;
+    }
+
+    .customer-recommendations-page .recommendation-card-info {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .customer-recommendations-content {
+        padding: 18px 14px;
+    }
+
+    .customer-recommendations-page .recommendations-search {
+        padding: 20px 15px;
+    }
+
+    .customer-recommendations-page .recommendations-search-form {
+        grid-template-columns: 1fr;
+    }
+
+    .customer-recommendations-page #findRecommendations {
+        grid-column: auto;
+    }
+
+    .customer-recommendations-page .recommendation-card-info {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .customer-recommendations-page .recommendation-card-top {
+        flex-wrap: wrap;
+    }
+
+    .customer-recommendations-page .recommendation-card-bottom {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .customer-recommendations-page .recommendation-view-button {
+        width: 100%;
+    }
+}

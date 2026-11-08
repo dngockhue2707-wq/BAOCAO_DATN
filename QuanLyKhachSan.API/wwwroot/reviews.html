@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Đánh giá phòng | DNK Hotel</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/reviews.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="/css/customer-layout.css">
+
+    <script src="/js/layout.js" defer></script>
+    <script src="/js/account-nav.js" defer></script>
+    <script src="/js/customer-layout.js" defer></script>
+    <script src="/js/reviews.js" defer></script>
+</head>
+
+<body>
+    <div id="site-header"></div>
+
+    <main class="profile-page customer-reviews-page">
+
+        <section class="profile-heading">
+            <div class="profile-container">
+
+                <span class="profile-eyebrow">
+                    DNK HOTEL · TÀI KHOẢN KHÁCH HÀNG
+                </span>
+
+                <h1>Không gian <em>của bạn</em></h1>
+
+                <p>
+                    Quản lý đánh giá và chia sẻ
+                    trải nghiệm lưu trú tại DNK Hotel.
+                </p>
+
+            </div>
+        </section>
+
+        <div class="profile-container profile-layout">
+
+            <aside id="customerSidebar"
+                   class="profile-sidebar"
+                   aria-label="Menu tài khoản khách hàng">
+            </aside>
+
+            <div class="profile-content">
+
+                <section class="profile-panel">
+
+                    <div class="profile-panel-header">
+
+                        <span class="profile-eyebrow">
+                            TRẢI NGHIỆM LƯU TRÚ
+                        </span>
+
+                        <h2>Đánh giá phòng của tôi</h2>
+
+                        <p>
+                            Viết hoặc cập nhật đánh giá
+                            về những loại phòng bạn đã sử dụng.
+                        </p>
+
+                    </div>
+
+                    <div class="customer-reviews-content">
+
+                        <div class="reviews-toolbar">
+
+                            <h2>Phòng đã lưu trú</h2>
+
+                            <a href="/my-bookings.html">
+                                Xem đơn đặt phòng
+                            </a>
+
+                        </div>
+
+                        <p id="reviewsMessage"
+                           role="status">
+                        </p>
+
+                        <div id="reviewsList"
+                             class="reviews-grid">
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+        </div>
+
+    </main>
+
+    <div id="reviewModal"
+         class="review-modal"
+         hidden>
+
+        <div class="review-modal-overlay"></div>
+
+        <div class="review-modal-content"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="reviewModalTitle">
+
+            <button type="button"
+                    id="closeReviewModal"
+                    class="review-close"
+                    aria-label="Đóng">
+                &times;
+            </button>
+
+            <span class="review-eyebrow">
+                DNK HOTEL
+            </span>
+
+            <h2 id="reviewModalTitle">
+                Đánh giá phòng
+            </h2>
+
+            <p id="reviewRoomName"></p>
+
+            <form id="reviewForm">
+
+                <div class="review-rating-area">
+
+                    <p>Đánh giá của bạn</p>
+
+                    <div id="reviewStars"
+                         class="review-stars">
+
+                        <button type="button"
+                                data-rating="1">★</button>
+
+                        <button type="button"
+                                data-rating="2">★</button>
+
+                        <button type="button"
+                                data-rating="3">★</button>
+
+                        <button type="button"
+                                data-rating="4">★</button>
+
+                        <button type="button"
+                                data-rating="5">★</button>
+
+                    </div>
+
+                    <p id="reviewRatingText">
+                        Vui lòng chọn số sao
+                    </p>
+
+                </div>
+
+                <label for="reviewContent">
+                    Nhận xét của bạn
+                </label>
+
+                <textarea
+                    id="reviewContent"
+                    maxlength="1000"
+                    rows="5"
+                    placeholder="Chia sẻ trải nghiệm của bạn về phòng nghỉ, sự tiện nghi và chất lượng phục vụ..."></textarea>
+
+                <div class="review-character-count">
+                    <span id="reviewLength">0</span>/1000 ký tự
+                </div>
+
+                <p id="reviewFormMessage"
+                   role="status">
+                </p>
+
+                <button type="submit"
+                        id="submitReview">
+                    Gửi đánh giá
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+    <div id="site-footer"></div>
+</body>
+</html>
