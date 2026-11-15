@@ -1,0 +1,397 @@
+
+/* ==========================================
+   KS HOTEL - MY BOOKINGS POLISH
+   Giao dien thong tin huy va hoan coc
+   ========================================== */
+
+.bookings-account-page {
+    --booking-brown: #30251e;
+    --booking-gold: #926024;
+    --booking-muted: #817569;
+    --booking-border: #e9dfd3;
+    --booking-cream: #faf8f5;
+}
+
+/* THE DAT PHONG */
+
+.bookings-account-page .my-booking-card {
+    padding: 24px;
+    border: 1px solid var(--booking-border);
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.bookings-account-page .my-booking-info {
+    margin: 20px 0;
+    padding: 20px;
+    gap: 18px 24px;
+    background: #fbf9f6;
+    border: 1px solid #eee6dd;
+    border-radius: 12px;
+}
+
+.bookings-account-page .my-booking-bottom {
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+/* KHUNG TOM TAT HOAN COC */
+
+.bookings-account-page .booking-refund-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin: 22px 0 4px;
+    padding: 20px 22px;
+    background: #faf7f2;
+    border: 1px solid #eadfd1;
+    border-radius: 13px;
+    color: var(--booking-brown);
+}
+
+.bookings-account-page .booking-refund-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 2px;
+}
+
+.bookings-account-page .booking-refund-heading > strong {
+    color: var(--booking-brown);
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* NHAN TRANG THAI */
+
+.bookings-account-page .booking-refund-badge,
+.bookings-account-page .cancellation-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    min-height: 30px;
+    padding: 5px 13px;
+    border-radius: 999px;
+    background: #f2e6d6;
+    color: #81571f;
+    font-family: var(--font-body, Georgia, serif);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: normal;
+    text-align: center;
+}
+
+.bookings-account-page .booking-refund-badge.refunded,
+.bookings-account-page .cancellation-status.refunded {
+    background: #e7f2e8;
+    color: #287345;
+}
+
+.bookings-account-page .booking-refund-badge.waiting,
+.bookings-account-page .cancellation-status.waiting {
+    background: #fff0d9;
+    color: #956019;
+}
+
+.bookings-account-page .booking-refund-badge.rejected,
+.bookings-account-page .cancellation-status.rejected {
+    background: #fbe8e5;
+    color: #a33e32;
+}
+
+.bookings-account-page .booking-refund-badge.no-refund,
+.bookings-account-page .cancellation-status.no-refund {
+    background: #eee9e3;
+    color: #6e6055;
+}
+
+/* CAC DONG TIEN HOAN */
+
+.bookings-account-page .booking-refund-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    width: 100%;
+    padding: 2px 0;
+}
+
+.bookings-account-page .booking-refund-row > span {
+    color: #796b5f;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.bookings-account-page .booking-refund-row > strong {
+    color: var(--booking-brown);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.6;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.bookings-account-page .booking-refund-row
+.booking-refund-emphasis {
+    color: var(--booking-gold);
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.bookings-account-page .booking-refund-description {
+    margin: 3px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid #e7dbce;
+    color: #817569;
+    font-size: 13px;
+    line-height: 1.75;
+}
+
+/* HOVER NHE */
+
+.bookings-account-page .my-booking-card {
+    transition: border-color .2s ease,
+                box-shadow .2s ease;
+}
+
+.bookings-account-page .my-booking-card:hover {
+    border-color: #d8c3aa;
+    box-shadow: 0 10px 26px rgba(48, 37, 30, .045);
+}
+
+/* CUA SO XEM CHI TIET */
+
+.booking-detail-panel {
+    width: min(780px, 100%);
+    max-height: min(86vh, 900px);
+    border-radius: 16px;
+}
+
+.booking-detail-header {
+    padding: 22px 28px;
+}
+
+.booking-detail-body {
+    padding: 8px 28px 25px;
+}
+
+.booking-detail-section {
+    padding: 19px 0;
+}
+
+.booking-detail-section h3 {
+    margin-bottom: 16px;
+    font-size: 23px;
+}
+
+.booking-detail-grid {
+    gap: 15px 26px;
+}
+
+.booking-detail-field {
+    gap: 5px;
+}
+
+.booking-detail-field strong {
+    line-height: 1.5;
+}
+
+/* THONG TIN HOAN COC TRONG MODAL */
+
+.booking-cancellation-detail {
+    margin-top: 2px;
+}
+
+.booking-detail-refund-state {
+    margin-bottom: 20px;
+    padding: 17px 20px;
+    border: 1px solid #e8ddcf;
+    border-radius: 12px;
+    background: #faf7f2;
+}
+
+.booking-detail-refund-state > strong {
+    display: block;
+    color: #926024;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.booking-detail-refund-state > p {
+    margin: 8px 0 0;
+    color: #817569;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.booking-detail-refund-state.refunded {
+    background: #f0f7f0;
+    border-color: #d6ead9;
+}
+
+.booking-detail-refund-state.refunded > strong {
+    color: #287345;
+}
+
+.booking-detail-refund-state.no-refund {
+    background: #f5f2ee;
+    border-color: #e7e0d8;
+}
+
+.booking-detail-refund-state.no-refund > strong {
+    color: #6e6055;
+}
+
+.booking-detail-refund-state.rejected {
+    background: #fff4f2;
+    border-color: #f1d9d4;
+}
+
+.booking-detail-refund-state.rejected > strong {
+    color: #a33e32;
+}
+
+/* DANH SACH YEU CAU HUY */
+
+.bookings-account-page .cancellation-list {
+    gap: 16px;
+}
+
+.bookings-account-page .cancellation-card-new {
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid var(--booking-border);
+    border-radius: 13px;
+}
+
+.bookings-account-page .cancellation-card-top {
+    margin-bottom: 18px;
+}
+
+.bookings-account-page .cancellation-request-code {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--booking-gold);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+}
+
+.bookings-account-page .cancellation-card h3 {
+    color: var(--booking-brown);
+    font-family: var(--font-heading, Georgia, serif);
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.bookings-account-page .cancellation-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 22px;
+    padding: 18px;
+    margin: 0 0 16px;
+    background: #faf8f5;
+    border: 1px solid #eee6de;
+    border-radius: 11px;
+}
+
+.bookings-account-page .cancellation-info-field {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 6px;
+}
+
+.bookings-account-page .cancellation-info-field span {
+    color: #817569;
+    font-size: 12px;
+}
+
+.bookings-account-page .cancellation-info-field strong {
+    color: #30251e;
+    font-size: 15px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.bookings-account-page .cancellation-note-box,
+.bookings-account-page .cancellation-processing-note {
+    padding: 15px 17px;
+    margin-top: 12px;
+    border-radius: 10px;
+    background: #faf8f5;
+}
+
+.bookings-account-page .cancellation-note-box strong,
+.bookings-account-page .cancellation-processing-note strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #785324;
+    font-size: 13px;
+}
+
+.bookings-account-page .cancellation-note-box p,
+.bookings-account-page .cancellation-processing-note p {
+    margin: 0;
+    color: #675a50;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.bookings-account-page .cancellation-state-description {
+    margin: 14px 0 0;
+    color: #817569;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+    .bookings-account-page .booking-refund-summary {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .bookings-account-page .booking-refund-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .bookings-account-page .booking-refund-heading > strong {
+        font-size: 18px;
+    }
+
+    .bookings-account-page .booking-refund-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .bookings-account-page .booking-refund-row > strong {
+        text-align: left;
+    }
+
+    .bookings-account-page .cancellation-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-detail-header {
+        padding: 18px;
+    }
+
+    .booking-detail-body {
+        padding: 8px 18px 20px;
+    }
+
+    .booking-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}

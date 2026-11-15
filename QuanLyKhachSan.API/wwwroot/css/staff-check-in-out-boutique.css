@@ -1,0 +1,282 @@
+
+body[data-page="check-in-out"] {
+    background: #FAF8F5;
+}
+
+body[data-page="check-in-out"] .staff-main {
+    padding-top: 24px;
+}
+
+body[data-page="check-in-out"] .staff-heading {
+    margin: 0 0 16px;
+    padding: 0;
+    border: 0;
+}
+
+body[data-page="check-in-out"] .staff-heading > span {
+    color: #926024;
+    font-size: 10px;
+    letter-spacing: 1.8px;
+}
+
+body[data-page="check-in-out"] .staff-heading h1 {
+    margin: 6px 0 0;
+    color: #35291F;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+}
+
+body[data-page="check-in-out"] .staff-heading p,
+body[data-page="check-in-out"] .staff-message:empty {
+    display: none;
+}
+
+.sc-page,
+.sc-page * {
+    box-sizing: border-box;
+}
+
+.sc-page {
+    width: 100%;
+    min-width: 0;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.sc-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px;
+    margin-bottom: 17px;
+}
+
+.sc-stat {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 93px;
+    min-width: 0;
+    padding: 17px;
+    border: 1px solid #E9DFD2;
+    border-radius: 10px;
+    background: #FFFFFF;
+}
+
+.sc-stat-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 22px;
+}
+
+.sc-stat-icon.arrival {
+    color: #B5791E;
+    background: #FFF0D7;
+}
+
+.sc-stat-icon.staying {
+    color: #397E56;
+    background: #E4F3E9;
+}
+
+.sc-stat-icon.checkout {
+    color: #9B6438;
+    background: #F7EBDF;
+}
+
+.sc-stat strong {
+    display: block;
+    color: #35291F;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 29px;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.sc-stat small {
+    display: block;
+    margin-top: 6px;
+    color: #817569;
+    font-size: 13px;
+}
+
+.sc-panel {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #E9DFD2;
+    border-radius: 11px;
+    background: #FFFFFF;
+}
+
+.sc-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #F0E9E1;
+}
+
+.sc-panel-head h2 {
+    margin: 0;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 21px;
+    color: #35291F;
+}
+
+.sc-panel-count,
+.sc-result {
+    color: #938679;
+    font-size: 13px;
+}
+
+.sc-filters {
+    display: flex;
+    gap: 11px;
+    margin-bottom: 12px;
+}
+
+.sc-filters input,
+.sc-filters select {
+    min-width: 0;
+    min-height: 43px;
+    padding: 10px 13px;
+    border: 1px solid #E9DFD2;
+    border-radius: 7px;
+    background: #FBF9F6;
+    color: #35291F;
+    font-size: 14px;
+}
+
+.sc-filters input {
+    flex: 1;
+}
+
+.sc-filters select {
+    flex: 0 0 190px;
+    background: #FFFFFF;
+}
+
+.sc-result {
+    margin: 0 0 13px;
+}
+
+.sc-panel .staff-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #E9DFD2;
+    border-radius: 8px;
+}
+
+.sc-panel .staff-table {
+    width: 100%;
+    min-width: 780px;
+    border-collapse: collapse;
+}
+
+.sc-panel .staff-table th {
+    padding: 13px 12px;
+    background: #F8F3EC;
+    border-bottom: 1px solid #E9DFD2;
+    color: #776A5E;
+    font-size: 12px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.sc-panel .staff-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #F0E9E1;
+    color: #403830;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.sc-panel .staff-table tbody tr:hover {
+    background: #FDFBF8;
+}
+
+.sc-id {
+    color: #926024;
+}
+
+.sc-customer {
+    color: #35291F;
+}
+
+.sc-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.sc-status.confirmed {
+    color: #337B55;
+    background: #E4F3E9;
+}
+
+.sc-status.deposit {
+    color: #3B5EA5;
+    background: #E5ECFF;
+}
+
+.sc-status.occupied {
+    color: #926024;
+    background: #F7EADB;
+}
+
+.sc-status.neutral {
+    color: #77716B;
+    background: #F1EFEC;
+}
+
+.sc-actions {
+    display: flex;
+    gap: 7px;
+}
+
+.sc-button {
+    min-height: 35px;
+    padding: 8px 14px;
+    border: 1px solid #926024;
+    border-radius: 6px;
+    background: #926024;
+    color: #FFFFFF;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.sc-button:hover {
+    background: #785324;
+}
+
+@media (max-width: 900px) {
+    .sc-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+    .sc-panel {
+        padding: 14px;
+    }
+
+    .sc-filters {
+        flex-direction: column;
+    }
+
+    .sc-filters input,
+    .sc-filters select {
+        width: 100%;
+        flex: auto;
+    }
+}

@@ -1,4 +1,4 @@
-HƯỚNG DẪN THANH TOÁN ONLINE VNPAY – DNK HOTEL
+HƯỚNG DẪN THANH TOÁN ONLINE VNPAY – KS HOTEL
 
 1. Đăng ký VNPay Sandbox
 
@@ -8,7 +8,7 @@ Truy cập: https://sandbox.vnpayment.vn/devreg/
 
 Nhận TmnCode và HashSecret từ VNPay.
 
-2. Chạy website DNK Hotel
+2. Chạy website KS Hotel
 
 Mở Terminal VSCode tại thư mục QuanLyKhachSan.API:
 
@@ -66,5 +66,5 @@ Lưu ý: Cloudflare Quick Tunnel có URL tạm thời. Cần cấu hình lại U
 
 Khi URL thay đổi, làm 3 bước:
 1. Mở Terminal trong VSCode, chạy lại Cloudflare Tunnel và copy URL mới.
-2. Vào cấu hình VNPay trong dự án DNK Hotel, thay URL cũ bằng URL mới ở ReturnUrl và IpnUrl (nếu đang cấu hình các URL này).
+2. Vào cấu hình VNPay trong dự án KS Hotel, thay URL cũ bằng URL mới ở ReturnUrl và IpnUrl (nếu đang cấu hình các URL này).
 3. Cập nhật URL IPN bên VNPay nếu tài khoản Sandbox của mình có đăng ký IPN URL, rồi khởi động lại backend nếu cần.

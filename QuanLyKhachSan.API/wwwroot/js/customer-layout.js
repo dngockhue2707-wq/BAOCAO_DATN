@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </h2>
 
         <p id="profileDisplayEmail">
-            DNK Hotel
+            KS Hotel
         </p>
 
         <span class="profile-member-label">
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bottom.className = "profile-sidebar-bottom";
 
     bottom.innerHTML = `
-        <span>DNK HOTEL</span>
+        <span>KS HOTEL</span>
 
         <p>
             Tận hưởng hành trình lưu trú
@@ -186,12 +186,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const name = String(
                 data.fullName ||
                 data.username ||
-                "Khách hàng DNK Hotel"
+                "Khách hàng KS Hotel"
             ).trim();
 
             const email = String(
                 data.email ||
-                "Thành viên DNK Hotel"
+                "Thành viên KS Hotel"
             ).trim();
 
             if (displayName) {

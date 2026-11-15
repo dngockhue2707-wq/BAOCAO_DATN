@@ -1,7 +1,6 @@
 
 "use strict";
 
-
 async function loadRoomReviews(roomTypeId) {
     const averageElement =
         document.getElementById("roomReviewAverage");
@@ -23,7 +22,11 @@ async function loadRoomReviews(roomTypeId) {
     function createElement(tag, text, className = "") {
         const element = document.createElement(tag);
         element.textContent = String(text ?? "");
-        if (className) element.className = className;
+
+        if (className) {
+            element.className = className;
+        }
+
         return element;
     }
 
@@ -65,7 +68,10 @@ async function loadRoomReviews(roomTypeId) {
         averageElement.textContent =
             average.toFixed(1);
 
-        const rounded = Math.round(average);
+        const rounded = Math.max(
+            0,
+            Math.min(5, Math.round(average))
+        );
 
         starsElement.textContent =
             "★".repeat(rounded) +
@@ -140,52 +146,95 @@ async function loadRoomReviews(roomTypeId) {
 
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
-    const id = Number(params.get("id"));
+
+    // Lấy mã phòng thực tế, ưu tiên phongId.
+    const selectedRoomId =
+        params.get("phongId") || params.get("id");
+
+    const roomId = Number(selectedRoomId);
 
     const money = value =>
         new Intl.NumberFormat("vi-VN", {
             style: "currency",
             currency: "VND",
             maximumFractionDigits: 0
-        }).format(value);
+        }).format(Number(value) || 0);
 
     const setText = (elementId, value) => {
-        document.getElementById(elementId).textContent = value;
+        const element = document.getElementById(elementId);
+
+        if (element) {
+            element.textContent = String(value ?? "");
+        }
     };
 
-    if (!Number.isInteger(id) || id <= 0) {
+    if (!Number.isInteger(roomId) || roomId <= 0) {
         setText("roomName", "Không tìm thấy phòng");
+        setText("roomMessage", "Mã phòng không hợp lệ.");
         return;
     }
 
     try {
-        const response = await fetch(`/api/rooms/by-room/${id}`, {
-            credentials: "same-origin",
-            cache: "no-store"
-        });
+        // API tìm phòng theo MaPhong, không phải MaLoaiPhong.
+        const response = await fetch(
+            `/api/rooms/by-room/${roomId}`,
+            {
+                credentials: "same-origin",
+                cache: "no-store"
+            }
+        );
+
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || "Không thể tải chi tiết phòng.");
+            throw new Error(
+                data.message || "Không thể tải chi tiết phòng."
+            );
         }
 
         const room = data.room;
+
+        if (!room) {
+            throw new Error("Không tìm thấy thông tin phòng.");
+        }
+
+        // Đảm bảo API trả về đúng mã phòng được chọn.
+        if (
+            room.maPhong != null &&
+            Number(room.maPhong) !== roomId
+        ) {
+            throw new Error(
+                "Thông tin phòng không khớp với phòng đã chọn."
+            );
+        }
 
         setText(
             "roomName",
             `${room.tenLoaiPhong} - Phòng ${room.soPhong}`
         );
+
         setText(
             "roomDescription",
             room.moTa || "Thông tin phòng đang được cập nhật."
         );
-        setText("roomPrice", `${money(room.giaCoBan)} / đêm`);
 
+        setText(
+            "roomPrice",
+            `${money(room.giaCoBan)} / đêm`
+        );
+
+        document.title =
+            `Xem chi tiết phòng ${room.soPhong} | KS Hotel`;
+
+        // Hiển thị hình ảnh phòng.
         const gallery = document.getElementById("roomImages");
+
+        gallery.replaceChildren();
 
         const images = (data.images || []).filter(path => {
             try {
                 const url = new URL(path, location.origin);
+
                 return url.protocol === "https:" ||
                        url.protocol === "http:";
             } catch {
@@ -196,50 +245,112 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (images.length === 0) {
             const placeholder = document.createElement("div");
             placeholder.className = "detail-placeholder";
-            placeholder.textContent = "DNK HOTEL";
+            placeholder.textContent = "KS HOTEL";
             gallery.appendChild(placeholder);
         } else {
             images.forEach(path => {
                 const img = document.createElement("img");
+
                 img.src = new URL(path, location.origin).href;
-                img.alt = room.tenLoaiPhong;
+                img.alt = `Phòng ${room.soPhong}`;
                 img.loading = "lazy";
+
                 gallery.appendChild(img);
             });
         }
 
+        // Thông tin phòng.
+        const specsContainer =
+            document.getElementById("roomSpecs");
+
+        specsContainer.replaceChildren();
+
         const specs = [
-            `${room.sucChuaNguoiLon} người lớn`,
-            `${room.sucChuaTreEm} trẻ em`,
-            room.dienTich ? `${room.dienTich} m²` : null,
-            `${room.soGiuong} giường`,
+            room.sucChuaNguoiLon != null
+                ? `${room.sucChuaNguoiLon} người lớn`
+                : null,
+
+            room.sucChuaTreEm != null
+                ? `${room.sucChuaTreEm} trẻ em`
+                : null,
+
+            room.dienTich
+                ? `${room.dienTich} m²`
+                : null,
+
+            room.soGiuong != null
+                ? `${room.soGiuong} giường`
+                : null,
+
             room.loaiGiuong
         ].filter(Boolean);
 
         specs.forEach(value => {
             const span = document.createElement("span");
             span.textContent = value;
-            document.getElementById("roomSpecs").appendChild(span);
+            specsContainer.appendChild(span);
         });
 
-        const amenities = data.amenities || [];
+        // Tiện nghi phòng.
+        const amenitiesContainer =
+            document.getElementById("roomAmenities");
+
+        amenitiesContainer.replaceChildren();
+
+        const amenities = Array.isArray(data.amenities)
+            ? [...data.amenities]
+            : [];
 
         if (amenities.length === 0) {
-            amenities.push("Thông tin tiện nghi đang cập nhật");
+            amenities.push(
+                "Thông tin tiện nghi đang cập nhật"
+            );
         }
 
         amenities.forEach(value => {
             const span = document.createElement("span");
             span.textContent = `✓ ${value}`;
-            document.getElementById("roomAmenities").appendChild(span);
+            amenitiesContainer.appendChild(span);
         });
 
-        document.getElementById("bookRoomButton").href =
-            `/booking.html?roomId=${room.maLoaiPhong}`;
+        // Giữ luồng đặt phòng hiện tại theo mã loại phòng.
+        const bookingParams = new URLSearchParams({
+            roomId: String(room.maLoaiPhong)
+        });
 
-        await loadRoomReviews(room.maLoaiPhong);
+        // Giữ lại ngày nhận, ngày trả và số lượng khách.
+        [
+            "checkIn",
+            "checkOut",
+            "adults",
+            "children"
+        ].forEach(key => {
+            const value = params.get(key);
+
+            if (value !== null && value !== "") {
+                bookingParams.set(key, value);
+            }
+        });
+
+        const bookButton =
+            document.getElementById("bookRoomButton");
+
+        if (bookButton) {
+            bookButton.href =
+                `/booking.html?${bookingParams.toString()}`;
+        }
+
+        // Đánh giá theo loại phòng.
+        if (room.maLoaiPhong != null) {
+            await loadRoomReviews(room.maLoaiPhong);
+        }
 
     } catch (error) {
-        setText("roomMessage", error.message);
+        console.error("Lỗi tải chi tiết phòng:", error);
+
+        setText(
+            "roomMessage",
+            error.message || "Không thể tải thông tin phòng."
+        );
     }
 });

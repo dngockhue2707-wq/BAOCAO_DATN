@@ -1,11 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Đăng nhập | DNK Hotel</title>
+    <title>Đăng nhập | KS Hotel</title>
 
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/login.css">
@@ -19,8 +19,15 @@
 
     <main class="login-layout">
         <section class="login-intro">
-            <span class="eyebrow">DNK HOTEL · HOSPITALITY</span>
-            <h1>Một kỳ nghỉ<br><em>đúng với bạn.</em></h1>
+            <span class="eyebrow">
+                KS HOTEL · HOSPITALITY
+            </span>
+
+            <h1>
+                Một kỳ nghỉ<br>
+                <em>đúng với bạn.</em>
+            </h1>
+
             <p>
                 Đăng nhập để khám phá những lựa chọn phòng nghỉ
                 phù hợp với sở thích và nhu cầu của riêng bạn.
@@ -28,32 +35,45 @@
 
             <div class="intro-note">
                 <span class="note-line"></span>
-                <span>Không gian tinh tế. Trải nghiệm cá nhân.</span>
+                <span>
+                    Không gian tinh tế. Trải nghiệm cá nhân.
+                </span>
             </div>
         </section>
 
         <section class="login-card">
             <div class="card-heading">
-                <span class="eyebrow">CHÀO MỪNG TRỞ LẠI</span>
+                <span class="eyebrow">
+                    CHÀO MỪNG TRỞ LẠI
+                </span>
+
                 <h2>Đăng nhập</h2>
-                <p>Vui lòng nhập thông tin tài khoản của bạn.</p>
+
+                <p>
+                    Vui lòng nhập thông tin tài khoản của bạn.
+                </p>
             </div>
 
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="username">Tên đăng nhập</label>
+                    <label for="username">
+                        Tên đăng nhập
+                    </label>
+
                     <input
                         id="username"
                         name="username"
                         type="text"
                         placeholder="Nhập tên đăng nhập"
                         autocomplete="username"
-                        required
-                    >
+                        required>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Mật khẩu</label>
+                    <label for="password">
+                        Mật khẩu
+                    </label>
+
                     <div class="password-field">
                         <input
                             id="password"
@@ -61,28 +81,54 @@
                             type="password"
                             placeholder="Nhập mật khẩu"
                             autocomplete="current-password"
-                            required
-                        >
+                            required>
+
                         <button
                             type="button"
                             id="togglePassword"
                             class="toggle-password"
-                            aria-label="Hiện hoặc ẩn mật khẩu"
-                        >Hiện</button>
+                            aria-label="Hiện hoặc ẩn mật khẩu">
+                            Hiện
+                        </button>
                     </div>
                 </div>
 
-                <p id="loginMessage" class="message" role="status"
-                   aria-live="polite"></p>
+                <div style="
+                    display:flex;
+                    justify-content:flex-end;
+                    margin:12px 0 22px;
+                ">
+                    <a href="/forgot-password.html"
+                       style="
+                           color:#926024;
+                           font-size:14px;
+                           font-weight:600;
+                           text-decoration:none;
+                       ">
+                        Quên mật khẩu?
+                    </a>
+                </div>
 
-                <button id="loginButton" class="submit-button" type="submit">
+                <p
+                    id="loginMessage"
+                    class="message"
+                    role="status"
+                    aria-live="polite">
+                </p>
+
+                <button
+                    id="loginButton"
+                    class="submit-button"
+                    type="submit">
                     Đăng nhập <span>→</span>
                 </button>
             </form>
-            
+
             <p class="register-link">
                 Chưa có tài khoản?
-                <a href="/register.html">Đăng ký ngay</a>
+                <a href="/register.html">
+                    Đăng ký ngay
+                </a>
             </p>
 
             <div class="security-note">
@@ -93,6 +139,5 @@
     </main>
 
     <div id="site-footer"></div>
-
 </body>
 </html>

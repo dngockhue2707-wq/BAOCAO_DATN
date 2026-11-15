@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const heading = el("div", "", "staff-heading");
 
     heading.append(
-        el("span", "DNK HOTEL · NHÂN VIÊN"),
+        el("span", "KS HOTEL · NHÂN VIÊN"),
         el("h1", pages[page] || "Lễ tân"),
         el("p", "Hệ thống hỗ trợ nghiệp vụ khách sạn.")
     );

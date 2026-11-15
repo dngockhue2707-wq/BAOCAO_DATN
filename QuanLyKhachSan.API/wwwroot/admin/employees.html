@@ -4,201 +4,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Quản lý nhân viên | DNK Hotel</title>
+    <title>Quản lý nhân viên | Admin</title>
 
     <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="/css/admin-employees.css">
 
-    <script src="/js/admin-employees.js" defer></script>
     <script src="/js/admin-layout.js" defer></script>
+    <script src="/js/admin-employees.js" defer></script>
 </head>
 
 <body data-page="employees">
     <div class="admin-shell">
-
         <div id="adminSidebar"></div>
 
-        <main class="admin-main">
-            <header class="admin-topbar">
-                <div>
-                    <span class="admin-label">
-                        DNK HOTEL · QUẢN TRỊ
+        <main class="admin-main employee-main">
+            <header class="employee-hero">
+                <div class="employee-hero-content">
+                    <span class="employee-eyebrow">
+                        HOTEL ADMINISTRATION · NHÂN SỰ
                     </span>
+
                     <h1>Quản lý nhân viên</h1>
+
+                    <p>
+                        Quản lý đội ngũ nhân sự và theo dõi
+                        hoạt động của nhân viên khách sạn.
+                    </p>
                 </div>
 
-                <div class="admin-user" id="adminUsername">
-                    Quản trị viên
+                <div class="employee-hero-user">
+                    <span class="employee-hero-avatar">A</span>
+                    <span id="adminUsername">Quản trị viên</span>
                 </div>
+
+                <svg class="employee-hero-art"
+                     viewBox="0 0 250 150"
+                     fill="none"
+                     aria-hidden="true">
+                    <circle cx="126" cy="48" r="19"
+                            stroke="currentColor" stroke-width="2"/>
+                    <path d="M89 112c1-25 14-39 37-39s36 14 37 39"
+                          stroke="currentColor" stroke-width="2"/>
+                    <circle cx="54" cy="65" r="13"
+                            stroke="currentColor" stroke-width="1.7"/>
+                    <path d="M29 111c1-19 9-30 25-30 9 0 16 4 20 11"
+                          stroke="currentColor" stroke-width="1.7"/>
+                    <circle cx="197" cy="65" r="13"
+                            stroke="currentColor" stroke-width="1.7"/>
+                    <path d="M222 111c-1-19-9-30-25-30-9 0-16 4-20 11"
+                          stroke="currentColor" stroke-width="1.7"/>
+                    <path d="M18 128h214M40 136h170"
+                          stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M126 8v12M120 14h12"
+                          stroke="currentColor" stroke-width="1.5"/>
+                </svg>
             </header>
 
-            <p id="employeeMessage"
-               class="employee-message"
-               role="status"></p>
+            <div class="employee-content">
+                <p id="employeeMessage"
+                   class="employee-message"
+                   role="status"
+                   aria-live="polite"></p>
 
-            <section class="employee-stats">
-                <article class="employee-stat-card">
-                    <span>Tổng nhân viên</span>
-                    <strong id="totalEmployees">0</strong>
-                    <small>Nhân sự trong hệ thống</small>
-                </article>
+                <section class="employee-stats">
+                    <article class="employee-stat-card employee-stat-total">
+                        <div class="employee-stat-icon">
+                            <svg viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor"
+                                 stroke-width="1.8"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <circle cx="9" cy="8" r="3"/>
+                                <path d="M3 20v-2a6 6 0 0 1 12 0v2"/>
+                                <path d="M17 5a3 3 0 0 1 0 6"/>
+                                <path d="M19 15a5 5 0 0 1 2 4"/>
+                            </svg>
+                        </div>
+                        <div class="employee-stat-info">
+                            <span>Tổng nhân viên</span>
+                            <strong id="totalEmployees">—</strong>
+                            <small>Nhân sự trong hệ thống</small>
+                        </div>
+                    </article>
 
-                <article class="employee-stat-card">
-                    <span>Đang làm việc</span>
-                    <strong id="activeEmployees">0</strong>
-                    <small>Nhân viên đang hoạt động</small>
-                </article>
+                    <article class="employee-stat-card employee-stat-active">
+                        <div class="employee-stat-icon">
+                            <svg viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor"
+                                 stroke-width="1.8"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="m8 12 3 3 5-6"/>
+                            </svg>
+                        </div>
+                        <div class="employee-stat-info">
+                            <span>Đang làm việc</span>
+                            <strong id="activeEmployees">—</strong>
+                            <small>Nhân sự đang hoạt động</small>
+                        </div>
+                    </article>
 
-                <article class="employee-stat-card">
-                    <span>Ngừng hoạt động</span>
-                    <strong id="inactiveEmployees">0</strong>
-                    <small>Nhân viên đã ngừng hoạt động</small>
-                </article>
-            </section>
+                    <article class="employee-stat-card employee-stat-inactive">
+                        <div class="employee-stat-icon">
+                            <svg viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor"
+                                 stroke-width="1.8"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M8 12h8"/>
+                            </svg>
+                        </div>
+                        <div class="employee-stat-info">
+                            <span>Ngừng hoạt động</span>
+                            <strong id="inactiveEmployees">—</strong>
+                            <small>Nhân sự đã ngừng hoạt động</small>
+                        </div>
+                    </article>
+                </section>
 
-            <section class="employee-panel">
-                <div class="employee-panel-header">
-                    <div>
-                        <h2>Danh sách nhân viên</h2>
-                        <p>
-                            Theo dõi nhân sự và thông tin liên hệ
-                            tại khách sạn DNK.
-                        </p>
+                <section class="employee-panel">
+                    <div class="employee-panel-header">
+                        <div class="employee-panel-heading">
+                            <span class="employee-panel-icon">
+                                <svg viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor"
+                                     stroke-width="1.8"
+                                     stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18"
+                                          height="16" rx="2"/>
+                                    <circle cx="9" cy="10" r="2"/>
+                                    <path d="M6 16a3 3 0 0 1 6 0M15 9h4M15 13h4"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h2>Danh sách nhân viên</h2>
+                                <p>
+                                    Thông tin và trạng thái làm việc của
+                                    nhân sự trong hệ thống
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="employee-header-actions">
+                            <button id="refreshEmployees"
+                                    type="button"
+                                    class="employee-outline-button">
+                                <svg viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor"
+                                     stroke-width="1.8"
+                                     stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <path d="M20 7v5h-5"/>
+                                    <path d="M4 17v-5h5"/>
+                                    <path d="M5.5 9A7 7 0 0 1 18 7"/>
+                                    <path d="M18.5 15A7 7 0 0 1 6 17"/>
+                                </svg>
+                                Làm mới
+                            </button>
+
+                            <button id="addEmployeeButton"
+                                    type="button"
+                                    class="employee-primary-button">
+                                <svg viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor"
+                                     stroke-width="2"
+                                     stroke-linecap="round">
+                                    <path d="M12 5v14M5 12h14"/>
+                                </svg>
+                                Thêm nhân viên
+                            </button>
+                        </div>
                     </div>
 
-                    <button
-                        id="addEmployeeButton"
-                        type="button"
-                        class="admin-button">
-                        + Thêm nhân viên
-                    </button>
-                    
-                    <button
-                        id="refreshEmployees"
-                        type="button"
-                        class="employee-outline-button">
-                        Làm mới
-                    </button>
+                    <div class="employee-toolbar">
+                        <div class="employee-field employee-search">
+                            <label for="employeeSearch">Tìm kiếm nhân viên</label>
+                            <div class="employee-search-input">
+                                <svg viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor"
+                                     stroke-width="1.8"
+                                     stroke-linecap="round">
+                                    <circle cx="11" cy="11" r="7"/>
+                                    <path d="m16 16 5 5"/>
+                                </svg>
+                                <input id="employeeSearch"
+                                       type="search"
+                                       placeholder="Tìm tên, tài khoản, chức vụ, email...">
+                            </div>
+                        </div>
+
+                        <div class="employee-field">
+                            <label for="employeeStatusFilter">Trạng thái</label>
+                            <select id="employeeStatusFilter">
+                                <option value="all">Tất cả trạng thái</option>
+                                <option value="active">Đang làm việc</option>
+                                <option value="inactive">Ngừng hoạt động</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="employee-table-container">
+                        <div class="admin-table-wrapper employee-table-scroll">
+                            <table class="employee-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã NV</th>
+                                        <th>Nhân viên</th>
+                                        <th>Chức vụ</th>
+                                        <th>Thông tin liên hệ</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeesTableBody">
+                                    <tr>
+                                        <td colspan="6" class="employee-empty">
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="employee-table-footer">
+                        <span id="employeeResultCount">
+                            Đang tải danh sách...
+                        </span>
+
+                        <div class="employee-pagination">
+                            <button id="previousEmployees"
+                                    type="button"
+                                    class="employee-page-button"
+                                    aria-label="Trang trước">
+                                ‹
+                            </button>
+
+                            <span id="employeePageInfo"
+                                  class="employee-page-info">
+                                Trang 1/1
+                            </span>
+
+                            <button id="nextEmployees"
+                                    type="button"
+                                    class="employee-page-button"
+                                    aria-label="Trang tiếp theo">
+                                ›
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="employee-footer">
+                    HOTEL ADMINISTRATION · STAFF MANAGEMENT
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <dialog id="employeeFormDialog"
+            class="employee-dialog employee-form-dialog">
+        <form id="employeeForm">
+            <div class="employee-dialog-header">
+                <div>
+                    <span class="employee-eyebrow">
+                        QUẢN LÝ NHÂN SỰ
+                    </span>
+                    <h2 id="employeeFormTitle">
+                        Thêm nhân viên
+                    </h2>
+                    <p>Cập nhật thông tin tài khoản nhân sự</p>
                 </div>
 
-                <div class="employee-toolbar">
-                    <div class="employee-field employee-search">
-                        <label for="employeeSearch">
-                            Tìm kiếm nhân viên
-                        </label>
+                <button type="button"
+                        id="closeEmployeeFormTop"
+                        class="employee-close-button"
+                        aria-label="Đóng">×</button>
+            </div>
 
-                        <input
-                            id="employeeSearch"
-                            type="search"
-                            placeholder="Tên, tài khoản, chức vụ, email...">
+            <div class="employee-dialog-body">
+                <input type="hidden" id="employeeId">
+
+                <div class="employee-form-section-title">
+                    Thông tin cá nhân
+                </div>
+
+                <div class="employee-detail-grid">
+                    <div class="employee-field">
+                        <label for="employeeFullName">Họ và tên</label>
+                        <input id="employeeFullName"
+                               type="text"
+                               maxlength="100"
+                               placeholder="Nhập họ và tên"
+                               required>
                     </div>
 
                     <div class="employee-field">
-                        <label for="employeeStatusFilter">
-                            Trạng thái
-                        </label>
+                        <label for="employeePosition">Chức vụ</label>
+                        <input id="employeePosition"
+                               type="text"
+                               maxlength="100"
+                               placeholder="Nhập chức vụ"
+                               required>
+                    </div>
 
-                        <select id="employeeStatusFilter">
-                            <option value="all">Tất cả trạng thái</option>
-                            <option value="active">Đang làm việc</option>
-                            <option value="inactive">Ngừng hoạt động</option>
+                    <div class="employee-field">
+                        <label for="employeePhone">Số điện thoại</label>
+                        <input id="employeePhone"
+                               type="tel"
+                               maxlength="20"
+                               placeholder="Nhập số điện thoại">
+                    </div>
+
+                    <div class="employee-field">
+                        <label for="employeeEmail">Email</label>
+                        <input id="employeeEmail"
+                               type="email"
+                               maxlength="150"
+                               placeholder="Nhập email liên hệ">
+                    </div>
+                </div>
+
+                <div class="employee-form-section-title">
+                    Thông tin tài khoản
+                </div>
+
+                <div class="employee-detail-grid">
+                    <div class="employee-field employee-detail-full">
+                        <label for="employeeUsername">
+                            Tên đăng nhập
+                        </label>
+                        <input id="employeeUsername"
+                               type="text"
+                               maxlength="100"
+                               minlength="4"
+                               autocomplete="off"
+                               placeholder="Nhập tên đăng nhập"
+                               required>
+                    </div>
+
+                    <div class="employee-field employee-detail-full"
+                         id="employeeStatusField" hidden>
+                        <label for="employeeActive">
+                            Trạng thái nhân viên
+                        </label>
+                        <select id="employeeActive">
+                            <option value="true">Đang làm việc</option>
+                            <option value="false">Ngừng hoạt động</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="admin-table-wrapper">
-                    <table class="admin-table employee-table">
-                        <thead>
-                            <tr>
-                                <th>Mã NV</th>
-                                <th>Họ và tên</th>
-                                <th>Tài khoản</th>
-                                <th>Chức vụ</th>
-                                <th>Số điện thoại</th>
-                                <th>Email</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="employeesTableBody">
-                            <tr>
-                                <td colspan="8" class="employee-empty">
-                                    Đang tải dữ liệu...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="employee-table-footer">
-                    <span id="employeeResultCount">
-                        
-                    </span>
-
-                    <div class="employee-pagination">
-                        <button
-                            id="previousEmployees"
-                            type="button"
-                            class="employee-outline-button">
-                            Trước
-                        </button>
-
-                        <span id="employeePageInfo">Trang 1/1</span>
-
-                        <button
-                            id="nextEmployees"
-                            type="button"
-                            class="employee-outline-button">
-                            Sau
-                        </button>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-    
-    <dialog id="employeeFormDialog" class="employee-dialog">
-        <form id="employeeForm">
-            <h2 id="employeeFormTitle">Thêm nhân viên</h2>
-
-            <input type="hidden" id="employeeId">
-            <div class="employee-field employee-detail-full"
-                id="employeeStatusField"
-                hidden>
-                <label for="employeeActive">Trạng thái nhân viên</label>
-
-                <select id="employeeActive">
-                    <option value="true">Đang làm việc</option>
-                    <option value="false">Ngừng hoạt động</option>
-                </select>
-            </div>
-
-            <div class="employee-detail-grid">
-                <div class="employee-field">
-                    <label for="employeeFullName">Họ và tên</label>
-                    <input id="employeeFullName" required maxlength="100">
-                </div>
-
-                <div class="employee-field">
-                    <label for="employeePosition">Chức vụ</label>
-                    <input id="employeePosition" required maxlength="100">
-                </div>
-
-                <div class="employee-field">
-                    <label for="employeePhone">Số điện thoại</label>
-                    <input id="employeePhone" maxlength="20">
-                </div>
-
-                <div class="employee-field">
-                    <label for="employeeEmail">Email</label>
-                    <input id="employeeEmail" type="email" maxlength="150">
-                </div>
-
-                <div class="employee-field employee-detail-full">
-                    <label for="employeeUsername">Tên đăng nhập</label>
-                    <input id="employeeUsername" maxlength="100" minlength="4" required>
                 </div>
             </div>
 
@@ -206,79 +363,93 @@
                 <button id="cancelEmployeeForm"
                         type="button"
                         class="employee-outline-button">
-                    Hủy
+                    Hủy bỏ
                 </button>
 
-                <button type="submit" class="admin-button">
+                <button id="submitEmployeeForm"
+                        type="submit"
+                        class="employee-primary-button">
                     Lưu nhân viên
                 </button>
             </div>
         </form>
     </dialog>
 
-    <dialog id="employeeDetailDialog" class="employee-dialog">
+    <dialog id="employeeDetailDialog"
+            class="employee-dialog employee-profile-dialog">
+
         <div class="employee-dialog-header">
             <div>
                 <span class="employee-eyebrow">
-                    DNK HOTEL · HỒ SƠ NHÂN VIÊN
+                    HỒ SƠ NHÂN SỰ
                 </span>
-
-                <h2 id="detailEmployeeName">
-                    Chi tiết nhân viên
-                </h2>
+                <h2>Chi tiết nhân viên</h2>
+                <p>Thông tin tài khoản và hoạt động</p>
             </div>
 
-            <button
-                id="closeEmployeeDetailTop"
-                type="button"
-                class="employee-close-button"
-                aria-label="Đóng">
-                ×
-            </button>
+            <button id="closeEmployeeDetailTop"
+                    type="button"
+                    class="employee-close-button"
+                    aria-label="Đóng">×</button>
         </div>
 
-        <div class="employee-detail-grid">
-            <div class="employee-detail-item">
-                <span>Mã nhân viên</span>
-                <strong id="detailEmployeeId">—</strong>
+        <div class="employee-dialog-body">
+            <div class="employee-profile-hero">
+                <div class="employee-profile-avatar"
+                     id="detailEmployeeAvatar">NV</div>
+
+                <div class="employee-profile-heading">
+                    <h3 id="detailEmployeeName">Nhân viên</h3>
+                    <span id="detailEmployeeRole">Nhân sự khách sạn</span>
+                </div>
             </div>
 
-            <div class="employee-detail-item">
-                <span>Tài khoản</span>
-                <strong id="detailEmployeeUsername">—</strong>
+            <div class="employee-form-section-title">
+                Thông tin chi tiết
             </div>
 
-            <div class="employee-detail-item">
-                <span>Họ và tên</span>
-                <strong id="detailEmployeeFullName">—</strong>
-            </div>
+            <div class="employee-detail-grid">
+                <div class="employee-detail-item">
+                    <span>Mã nhân viên</span>
+                    <strong id="detailEmployeeId">—</strong>
+                </div>
 
-            <div class="employee-detail-item">
-                <span>Chức vụ</span>
-                <strong id="detailEmployeePosition">—</strong>
-            </div>
+                <div class="employee-detail-item">
+                    <span>Tài khoản</span>
+                    <strong id="detailEmployeeUsername">—</strong>
+                </div>
 
-            <div class="employee-detail-item">
-                <span>Số điện thoại</span>
-                <strong id="detailEmployeePhone">—</strong>
-            </div>
+                <div class="employee-detail-item">
+                    <span>Họ và tên</span>
+                    <strong id="detailEmployeeFullName">—</strong>
+                </div>
 
-            <div class="employee-detail-item">
-                <span>Email</span>
-                <strong id="detailEmployeeEmail">—</strong>
-            </div>
+                <div class="employee-detail-item">
+                    <span>Chức vụ</span>
+                    <strong id="detailEmployeePosition">—</strong>
+                </div>
 
-            <div class="employee-detail-item employee-detail-full">
-                <span>Trạng thái làm việc</span>
-                <strong id="detailEmployeeStatus">—</strong>
+                <div class="employee-detail-item">
+                    <span>Số điện thoại</span>
+                    <strong id="detailEmployeePhone">—</strong>
+                </div>
+
+                <div class="employee-detail-item">
+                    <span>Email</span>
+                    <strong id="detailEmployeeEmail">—</strong>
+                </div>
+
+                <div class="employee-detail-item employee-detail-full">
+                    <span>Trạng thái làm việc</span>
+                    <strong id="detailEmployeeStatus">—</strong>
+                </div>
             </div>
         </div>
 
         <div class="employee-dialog-actions">
-            <button
-                id="closeEmployeeDetail"
-                type="button"
-                class="admin-button">
+            <button id="closeEmployeeDetail"
+                    type="button"
+                    class="employee-primary-button">
                 Đóng
             </button>
         </div>

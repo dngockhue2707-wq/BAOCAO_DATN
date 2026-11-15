@@ -287,7 +287,7 @@ public class AccountController : ControllerBase
         {
             return Unauthorized(new
             {
-                message = "Tài khoản của bạn đã ngừng hoạt động. Vui lòng liên hệ quản trị viên DNK Hotel để được hỗ trợ."
+                message = "Tài khoản của bạn đã ngừng hoạt động. Vui lòng liên hệ quản trị viên KS Hotel để được hỗ trợ."
             });
         }
 

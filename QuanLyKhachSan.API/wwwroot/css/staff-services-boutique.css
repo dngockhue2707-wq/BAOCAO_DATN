@@ -1,0 +1,228 @@
+
+body[data-page="services"] {
+    background: #FAF8F5;
+}
+
+body[data-page="services"] .staff-main {
+    padding-top: 24px;
+}
+
+body[data-page="services"] .staff-heading {
+    margin: 0 0 16px;
+    padding: 0;
+    border: 0;
+}
+
+body[data-page="services"] .staff-heading > span {
+    color: #926024;
+    font-size: 10px;
+    letter-spacing: 1.8px;
+}
+
+body[data-page="services"] .staff-heading h1 {
+    margin: 6px 0 0;
+    color: #35291F;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+}
+
+body[data-page="services"] .staff-heading p,
+body[data-page="services"] .staff-message:empty {
+    display: none;
+}
+
+.sv-page,
+.sv-page * {
+    box-sizing: border-box;
+}
+
+.sv-page {
+    width: 100%;
+    min-width: 0;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.sv-columns {
+    display: grid;
+    grid-template-columns: minmax(320px, .85fr) minmax(0, 1.65fr);
+    gap: 15px;
+    align-items: start;
+}
+
+.sv-panel {
+    min-width: 0;
+    padding: 19px;
+    border: 1px solid #E9DFD2;
+    border-radius: 11px;
+    background: #FFFFFF;
+}
+
+.sv-panel-title {
+    margin: 0 0 20px;
+    padding: 0 0 15px;
+    border-bottom: 1px solid #F0E9E1;
+    color: #35291F;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 19px;
+    font-weight: 600;
+}
+
+.sv-form {
+    margin: 0;
+}
+
+.sv-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 19px 13px;
+}
+
+.sv-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+}
+
+.sv-field > span {
+    color: #625449;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.sv-field select,
+.sv-field input {
+    width: 100%;
+    min-width: 0;
+    min-height: 43px;
+    padding: 10px 11px;
+    border: 1px solid #E9DFD2;
+    border-radius: 7px;
+    background: #FBF9F6;
+    color: #35291F;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+    outline: none;
+}
+
+.sv-field select:focus,
+.sv-field input:focus {
+    border-color: #926024;
+    box-shadow: 0 0 0 3px rgba(146, 96, 36, .07);
+}
+
+.sv-submit-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 23px;
+}
+
+.sv-submit {
+    min-height: 41px;
+    padding: 10px 15px;
+    border: 1px solid #926024;
+    border-radius: 7px;
+    background: #926024;
+    color: #FFFFFF;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.sv-submit:hover {
+    background: #785324;
+}
+
+.sv-submit:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.sv-history-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 17px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #F0E9E1;
+}
+
+.sv-history-head .sv-panel-title {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.sv-count {
+    color: #938679;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.sv-history-panel .staff-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #E9DFD2;
+    border-radius: 8px;
+}
+
+.sv-history-panel .staff-table {
+    width: 100%;
+    min-width: 690px;
+    border-collapse: collapse;
+}
+
+.sv-history-panel .staff-table th {
+    padding: 13px 11px;
+    border-bottom: 1px solid #E9DFD2;
+    background: #F8F3EC;
+    color: #776A5E;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.sv-history-panel .staff-table td {
+    padding: 14px 11px;
+    border-bottom: 1px solid #F0E9E1;
+    color: #403830;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.sv-history-panel .staff-table tbody tr:hover {
+    background: #FDFBF8;
+}
+
+.sv-booking-id,
+.sv-money {
+    color: #926024;
+}
+
+.sv-money {
+    white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+    .sv-columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+    .sv-panel {
+        padding: 15px;
+    }
+
+    .sv-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sv-submit {
+        width: 100%;
+    }
+}

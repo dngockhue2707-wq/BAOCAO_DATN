@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (service.image) {
             const img = document.createElement("img");
             img.src = service.image;
-            img.alt = service.name || "Dịch vụ DNK Hotel";
+            img.alt = service.name || "Dịch vụ KS Hotel";
             img.loading = "lazy";
             img.onerror = () => {
                 image.textContent = getIcon(service.name);
@@ -80,14 +80,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const tag = document.createElement("span");
         tag.className = "info-service-tag";
-        tag.textContent = "DỊCH VỤ DNK HOTEL";
+        tag.textContent = "DỊCH VỤ KS HOTEL";
 
         const title = document.createElement("h3");
         title.textContent = service.name || "Dịch vụ khách sạn";
 
         const description = document.createElement("p");
         description.textContent =
-            service.description || "Dịch vụ hỗ trợ khách hàng tại DNK Hotel.";
+            service.description || "Dịch vụ hỗ trợ khách hàng tại KS Hotel.";
 
         const price = document.createElement("p");
         price.className = "info-service-price";

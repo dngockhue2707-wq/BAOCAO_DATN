@@ -6,17 +6,195 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Đơn đặt phòng của tôi | DNK Hotel</title>
+    <title>Đơn đặt phòng của tôi | KS Hotel</title>
 
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/profile.css">
     <link rel="stylesheet" href="/css/my-bookings.css">
     <link rel="stylesheet" href="/css/customer-layout.css">
+    <link rel="stylesheet" href="/css/my-bookings-polish.css">
+
+    <style>
+        .cancellation-section {
+            margin-top: 24px;
+        }
+
+        .cancellation-list {
+            display: grid;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .cancellation-card {
+            border: 1px solid #e9dfd3;
+            border-radius: 12px;
+            padding: 18px;
+            background: #fff;
+        }
+
+        .cancellation-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .cancellation-card h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #30251e;
+        }
+
+        .cancellation-card p {
+            margin: 7px 0;
+            line-height: 1.6;
+        }
+
+        .cancellation-status {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #f3e7d6;
+            color: #785324;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .cancellation-card .cancellation-money {
+            font-weight: 700;
+            color: #926024;
+        }
+
+        .booking-cancellation-button {
+            padding: 11px 17px;
+            border: 1px solid #926024;
+            border-radius: 8px;
+            background: #fff;
+            color: #926024;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .booking-cancellation-button:hover {
+            background: #f3e7d6;
+        }
+
+        .booking-cancellation-info {
+            width: 100%;
+            margin-top: 8px;
+            color: #785324;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .cancellation-policy {
+            margin: 16px 0;
+            padding: 16px;
+            border-radius: 10px;
+            background: #faf8f5;
+            border: 1px solid #e9dfd3;
+            line-height: 1.7;
+        }
+
+        .cancellation-policy p {
+            margin: 6px 0;
+        }
+
+        .cancellation-policy ul {
+            margin: 8px 0;
+            padding-left: 22px;
+        }
+
+        .cancellation-dialog {
+            width: min(520px, calc(100% - 28px));
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 0;
+            border-radius: 16px;
+            padding: 25px;
+            background: #fff;
+            color: #30251e;
+            box-shadow: 0 18px 60px rgba(0,0,0,.18);
+        }
+
+        .cancellation-dialog::backdrop {
+            background: rgba(27, 21, 16, .6);
+        }
+
+        .cancellation-dialog h2 {
+            margin: 0 0 12px;
+            font-size: 25px;
+        }
+
+        .cancellation-dialog label {
+            display: block;
+            font-weight: 700;
+            margin: 15px 0 8px;
+        }
+
+        .cancellation-dialog textarea {
+            display: block;
+            width: 100%;
+            min-height: 110px;
+            padding: 12px;
+            border: 1px solid #d8cbbd;
+            border-radius: 8px;
+            resize: vertical;
+            font: inherit;
+            box-sizing: border-box;
+        }
+
+        .cancellation-dialog-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cancellation-dialog-actions button {
+            padding: 11px 18px;
+            border-radius: 8px;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        #cancelRequestClose {
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #30251e;
+        }
+
+        #cancelRequestSubmit {
+            border: 1px solid #926024;
+            background: #926024;
+            color: #fff;
+        }
+
+        #cancelRequestSubmit:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        .cancellation-feedback {
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        .cancellation-feedback.error {
+            color: #b42318;
+        }
+    </style>
 
     <script src="/js/layout.js" defer></script>
     <script src="/js/account-nav.js" defer></script>
     <script src="/js/customer-layout.js" defer></script>
     <script src="/js/my-bookings.js" defer></script>
+    <script src="/js/my-bookings-cancellation.js" defer></script>
 </head>
 
 <body>
@@ -28,14 +206,14 @@
             <div class="profile-container">
 
                 <span class="profile-eyebrow">
-                    DNK HOTEL · TÀI KHOẢN KHÁCH HÀNG
+                    KS HOTEL · TÀI KHOẢN KHÁCH HÀNG
                 </span>
 
                 <h1>Không gian <em>của bạn</em></h1>
 
                 <p>
                     Quản lý thông tin tài khoản và theo dõi
-                    hành trình lưu trú của bạn tại DNK Hotel.
+                    hành trình lưu trú của bạn tại KS Hotel.
                 </p>
 
             </div>
@@ -62,8 +240,8 @@
                         <h2>Đơn đặt phòng của tôi</h2>
 
                         <p>
-                            Theo dõi trạng thái, lịch sử lưu trú
-                            và thanh toán tiền đặt cọc.
+                            Theo dõi trạng thái, lịch sử lưu trú,
+                            thanh toán đặt cọc và yêu cầu hủy phòng.
                         </p>
 
                     </div>
@@ -130,10 +308,137 @@
 
                 </section>
 
+                <section class="profile-panel cancellation-section">
+
+                    <div class="profile-panel-header">
+                        <span class="profile-eyebrow">
+                            HỦY PHÒNG VÀ HOÀN CỌC
+                        </span>
+
+                        <h2>Yêu cầu hủy phòng</h2>
+
+                        <p>
+                            Theo dõi quá trình xử lý yêu cầu hủy
+                            và hoàn tiền đặt cọc của bạn.
+                        </p>
+                    </div>
+
+                    <div class="cancellation-policy">
+                        <strong>
+                            Chính sách hoàn cọc dự kiến của KS Hotel
+                        </strong>
+
+                        <ul>
+                            <li>
+                                Hủy trước giờ nhận phòng từ 72 giờ:
+                                hoàn 100% tiền cọc.
+                            </li>
+                            <li>
+                                Hủy từ 24 đến dưới 72 giờ:
+                                hoàn 50% tiền cọc.
+                            </li>
+                            <li>
+                                Hủy dưới 24 giờ:
+                                không hoàn tiền cọc.
+                            </li>
+                        </ul>
+
+                        <p>
+                            Giờ nhận phòng dùng để tính chính sách:
+                            14:00 (giờ Việt Nam).
+                        </p>
+
+                        <p>
+                            Số tiền hoàn chính thức do hệ thống
+                            tính khi gửi yêu cầu. Việc duyệt hủy
+                            không đồng nghĩa tiền đã được hoàn.
+                        </p>
+                    </div>
+
+                    <p id="cancellationMessage"
+                       class="bookings-message"
+                       role="status"
+                       aria-live="polite">
+                    </p>
+
+                    <div id="cancellationRequests"
+                         class="cancellation-list">
+                    </div>
+
+                </section>
+
             </div>
         </div>
 
     </main>
+
+    <dialog id="cancelRequestDialog"
+            class="cancellation-dialog"
+            aria-labelledby="cancelRequestTitle">
+
+        <form id="cancelRequestForm">
+
+            <h2 id="cancelRequestTitle">
+                Yêu cầu hủy đặt phòng
+            </h2>
+
+            <p id="cancelRequestBooking">
+            </p>
+
+            <p>
+                Đơn đã đặt cọc cần được khách sạn
+                xét duyệt trước khi hủy.
+            </p>
+
+            <div class="cancellation-policy">
+                <strong>Quy định hoàn cọc</strong>
+
+                <p>
+                    Trước 72 giờ: 100% ·
+                    Từ 24 đến dưới 72 giờ: 50% ·
+                    Dưới 24 giờ: 0%.
+                </p>
+
+                <p>
+                    Hệ thống tính theo thời điểm
+                    gửi yêu cầu và giờ nhận phòng 14:00.
+                </p>
+            </div>
+
+            <label for="cancelRequestReason">
+                Lý do muốn hủy phòng
+            </label>
+
+            <textarea
+                id="cancelRequestReason"
+                maxlength="500"
+                minlength="5"
+                required
+                placeholder="Nhập lý do hủy phòng (5–500 ký tự)...">
+            </textarea>
+
+            <p id="cancelRequestFeedback"
+               class="cancellation-feedback"
+               role="status">
+            </p>
+
+            <div class="cancellation-dialog-actions">
+
+                <button type="button"
+                        id="cancelRequestClose">
+                    Quay lại
+                </button>
+
+                <button type="submit"
+                        id="cancelRequestSubmit">
+                    Gửi yêu cầu hủy
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
 
     <div id="site-footer"></div>
 </body>

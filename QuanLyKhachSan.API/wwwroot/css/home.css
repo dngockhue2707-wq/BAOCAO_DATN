@@ -1,6 +1,6 @@
 
 /* ============================================
-   DNK HOTEL - GIAO DIỆN TRANG CHỦ
+   KS HOTEL - GIAO DIỆN TRANG CHỦ
    ============================================ */
 
 .home-page {
@@ -1144,5 +1144,376 @@
     .home-page *::after {
         transition: none !important;
         scroll-behavior: auto !important;
+    }
+}
+
+/* ============================================
+   KS HOTEL - CA NHAN HOA TRANG CHU
+   ============================================ */
+
+.home-personalized {
+    padding-top: 65px;
+    padding-bottom: 85px;
+}
+
+.home-personalized[hidden],
+.personalized-footer[hidden] {
+    display: none !important;
+}
+
+.personalized-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.personalized-heading h2 {
+    margin: 12px 0;
+    color: #30251E;
+    font-family: var(--font-heading);
+    font-size: clamp(30px, 3.3vw, 46px);
+    font-weight: 500;
+    line-height: 1.25;
+}
+
+.personalized-heading h2 em {
+    color: #926024;
+    font-weight: 400;
+}
+
+.personalized-description {
+    max-width: 600px;
+    margin: 0;
+    color: #817569;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.personalized-dates {
+    margin: 10px 0 0;
+    color: #926024;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.personalized-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.personalized-card {
+    overflow: hidden;
+    border: 1px solid #EAE0D4;
+    border-radius: 19px;
+    background: #FFFDFA;
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.personalized-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 35px rgba(48,37,30,.09);
+}
+
+.personalized-image {
+    position: relative;
+    height: 225px;
+    background-color: #EADCCA;
+    background-position: center;
+    background-size: cover;
+}
+
+.personalized-rank {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: rgba(255,253,249,.96);
+    color: #926024;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.personalized-card-body {
+    padding: 22px;
+}
+
+.personalized-card h3 {
+    margin: 0 0 12px;
+    color: #30251E;
+    font-family: var(--font-heading);
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.personalized-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    color: #926024;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.personalized-price {
+    margin: 0 0 13px;
+    color: #30251E;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.personalized-price small {
+    color: #817569;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.personalized-reasons {
+    margin: 0 0 17px;
+    padding-left: 19px;
+    color: #817569;
+    font-size: 13px;
+    line-height: 1.75;
+}
+
+.personalized-reasons li {
+    margin-bottom: 5px;
+}
+
+.personalized-meta {
+    margin: 0 0 18px;
+    color: #74685D;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.personalized-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #926024;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.personalized-card-link:hover {
+    color: #785324;
+    text-decoration: underline;
+}
+
+.personalized-status {
+    color: #817569;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.personalized-status:empty {
+    display: none;
+}
+
+.personalized-empty {
+    padding: 35px;
+    border: 1px solid #EAE0D4;
+    border-radius: 18px;
+    background: #F6F0E8;
+}
+
+.personalized-empty h3 {
+    margin: 0 0 12px;
+    font-family: var(--font-heading);
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.personalized-empty p {
+    margin: 0 0 22px;
+    color: #817569;
+    line-height: 1.8;
+}
+
+.personalized-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 35px;
+}
+
+@media (max-width: 1080px) {
+    .personalized-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 780px) {
+    .home-personalized {
+        padding-top: 45px;
+        padding-bottom: 65px;
+    }
+
+    .personalized-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .personalized-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .personalized-image {
+        height: 240px;
+    }
+}
+
+/* ============================================
+   KS HOTEL - CAROUSEL PHONG CA NHAN HOA
+   ============================================ */
+
+.home-personalized {
+    position: relative;
+    overflow: hidden;
+}
+
+.home-personalized .personalized-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 24px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2px;
+    padding: 8px 2px 24px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    touch-action: pan-x pan-y;
+}
+
+.home-personalized .personalized-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.home-personalized .personalized-card {
+    flex: 0 0 calc((100% - 48px) / 3);
+    min-width: 0;
+    scroll-snap-align: start;
+    align-self: stretch;
+}
+
+.home-personalized .personalized-card-body {
+    min-height: 285px;
+}
+
+.home-personalized .personalized-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.home-personalized .personalized-arrow {
+    display: grid;
+    place-items: center;
+    width: 43px;
+    height: 43px;
+    border: 1px solid #DFCEB9;
+    border-radius: 50%;
+    background: #FFFDFA;
+    color: #926024;
+    font-size: 25px;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+}
+
+.home-personalized .personalized-arrow:hover:not(:disabled) {
+    background: #926024;
+    color: #fff;
+}
+
+.home-personalized .personalized-arrow:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.home-personalized .personalized-empty {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+}
+
+@media (max-width: 1000px) {
+    .home-personalized .personalized-card {
+        flex-basis: calc((100% - 24px) / 2);
+    }
+}
+
+@media (max-width: 600px) {
+    .home-personalized .personalized-card {
+        flex-basis: 88%;
+    }
+
+    .home-personalized .personalized-grid {
+        gap: 15px;
+    }
+
+    .home-personalized .personalized-controls {
+        margin-top: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-personalized .personalized-grid {
+        scroll-behavior: auto;
+    }
+}
+
+/* ============================================
+   KS HOTEL - HIEU UNG CAROUSEL
+   ============================================ */
+
+.home-personalized .personalized-card {
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+.home-personalized .personalized-image {
+    overflow: hidden;
+    transition:
+        background-size .4s ease,
+        filter .4s ease;
+}
+
+.home-personalized .personalized-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(48, 37, 30, .13);
+}
+
+.home-personalized .personalized-card:hover
+.personalized-image {
+    filter: brightness(1.06);
+}
+
+.home-personalized .personalized-arrow {
+    transition:
+        background .25s ease,
+        color .25s ease,
+        transform .25s ease;
+}
+
+.home-personalized .personalized-arrow:hover:not(:disabled) {
+    transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-personalized .personalized-card,
+    .home-personalized .personalized-image,
+    .home-personalized .personalized-arrow {
+        transition: none !important;
     }
 }

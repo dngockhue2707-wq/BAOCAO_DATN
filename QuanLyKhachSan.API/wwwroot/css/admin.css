@@ -789,3 +789,308 @@ h6 {
         padding: 18px;
     }
 }
+
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
+
+:root {
+    --font-heading: "Playfair Display", Georgia, serif;
+    --font-body: "Times New Roman", Times, serif;
+    --font-number: "Lora", Georgia, serif;
+
+    --ui-heading: var(--font-heading);
+    --ui-body: var(--font-body);
+
+    --contact-heading: var(--font-heading);
+    --contact-body: var(--font-body);
+
+    --emp-heading: var(--font-heading);
+    --emp-body: var(--font-body);
+
+    --finance-heading: var(--font-heading);
+    --finance-body: var(--font-body);
+
+    --re-heading: var(--font-heading);
+    --re-body: var(--font-body);
+}
+
+body[data-page] {
+    --font-heading: "Playfair Display", Georgia, serif;
+    --font-body: "Times New Roman", Times, serif;
+    --font-number: "Lora", Georgia, serif;
+
+    --ui-heading: var(--font-heading);
+    --ui-body: var(--font-body);
+
+    --contact-heading: var(--font-heading);
+    --contact-body: var(--font-body);
+
+    --emp-heading: var(--font-heading);
+    --emp-body: var(--font-body);
+
+    --finance-heading: var(--font-heading);
+    --finance-body: var(--font-body);
+
+    --re-heading: var(--font-heading);
+    --re-body: var(--font-body);
+}
+
+body[data-page],
+body[data-page] .admin-shell,
+body[data-page] .admin-main,
+body[data-page] .admin-sidebar,
+body[data-page] dialog,
+body[data-page] table {
+    font-family: var(--font-body);
+}
+
+body[data-page] :is(
+    p,
+    a,
+    label,
+    li,
+    td,
+    th,
+    button,
+    input,
+    select,
+    textarea,
+    option,
+    summary
+) {
+    font-family: var(--font-body);
+}
+
+body[data-page] :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6
+) {
+    font-family: var(--font-heading);
+}
+
+body[data-page] :is(
+    .admin-brand,
+    .admin-panel-title,
+    .contacts-panel-title h2,
+    .contacts-detail-section-title,
+    .contacts-reply-heading,
+    .customer-detail-heading,
+    .employee-panel-header h2,
+    .lux-panel-header h2,
+    .re-panel h2,
+    .room-section-top h2,
+    .service-panel-header h2,
+    .customer-panel-heading h2,
+    .admin-topbar h1,
+    .lux-hero h1,
+    .employee-hero h1,
+    .contacts-header h1
+) {
+    font-family: var(--font-heading);
+}
+
+body[data-page] :is(
+    .admin-brand-subtitle,
+    .admin-nav-caption,
+    .admin-nav-link,
+    .admin-subnav a,
+    .admin-nav-group > summary,
+    .admin-account,
+    .admin-user,
+    .admin-button,
+    .admin-input,
+    .admin-select,
+    .admin-textarea,
+    .admin-table,
+    .admin-logout,
+    .contacts-table,
+    .customer-table,
+    .employee-table,
+    .service-table,
+    .room-tab,
+    .room-image-tab,
+    .customer-view-button,
+    .service-primary-button,
+    .service-outline-button,
+    .employee-primary-button,
+    .employee-outline-button
+) {
+    font-family: var(--font-body);
+}
+
+body[data-page] :is(
+    .admin-stat strong,
+    .admin-stat-card strong,
+    .admin-kpi-card strong,
+    .stat-card > strong,
+    .kpi-card > strong,
+    .room-overview-card strong,
+    .customer-stat-card strong,
+    .service-stat-card strong,
+    .employee-stat-info strong,
+    .contacts-stat-info strong,
+    .lux-kpi strong,
+    .lux-revenue-kpi strong,
+    .re-main-number,
+    .re-kpi-value
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page="dashboard"] :is(
+    .lux-kpi strong,
+    .lux-revenue-kpi strong,
+    .lux-chart-total,
+    .lux-donut-inner strong,
+    .lux-room-legend-item strong,
+    .lux-daily-summary strong,
+    .lux-room-status-row strong
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page="dashboard"] :is(
+    .lux-line-chart text,
+    .lux-daily-chart svg text
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page="reports"] :is(
+    .re-main-number,
+    .re-kpi-value,
+    .re-percentage > span,
+    .re-chart-axis-label,
+    .re-monthly-table td:nth-child(n+2),
+    .re-status-table td:nth-child(2)
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page="rooms"] :is(
+    .room-overview-card strong,
+    .room-record-count .font-number,
+    .room-price,
+    .room-price-value,
+    .room-number,
+    .room-amount
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page="customers"] :is(
+    .customer-stat-card strong,
+    .customer-booking-table td:nth-child(3),
+    .customer-booking-table td:nth-child(4),
+    .customer-booking-table td:nth-child(5),
+    .customer-amount,
+    .customer-total
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page="services"] :is(
+    .service-stat-card strong,
+    .service-price-cell,
+    .service-price,
+    .service-amount
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page="employees"] :is(
+    .employee-stat-info strong,
+    .employee-code,
+    .employee-number
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page="contacts"] :is(
+    .contacts-stat-info strong,
+    .contacts-code,
+    .contacts-date,
+    .contacts-page-number
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page="bookings"] :is(
+    .booking-price,
+    .booking-total,
+    .booking-amount,
+    .booking-code,
+    .booking-number
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body:is(
+    [data-page="invoices"],
+    [data-page="reports"]
+) :is(
+    .invoice-total,
+    .invoice-amount,
+    .invoice-price,
+    .invoice-number,
+    .invoice-code,
+    .finance-total,
+    .finance-amount,
+    .finance-price,
+    .revenue-value,
+    .total-revenue,
+    .received-amount
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page] :is(
+    input[type="number"],
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="time"]
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page] :is(
+    .font-number,
+    .numeric-value,
+    .currency-value,
+    .money-value,
+    .price-value,
+    .total-value,
+    .amount-value,
+    .revenue-number
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+body[data-page] .font-heading {
+    font-family: var(--font-heading) !important;
+}
+
+body[data-page] .font-body {
+    font-family: var(--font-body) !important;
+}
+
+body[data-page] .font-number {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}

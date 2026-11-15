@@ -146,7 +146,7 @@ async function initializeAccountNavigation() {
 }
 
 document.addEventListener(
-    "dnk:header-loaded",
+    "KS:header-loaded",
     initializeAccountNavigation
 );
 

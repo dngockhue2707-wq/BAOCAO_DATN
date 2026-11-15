@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             displayResult(
                 "success",
                 "Đặt cọc thành công!",
-                "DNK Hotel đã ghi nhận khoản tiền cọc. " +
+                "KS Hotel đã ghi nhận khoản tiền cọc. " +
                 "Bạn có thể xem trạng thái đơn trong tài khoản.",
                 "✓"
             );
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "checking",
                 "Chưa thể xác minh giao dịch",
                 error.message ||
-                    "Không kết nối được đến hệ thống DNK Hotel.",
+                    "Không kết nối được đến hệ thống KS Hotel.",
                 "?"
             );
 

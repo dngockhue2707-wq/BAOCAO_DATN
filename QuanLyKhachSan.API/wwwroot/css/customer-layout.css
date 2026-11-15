@@ -1,5 +1,5 @@
 
-/* DNK HOTEL - CUSTOMER SHARED LAYOUT */
+/* KS HOTEL - CUSTOMER SHARED LAYOUT */
 
 .profile-layout {
     grid-template-columns: 260px minmax(0, 1fr);
@@ -83,7 +83,7 @@
 }
 
 /* ============================================
-   DNK HOTEL - CUSTOMER RECOMMENDATIONS
+   KS HOTEL - CUSTOMER RECOMMENDATIONS
    ============================================ */
 
 .customer-recommendations-page .profile-content {

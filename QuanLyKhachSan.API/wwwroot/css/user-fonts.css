@@ -1,0 +1,146 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
+
+:root {
+    --font-heading: "Playfair Display", Georgia, serif;
+    --font-body: "Times New Roman", Times, serif;
+    --font-number: "Lora", Georgia, serif;
+}
+
+html,
+body {
+    font-family: var(--font-body);
+}
+
+body,
+p,
+a,
+span,
+label,
+li,
+td,
+th,
+small,
+button,
+input,
+select,
+textarea,
+option {
+    font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+}
+
+.site-logo,
+.footer-brand,
+.brand,
+.logo,
+.info-visual-name,
+.gallery-brand,
+.detail-placeholder {
+    font-family: var(--font-heading);
+}
+
+.site-nav,
+.site-nav a,
+.site-dropdown-menu a,
+.header-logout,
+.footer-about,
+.footer-column a,
+.footer-bottom,
+.profile-nav-item,
+.rooms-tab,
+.rooms-card-action,
+.home-btn,
+.search-button,
+.submit-button,
+.register-field,
+.booking-card-actions button {
+    font-family: var(--font-body);
+}
+
+.availability-price strong,
+.booking-summary strong,
+#bookingTotal,
+#roomPrice,
+.booking-total-value,
+.booking-refund-emphasis,
+.booking-deposit-amount,
+.recommendation-price,
+.recommendation-score strong,
+.rooms-summary-right strong,
+.rooms-card-number,
+.info-service-price,
+.about-value-number,
+.home-price,
+.room-price,
+.price,
+.price-value,
+.total-price,
+.total-amount,
+.amount,
+.currency-value,
+.detail-review-score > strong,
+.process-number {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.booking-card-code,
+.review-booking-code,
+.cancellation-request-code,
+.booking-detail-code,
+.room-number,
+.review-room-number,
+.rating-value,
+.recommendation-score-value,
+.recommendation-percent,
+.numeric-value {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.booking-summary #bookingTotal,
+.booking-page #bookingTotal,
+.detail-page #roomPrice,
+.recommendations-page .recommendation-price,
+.my-bookings-page .booking-total-value,
+.bookings-account-page .booking-total-value,
+.bookings-account-page .booking-refund-emphasis,
+.bookings-account-page .booking-refund-row .booking-refund-emphasis,
+.rooms-page .rooms-card-number,
+.rooms-page .rooms-summary-right strong,
+.recommendations-page .recommendation-score strong,
+.availability-page .availability-price strong,
+.info-page .info-service-price {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.font-heading {
+    font-family: var(--font-heading) !important;
+}
+
+.font-body {
+    font-family: var(--font-body) !important;
+}
+
+.font-number {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}

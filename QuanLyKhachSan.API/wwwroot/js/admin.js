@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const heading = document.createElement("div");
 
     heading.append(
-        el("span", "DNK HOTEL · QUẢN TRỊ", "admin-label"),
+        el("span", "KS HOTEL · QUẢN TRỊ", "admin-label"),
         el("h1", pages[page] || "Quản trị")
     );
 
@@ -640,33 +640,26 @@ document.addEventListener("DOMContentLoaded", async () => {
                 closeModal();
             }
         });
-
+        
         box.appendChild(table(
             [
-                "Mã hóa đơn",
-                "Mã đặt phòng",
+                "Mã HĐ",
                 "Khách hàng",
                 "Ngày lập",
-                "Tiền phòng",
-                "Dịch vụ",
                 "Tổng tiền",
-                "Còn lại",
                 "Trạng thái",
                 "Thao tác"
             ],
             data.items.map(i => [
                 `#${i.id}`,
-                `#${i.bookingId}`,
                 i.customer,
                 date(i.date),
-                money(i.roomAmount),
-                money(i.serviceAmount),
                 money(i.total),
-                money(i.remaining),
                 i.status,
-                button("Xem chi tiết", () => showInvoiceDetail(i.id))
+                button("Chi tiết", () => showInvoiceDetail(i.id))
             ])
         ));
+
 
         content.replaceChildren(box, overlay);
     }

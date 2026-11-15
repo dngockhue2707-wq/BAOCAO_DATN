@@ -1,0 +1,457 @@
+
+body[data-page="customers"] .customer-page-subtitle {
+    margin: 8px 0 0;
+    color: #827163;
+    font-family: "Times New Roman", serif;
+    font-size: 15px;
+}
+
+body[data-page="customers"] .customer-stat-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 18px;
+    min-height: 130px;
+}
+
+body[data-page="customers"] .customer-stat-card > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+body[data-page="customers"] .customer-stat-icon {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    color: #936D44;
+    background: #F1E5D6;
+}
+
+body[data-page="customers"] .customer-stat-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+body[data-page="customers"] .customer-stat-card:nth-child(2) .customer-stat-icon {
+    background: #E4EEE4;
+    color: #558060;
+}
+
+body[data-page="customers"] .customer-stat-card:nth-child(3) .customer-stat-icon {
+    background: #F1E9E0;
+    color: #A27B51;
+}
+
+body[data-page="customers"] .customer-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+body[data-page="customers"] .customer-panel-icon {
+    display: grid;
+    place-items: center;
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #F4EBDD;
+    color: #946C41;
+}
+
+body[data-page="customers"] .customer-panel-icon svg {
+    width: 23px;
+    height: 23px;
+}
+
+body[data-page="customers"] .customer-table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+body[data-page="customers"] .customer-footer {
+    margin-top: 25px;
+    color: #A79A8C;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-align: center;
+}
+
+/* POPUP */
+
+body[data-page="customers"] .customer-dialog {
+    position: fixed;
+    width: min(810px, calc(100vw - 32px));
+    max-width: 810px;
+    max-height: min(88vh, 850px);
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #E4D6C6;
+    border-radius: 17px;
+    background: #FFFEFC;
+    box-shadow: 0 25px 85px rgba(29, 20, 13, .27);
+    color: #403025;
+    font-family: "Times New Roman", serif;
+}
+
+body[data-page="customers"] .customer-dialog[open] {
+    display: block;
+}
+
+body[data-page="customers"] .customer-dialog::backdrop {
+    background: rgba(28, 20, 14, .60);
+    backdrop-filter: blur(4px);
+}
+
+body[data-page="customers"] .customer-dialog-layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: min(88vh, 850px);
+    max-height: min(88vh, 850px);
+    min-height: 0;
+}
+
+body[data-page="customers"] .customer-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 18px;
+    margin: 0;
+    padding: 21px 27px;
+    border-bottom: 1px solid #E9DED1;
+    background: linear-gradient(110deg, #FCF8F2, #F3EADF);
+}
+
+body[data-page="customers"] .customer-eyebrow {
+    display: block;
+    margin: 0 0 6px;
+    color: #9E7950;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+}
+
+body[data-page="customers"] .customer-dialog-header h2 {
+    margin: 0;
+    color: #38271D;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+body[data-page="customers"] .customer-dialog-header p {
+    margin: 6px 0 0;
+    color: #937F6D;
+    font-size: 13px;
+}
+
+body[data-page="customers"] .customer-close-icon {
+    display: grid;
+    place-items: center;
+    width: 37px;
+    height: 37px;
+    padding: 0;
+    border-radius: 50%;
+    line-height: 1;
+    transition: background .2s, color .2s;
+}
+
+body[data-page="customers"] .customer-close-icon:hover {
+    background: #70513A;
+    color: #FFFFFF;
+}
+
+body[data-page="customers"] .customer-dialog-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding: 22px 27px 28px;
+    scrollbar-width: thin;
+    scrollbar-color: #C7A985 transparent;
+}
+
+/* THÔNG TIN KHÁCH HÀNG */
+
+body[data-page="customers"] .customer-profile-hero {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 106px;
+    margin-bottom: 23px;
+    padding: 17px 20px;
+    border: 1px solid #E9DBC9;
+    border-radius: 12px;
+    background: linear-gradient(110deg, #FCF5EC, #F6EBDE);
+}
+
+body[data-page="customers"] .customer-profile-avatar {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #E9D4B8;
+    color: #835C34;
+}
+
+body[data-page="customers"] .customer-profile-avatar svg {
+    width: 32px;
+    height: 32px;
+}
+
+body[data-page="customers"] .customer-profile-information {
+    min-width: 0;
+}
+
+body[data-page="customers"] .customer-profile-information > span {
+    color: #A27C50;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+body[data-page="customers"] .customer-profile-information h3 {
+    margin: 5px 0 4px;
+    color: #432D1D;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 21px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+body[data-page="customers"] .customer-profile-information p {
+    margin: 0;
+    color: #998574;
+    font-size: 13px;
+}
+
+body[data-page="customers"] .customer-detail-section {
+    margin-bottom: 24px;
+}
+
+body[data-page="customers"] .customer-detail-heading {
+    margin: 0 0 14px;
+    color: #4B3425;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+body[data-page="customers"] .customer-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px 13px;
+}
+
+body[data-page="customers"] .customer-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    padding: 14px 16px;
+    border: 1px solid #EDE4D9;
+    border-radius: 9px;
+    background: #FAF8F5;
+}
+
+body[data-page="customers"] .customer-detail-item span {
+    color: #948170;
+    font-size: 12px;
+}
+
+body[data-page="customers"] .customer-detail-item strong {
+    color: #4A382B;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+body[data-page="customers"] .customer-detail-full {
+    grid-column: 1 / -1;
+}
+
+/* LỊCH SỬ ĐẶT PHÒNG */
+
+body[data-page="customers"] .customer-booking-history {
+    margin: 0;
+    padding-top: 22px;
+    border-top: 1px solid #ECE3D8;
+}
+
+body[data-page="customers"] .customer-booking-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 16px;
+}
+
+body[data-page="customers"] .customer-booking-history h3 {
+    margin: 0 0 6px;
+    color: #493225;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 19px;
+    font-weight: 600;
+}
+
+body[data-page="customers"] .customer-booking-history p {
+    margin: 0;
+    color: #8C7B6C;
+    font-size: 13px;
+}
+
+body[data-page="customers"] .customer-booking-table-wrapper {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    border: 1px solid #E9DFD2;
+    border-radius: 9px;
+    scrollbar-width: thin;
+}
+
+body[data-page="customers"] .customer-booking-table {
+    width: 100%;
+    min-width: 710px;
+    border-collapse: collapse;
+    background: #FFFFFF;
+}
+
+body[data-page="customers"] .customer-booking-table th {
+    padding: 14px 12px;
+    background: #F4EEE6;
+    color: #604A37;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+body[data-page="customers"] .customer-booking-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #EFE7DE;
+    color: #4A382A;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+body[data-page="customers"] .customer-booking-table td:nth-child(3),
+body[data-page="customers"] .customer-booking-table td:nth-child(4),
+body[data-page="customers"] .customer-booking-table td:nth-child(5) {
+    white-space: nowrap;
+}
+
+/* CHÂN POPUP */
+
+body[data-page="customers"] .customer-dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 15px 27px;
+    border-top: 1px solid #E9DFD3;
+    background: #FFFEFC;
+}
+
+body[data-page="customers"] .customer-dialog-actions span {
+    color: #9A8877;
+    font-size: 12px;
+}
+
+body[data-page="customers"] .customer-dialog-close-button {
+    min-width: 115px;
+    min-height: 41px;
+    padding: 10px 23px;
+    border: 1px solid #72513A;
+    border-radius: 8px;
+    background: #72513A;
+    color: #FFFFFF;
+    font-family: "Times New Roman", serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+body[data-page="customers"] .customer-dialog-close-button:hover {
+    background: #533928;
+}
+
+@media (max-width: 1100px) {
+    body[data-page="customers"] .customer-stat-card {
+        padding: 15px;
+        gap: 12px;
+    }
+
+    body[data-page="customers"] .customer-stat-icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    body[data-page="customers"] .customer-stat-icon svg {
+        width: 23px;
+        height: 23px;
+    }
+}
+
+@media (max-width: 600px) {
+    body[data-page="customers"] .customer-stat-card {
+        min-height: 110px;
+    }
+
+    body[data-page="customers"] .customer-panel-title {
+        align-items: flex-start;
+    }
+
+    body[data-page="customers"] .customer-dialog {
+        width: calc(100vw - 18px);
+        max-height: 92vh;
+        border-radius: 12px;
+    }
+
+    body[data-page="customers"] .customer-dialog-layout {
+        height: 92vh;
+        max-height: 92vh;
+    }
+
+    body[data-page="customers"] .customer-dialog-header,
+    body[data-page="customers"] .customer-dialog-body,
+    body[data-page="customers"] .customer-dialog-actions {
+        padding-left: 17px;
+        padding-right: 17px;
+    }
+
+    body[data-page="customers"] .customer-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-page="customers"] .customer-detail-full {
+        grid-column: auto;
+    }
+
+    body[data-page="customers"] .customer-profile-hero {
+        padding: 14px;
+    }
+
+    body[data-page="customers"] .customer-dialog-actions span {
+        display: none;
+    }
+
+    body[data-page="customers"] .customer-dialog-close-button {
+        width: 100%;
+    }
+}

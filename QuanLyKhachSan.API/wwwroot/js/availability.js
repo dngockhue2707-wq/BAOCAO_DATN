@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <text x="400" y="405"
                       font-family="Georgia,serif"
                       font-size="32" fill="#926024"
-                      text-anchor="middle">DNK HOTEL</text>
+                      text-anchor="middle">KS HOTEL</text>
             </svg>
         `;
 

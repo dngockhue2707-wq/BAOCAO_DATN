@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (displayName) {
             displayName.textContent =
-                name || data.username || "Khách hàng DNK Hotel";
+                name || data.username || "Khách hàng KS Hotel";
         }
 
         if (displayEmail) {

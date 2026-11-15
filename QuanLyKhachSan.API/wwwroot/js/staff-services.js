@@ -2,13 +2,20 @@
 "use strict";
 
 document.addEventListener("staff-auth-ready", () => {
-    const s = Staff;
+    const s = window.Staff;
 
-    function field(label, node) {
-        const wrap = s.el("label", "", "staff-field");
-        wrap.append(s.el("span", label), node);
+    const el = (tag, className = "", text = "") => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        node.textContent = String(text ?? "");
+        return node;
+    };
+
+    const field = (label, control) => {
+        const wrap = el("label", "sv-field");
+        wrap.append(el("span", "", label), control);
         return wrap;
-    }
+    };
 
     async function load() {
         try {
@@ -19,76 +26,110 @@ document.addEventListener("staff-auth-ready", () => {
                 s.api("operations/service-usage")
             ]);
 
-            const panel = s.panel("Ghi nhận dịch vụ khách sử dụng");
-            const form = s.el("form", "", "staff-form");
+            const serviceItems = Array.isArray(services.items)
+                ? services.items : [];
+            const bookingItems = Array.isArray(bookings.items)
+                ? bookings.items : [];
+            const roomItems = Array.isArray(rooms.items)
+                ? rooms.items : [];
+            const usageItems = Array.isArray(usage.items)
+                ? usage.items : [];
+
+            const activeBookings = bookingItems.filter(
+                x => x.status === "Đã nhận phòng"
+            );
+
+            const uniqueBookings = [
+                ...new Map(
+                    activeBookings.map(x => [x.id, x])
+                ).values()
+            ];
+
+            const page = el("div", "sv-page");
+            const columns = el("div", "sv-columns");
+
+            const formPanel = el("section", "sv-panel sv-form-panel");
+            formPanel.appendChild(
+                el("h2", "sv-panel-title", "Ghi nhận dịch vụ")
+            );
+
+            const form = el("form", "sv-form");
+            const formGrid = el("div", "sv-form-grid");
 
             const bookingSelect = document.createElement("select");
             const roomSelect = document.createElement("select");
             const serviceSelect = document.createElement("select");
             const quantity = document.createElement("input");
+
             quantity.type = "number";
             quantity.min = "1";
             quantity.max = "100";
             quantity.value = "1";
             quantity.required = true;
 
-            const checkedIn = bookings.items.filter(
-                x => x.status === "Đã nhận phòng"
-            );
-
-            const uniqueBookings = [...new Map(
-                checkedIn.map(x => [x.id, x])
-            ).values()];
-
             uniqueBookings.forEach(item => {
-                const option = document.createElement("option");
-                option.value = item.id;
-                option.textContent = `#${item.id} - ${item.customer}`;
-                bookingSelect.appendChild(option);
+                bookingSelect.add(
+                    new Option(`#${item.id} - ${item.customer}`, item.id)
+                );
+            });
+
+            serviceItems.forEach(item => {
+                serviceSelect.add(
+                    new Option(
+                        `${item.name} - ${s.money(item.price)}/${item.unit}`,
+                        item.id
+                    )
+                );
             });
 
             function updateRooms() {
                 roomSelect.replaceChildren();
 
-                const selectedId = Number(bookingSelect.value);
+                const bookingId = Number(bookingSelect.value);
 
-                const available = checkedIn.filter(
-                    item => item.id === selectedId
-                );
+                activeBookings
+                    .filter(item => Number(item.id) === bookingId)
+                    .forEach(item => {
+                        const matchedRoom = roomItems.find(
+                            x => String(x.number) === String(item.roomNumber)
+                        );
 
-                available.forEach(item => {
-                    const room = rooms.items.find(
-                        x => x.number === item.roomNumber
-                    );
-                    if (!room) return;
+                        if (!matchedRoom) return;
 
-                    const option = document.createElement("option");
-                    option.value = room.id;
-                    option.textContent = room.number;
-                    roomSelect.appendChild(option);
-                });
+                        if (![...roomSelect.options].some(
+                            option => Number(option.value) === Number(matchedRoom.id)
+                        )) {
+                            roomSelect.add(
+                                new Option(
+                                    matchedRoom.number,
+                                    matchedRoom.id
+                                )
+                            );
+                        }
+                    });
             }
 
             bookingSelect.addEventListener("change", updateRooms);
             updateRooms();
 
-            services.items.forEach(item => {
-                const option = document.createElement("option");
-                option.value = item.id;
-                option.textContent = `${item.name} - ${s.money(item.price)}/${item.unit}`;
-                serviceSelect.appendChild(option);
-            });
-
-            const submit = s.el("button", "Ghi nhận dịch vụ", "staff-action");
-            submit.type = "submit";
-
-            form.append(
+            formGrid.append(
                 field("Đơn đặt phòng", bookingSelect),
                 field("Phòng", roomSelect),
                 field("Dịch vụ", serviceSelect),
-                field("Số lượng", quantity),
-                submit
+                field("Số lượng", quantity)
             );
+
+            const submit = el(
+                "button",
+                "sv-submit",
+                "＋  Ghi nhận dịch vụ"
+            );
+            submit.type = "submit";
+
+            const submitRow = el("div", "sv-submit-row");
+            submitRow.appendChild(submit);
+
+            form.append(formGrid, submitRow);
 
             form.addEventListener("submit", async event => {
                 event.preventDefault();
@@ -100,8 +141,24 @@ document.addEventListener("staff-auth-ready", () => {
                     quantity: Number(quantity.value)
                 };
 
-                if (!input.bookingId || !input.roomId || !input.serviceId) {
-                    s.notify("Vui lòng chọn đầy đủ đơn, phòng và dịch vụ.", true);
+                if (
+                    !input.bookingId ||
+                    !input.roomId ||
+                    !input.serviceId
+                ) {
+                    s.notify(
+                        "Vui lòng chọn đầy đủ đơn, phòng và dịch vụ.",
+                        true
+                    );
+                    return;
+                }
+
+                if (
+                    !Number.isInteger(input.quantity) ||
+                    input.quantity < 1 ||
+                    input.quantity > 100
+                ) {
+                    s.notify("Số lượng từ 1 đến 100.", true);
                     return;
                 }
 
@@ -111,38 +168,63 @@ document.addEventListener("staff-auth-ready", () => {
 
                 try {
                     const result = await s.api(
-                        "operations/service-usage", "POST", input
+                        "operations/service-usage",
+                        "POST",
+                        input
                     );
+
                     await load();
-                    s.notify(result.message);
+                    s.notify(result.message || "Đã ghi nhận dịch vụ.");
                 } catch (error) {
-                    s.notify(error.message, true);
+                    s.notify(error.message || "Ghi nhận thất bại.", true);
                     submit.disabled = false;
                 }
             });
 
-            const history = s.panel("Lịch sử sử dụng dịch vụ");
+            formPanel.appendChild(form);
 
-            const rows = usage.items.map(item => [
-                "#" + item.bookingId,
-                item.room,
+            const historyPanel = el("section", "sv-panel sv-history-panel");
+
+            const historyHead = el("div", "sv-history-head");
+            historyHead.append(
+                el("h2", "sv-panel-title", "Lịch sử sử dụng"),
+                el("span", "sv-count", `${usageItems.length} lượt`)
+            );
+
+            const rows = usageItems.map(item => [
+                el("strong", "sv-booking-id", `#${item.bookingId}`),
+                el("strong", "", item.room),
                 item.service,
                 item.quantity,
                 s.money(item.price),
-                s.money(item.total),
+                el("strong", "sv-money", s.money(item.total)),
                 s.date(item.date)
             ]);
 
-            history.appendChild(s.table(
-                ["Đơn", "Phòng", "Dịch vụ", "Số lượng",
-                 "Đơn giá", "Thành tiền", "Ngày sử dụng"],
-                rows
-            ));
+            historyPanel.append(
+                historyHead,
+                s.table(
+                    [
+                        "Đơn",
+                        "Phòng",
+                        "Dịch vụ",
+                        "SL",
+                        "Đơn giá",
+                        "Thành tiền",
+                        "Ngày sử dụng"
+                    ],
+                    rows
+                )
+            );
 
-            panel.appendChild(form);
-            s.content.replaceChildren(panel, history);
+            columns.append(formPanel, historyPanel);
+            page.appendChild(columns);
+            s.content.replaceChildren(page);
         } catch (error) {
-            s.notify(error.message, true);
+            s.notify(
+                error.message || "Không tải được dịch vụ.",
+                true
+            );
         }
     }
 

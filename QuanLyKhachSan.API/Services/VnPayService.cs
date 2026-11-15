@@ -91,7 +91,7 @@ public class VnPayService
                 .ToString(CultureInfo.InvariantCulture),
             ["vnp_CurrCode"] = "VND",
             ["vnp_TxnRef"] = reference,
-            ["vnp_OrderInfo"] = $"Dat coc DNK Hotel {reference}",
+            ["vnp_OrderInfo"] = $"Dat coc KS Hotel {reference}",
             ["vnp_OrderType"] = "other",
             ["vnp_Locale"] = "vn",
             ["vnp_ReturnUrl"] = returnUrl,

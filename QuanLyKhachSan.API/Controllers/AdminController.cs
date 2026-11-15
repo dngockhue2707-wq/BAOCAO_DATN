@@ -541,7 +541,7 @@ public class AdminController : ControllerBase
                 position = employee.ChucVu ?? "",
                 active = employee.TrangThai,
                 username = account.TenDangNhap,
-                role = account.TenDangNhap == "admin_dnk"
+                role = account.TenDangNhap == "admin_KS"
                     ? "Admin"
                     : "NhanVien"
             }

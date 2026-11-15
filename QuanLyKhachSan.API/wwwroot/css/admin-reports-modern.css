@@ -1,0 +1,704 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap");
+
+body[data-page="reports"] {
+    --re-bg: #FAF8F5;
+    --re-card: #FFFEFC;
+    --re-dark: #30251E;
+    --re-brown: #765039;
+    --re-gold: #B98A50;
+    --re-green: #55735B;
+    --re-border: #E9DED1;
+    --re-muted: #89796A;
+    --re-heading: "Playfair Display", Georgia, serif;
+    --re-body: "Times New Roman", Times, serif;
+
+    margin: 0;
+    background: var(--re-bg);
+    color: var(--re-dark);
+    font-family: var(--re-body);
+    overflow-x: hidden;
+}
+
+body[data-page="reports"] *,
+body[data-page="reports"] *::before,
+body[data-page="reports"] *::after {
+    box-sizing: border-box;
+}
+
+body[data-page="reports"] .admin-main {
+    min-width: 0;
+    background: var(--re-bg);
+}
+
+body[data-page="reports"] .admin-topbar {
+    min-height: 105px;
+    padding-top: 23px;
+    padding-bottom: 10px;
+    border: none;
+    background: var(--re-bg);
+}
+
+body[data-page="reports"] .admin-topbar::before,
+body[data-page="reports"] .admin-topbar::after {
+    display: none;
+}
+
+body[data-page="reports"] .admin-topbar h1 {
+    margin: 0;
+    color: #34251C;
+    font-family: var(--re-heading);
+    font-size: 38px;
+    font-weight: 600;
+}
+
+body[data-page="reports"] .admin-label {
+    color: #A27543;
+    font-size: 12px;
+    letter-spacing: 1.1px;
+    font-weight: 700;
+}
+
+body[data-page="reports"] .admin-user {
+    padding: 9px 14px;
+    border: 1px solid #E7D9C9;
+    border-radius: 22px;
+    background: #FFFFFF;
+    color: #74543B;
+}
+
+body[data-page="reports"] .admin-message:empty {
+    display: none;
+}
+
+.re-dashboard {
+    width: 100%;
+    min-width: 0;
+    padding-bottom: 35px;
+}
+
+.re-description {
+    margin: -2px 0 21px;
+    color: #847366;
+    font-size: 15px;
+}
+
+/* TỔNG QUAN DOANH THU */
+
+.re-overview {
+    display: grid;
+    grid-template-columns: minmax(0, 2.5fr) repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.re-main-revenue {
+    position: relative;
+    min-width: 0;
+    min-height: 158px;
+    overflow: hidden;
+    border: 1px solid #896343;
+    border-radius: 15px;
+    background: linear-gradient(120deg, #74502F, #583823);
+    box-shadow: 0 8px 22px rgba(82, 53, 31, .13);
+    color: #FFFFFF;
+}
+
+.re-main-revenue-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    height: 100%;
+    padding: 22px 24px;
+}
+
+.re-main-label {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: #F7E8D5;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.re-main-label .re-icon {
+    display: grid;
+    place-items: center;
+    width: 41px;
+    height: 41px;
+    flex-shrink: 0;
+    border-radius: 11px;
+    background: rgba(255,255,255,.13);
+    color: #FFF6E8;
+}
+
+.re-icon svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+}
+
+.re-main-number {
+    display: block;
+    font-size: clamp(25px, 2.7vw, 37px);
+    font-weight: 700;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.re-main-caption {
+    margin: 0;
+    color: #EBD8BF;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.re-main-ornament {
+    position: absolute;
+    right: -45px;
+    bottom: -85px;
+    width: 190px;
+    height: 190px;
+    border: 1px solid rgba(238,202,152,.25);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.re-main-ornament::after {
+    content: "";
+    position: absolute;
+    inset: 22px;
+    border: 1px solid rgba(238,202,152,.16);
+    border-radius: 50%;
+}
+
+/* BỐN KPI */
+
+.re-kpi {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    min-width: 0;
+    min-height: 158px;
+    padding: 19px 15px;
+    border: 1px solid #E9DDD0;
+    border-radius: 14px;
+    background: #FFFFFF;
+    box-shadow: 0 5px 18px rgba(56,38,25,.035);
+}
+
+.re-kpi-top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 11px;
+}
+
+.re-kpi .re-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 11px;
+    background: #F4E9DD;
+    color: #A2743C;
+}
+
+.re-kpi-title {
+    color: #5B4739;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.re-kpi-value {
+    display: block;
+    color: #34251B;
+    font-size: clamp(19px, 1.8vw, 26px);
+    font-weight: 700;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.re-kpi-invoice .re-kpi-value {
+    font-size: clamp(16px, 1.5vw, 21px);
+    white-space: nowrap;
+}
+
+.re-kpi-success .re-icon {
+    background: #E8F3EA;
+    color: #417D51;
+}
+
+.re-kpi-cancel .re-icon {
+    background: #FAECE9;
+    color: #B35C4F;
+}
+
+/* KHUNG NỘI DUNG */
+
+.re-panel {
+    min-width: 0;
+    margin-bottom: 19px;
+    padding: 24px 25px;
+    border: 1px solid #E8DCCF;
+    border-radius: 16px;
+    background: var(--re-card);
+    box-shadow: 0 6px 22px rgba(53,36,25,.035);
+}
+
+.re-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 19px;
+}
+
+.re-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.re-panel-title .re-icon {
+    display: grid;
+    place-items: center;
+    width: 37px;
+    height: 37px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #F5EBDD;
+    color: #A47743;
+}
+
+.re-panel h2 {
+    margin: 0;
+    color: #37261C;
+    font-family: var(--re-heading);
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.re-panel-description {
+    margin: -8px 0 19px;
+    color: #897A6D;
+    font-size: 13px;
+}
+
+/* BIỂU ĐỒ ĐƯỜNG */
+
+.re-chart-panel {
+    padding-bottom: 17px;
+}
+
+.re-legend {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.re-legend > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #655344;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.re-legend i {
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+}
+
+.re-legend-invoice {
+    background: #B9894E;
+}
+
+.re-legend-received {
+    background: #55775C;
+}
+
+.re-year-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.re-year-field label {
+    color: #5E4838;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.re-year-field select {
+    width: 110px;
+    min-height: 39px;
+    padding: 8px 12px;
+    border: 1px solid #E0D0BD;
+    border-radius: 8px;
+    outline: none;
+    background: #FFFFFF;
+    color: #523A2A;
+    font-family: var(--re-body);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.re-year-field select:focus {
+    border-color: #A87A47;
+    box-shadow: 0 0 0 3px rgba(168,122,71,.12);
+}
+
+.re-chart-scroll {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #C9AD8B #F7F2EC;
+}
+
+.re-chart-scroll svg {
+    display: block;
+    width: 100%;
+    min-width: 760px;
+    height: auto;
+    overflow: visible;
+}
+
+.re-chart-gridline {
+    stroke: #E8DED4;
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+}
+
+.re-chart-axis-label {
+    fill: #887668;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+}
+
+.re-chart-line {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.re-chart-invoice {
+    stroke: #C18A38;
+}
+
+.re-chart-received {
+    stroke: #53795D;
+}
+
+.re-chart-point-invoice {
+    fill: #FFFFFF;
+    stroke: #C18A38;
+    stroke-width: 2.5;
+}
+
+.re-chart-point-received {
+    fill: #FFFFFF;
+    stroke: #53795D;
+    stroke-width: 2.5;
+}
+
+/* HAI BẢNG TRẠNG THÁI */
+
+.re-status-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 17px;
+    margin-bottom: 19px;
+}
+
+.re-status-grid .re-panel {
+    margin-bottom: 0;
+}
+
+.re-status-table-wrapper {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+}
+
+.re-status-table {
+    width: 100%;
+    min-width: 350px;
+    border-collapse: collapse;
+}
+
+.re-status-table thead {
+    background: #F6F0E9;
+}
+
+.re-status-table th {
+    padding: 12px 11px;
+    color: #5B4636;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.re-status-table td {
+    padding: 12px 11px;
+    border-bottom: 1px solid #EFE7DE;
+    color: #503C2D;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.re-status-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.re-status-table th:nth-child(2),
+.re-status-table td:nth-child(2) {
+    text-align: center;
+    width: 80px;
+    font-weight: 700;
+}
+
+.re-status-table th:nth-child(3),
+.re-status-table td:nth-child(3) {
+    width: 39%;
+}
+
+.re-percentage {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.re-percentage > span {
+    width: 36px;
+    flex-shrink: 0;
+    text-align: right;
+    color: #725239;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.re-status-track {
+    flex: 1 1 auto;
+    height: 9px;
+    overflow: hidden;
+    border-radius: 9px;
+    background: #F1EAE2;
+}
+
+.re-status-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #C99B63, #96632E);
+}
+
+.re-room-panel .re-status-fill {
+    background: linear-gradient(90deg, #91AA94, #55785D);
+}
+
+/* BẢNG DOANH THU CHI TIẾT */
+
+.re-monthly-scroll {
+    width: 100%;
+    max-width: 100%;
+    max-height: 460px;
+    overflow: auto;
+    border: 1px solid #EAE0D5;
+    border-radius: 9px;
+    scrollbar-width: thin;
+}
+
+.re-monthly-table {
+    width: 100%;
+    min-width: 550px;
+    border-collapse: collapse;
+}
+
+.re-monthly-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #F6F0E9;
+}
+
+.re-monthly-table th {
+    padding: 14px 16px;
+    color: #5D4838;
+    font-size: 14px;
+    text-align: left;
+}
+
+.re-monthly-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid #EEE5DC;
+    color: #47362A;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.re-monthly-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.re-monthly-table tbody tr:hover {
+    background: #FBF7F1;
+}
+
+.re-monthly-table th:not(:first-child),
+.re-monthly-table td:not(:first-child) {
+    text-align: right;
+}
+
+.re-received-cell {
+    color: #42764C !important;
+    font-weight: 700;
+}
+
+.re-report-message {
+    margin: 0 0 15px;
+    padding: 12px 15px;
+    border: 1px solid #E7DACB;
+    border-radius: 8px;
+    background: #F8F0E7;
+    color: #775638;
+    font-size: 14px;
+}
+
+.re-report-message.error {
+    border-color: #EBD1CB;
+    background: #FCEFED;
+    color: #A54A40;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1450px) {
+    .re-overview {
+        grid-template-columns: minmax(0, 2.3fr) repeat(4, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .re-main-revenue-content {
+        padding: 19px;
+    }
+
+    .re-main-number {
+        font-size: 29px;
+    }
+
+    .re-kpi {
+        padding: 16px 12px;
+    }
+
+    .re-kpi-title {
+        font-size: 12px;
+    }
+
+    .re-kpi-value {
+        font-size: 22px;
+    }
+
+    .re-kpi-invoice .re-kpi-value {
+        font-size: 17px;
+    }
+}
+
+@media (max-width: 1150px) {
+    .re-overview {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .re-main-revenue {
+        grid-column: 1 / -1;
+        min-height: 145px;
+    }
+
+    .re-kpi {
+        min-height: 130px;
+    }
+
+    .re-status-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 800px) {
+    .re-overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .re-panel {
+        padding: 18px;
+    }
+
+    .re-panel-heading {
+        align-items: flex-start;
+    }
+
+    .re-panel h2 {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 520px) {
+    body[data-page="reports"] .admin-topbar h1 {
+        font-size: 31px;
+    }
+
+    .re-overview {
+        gap: 10px;
+    }
+
+    .re-kpi {
+        min-height: 120px;
+    }
+
+    .re-kpi-value {
+        font-size: 22px;
+    }
+
+    .re-kpi-invoice .re-kpi-value {
+        font-size: 16px;
+    }
+
+    .re-kpi-title {
+        font-size: 12px;
+    }
+
+    .re-chart-panel .re-panel-heading {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .re-year-field {
+        margin-left: 0;
+    }
+
+    .re-status-table {
+        min-width: 350px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .re-chart-line {
+        transition: none;
+    }
+}

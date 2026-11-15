@@ -25,7 +25,7 @@ async function loadComponent(selector, path) {
             initializeRoomDropdown();
 
             document.dispatchEvent(
-                new CustomEvent("dnk:header-loaded")
+                new CustomEvent("KS:header-loaded")
             );
         }
     } catch (error) {

@@ -1,0 +1,1271 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap");
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) {
+    --ui-bg: #FAF8F5;
+    --ui-card: #FFFEFC;
+    --ui-cream: #F6EFE7;
+    --ui-dark: #35261C;
+    --ui-brown: #73513A;
+    --ui-gold: #B48A54;
+    --ui-muted: #897869;
+    --ui-border: #E9DCCE;
+    --ui-heading: "Playfair Display", Georgia, serif;
+    --ui-body: "Times New Roman", Times, serif;
+    background: var(--ui-bg);
+    color: var(--ui-dark);
+    font-family: var(--ui-body);
+    overflow-x: hidden;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) *,
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) *::before,
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) *::after {
+    box-sizing: border-box;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) [hidden] {
+    display: none !important;
+}
+
+/* BO CUC CHUNG */
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) .admin-shell {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+    background: var(--ui-bg);
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) .admin-main {
+    display: block;
+    width: calc(100% - 260px);
+    max-width: calc(100% - 260px);
+    min-width: 0;
+    height: 100vh;
+    min-height: 0;
+    margin: 0 0 0 260px;
+    padding: 0 28px 34px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: var(--ui-bg);
+    scrollbar-width: thin;
+    scrollbar-color: #CAA984 transparent;
+}
+
+/* DAU TRANG */
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) .admin-topbar {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 158px;
+    margin: 0 -28px 23px;
+    padding: 24px 31px;
+    overflow: hidden;
+    border-bottom: 1px solid #E8DACA;
+    background: linear-gradient(
+        110deg,
+        #FFFCF8 0%,
+        #F3E9DE 100%
+    );
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) .admin-topbar::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -45px;
+    right: -45px;
+    width: 335px;
+    height: 230px;
+    border: 1px solid rgba(175,132,77,.23);
+    border-radius: 50%;
+    transform: rotate(-16deg);
+    pointer-events: none;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) .admin-topbar::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    right: 4%;
+    top: -75px;
+    width: 250px;
+    height: 260px;
+    border: 1px solid rgba(175,132,77,.13);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) .admin-topbar > div:first-child {
+    min-width: 0;
+    max-width: 75%;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) .admin-label {
+    display: block;
+    margin: 0 0 8px;
+    color: #956A3C;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) .admin-topbar h1 {
+    margin: 0;
+    color: #342319;
+    font-family: var(--ui-heading);
+    font-size: clamp(29px, 3vw, 39px);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="bookings"],
+    [data-page="customers"],
+    [data-page="services"]
+) .admin-user {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    max-width: 220px;
+    padding: 9px 16px;
+    overflow: hidden;
+    border: 1px solid #E3D2BF;
+    border-radius: 25px;
+    background: rgba(255,255,255,.92);
+    color: #6D513B;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* THONG BAO */
+
+body:is(
+    [data-page="rooms"],
+    [data-page="customers"],
+    [data-page="services"]
+) :is(
+    .room-management-message,
+    .customer-message,
+    .service-message
+) {
+    min-height: 0;
+    margin: 0;
+    font-size: 14px;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="customers"],
+    [data-page="services"]
+) :is(
+    .room-management-message,
+    .customer-message,
+    .service-message
+):empty {
+    display: none;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="customers"],
+    [data-page="services"]
+) :is(
+    .room-management-message,
+    .customer-message,
+    .service-message
+):not(:empty) {
+    margin-bottom: 17px;
+    padding: 12px 15px;
+    border: 1px solid #DDE8DC;
+    border-radius: 9px;
+    background: #F0F7EF;
+    color: #44754E;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="customers"],
+    [data-page="services"]
+) :is(
+    .room-management-message,
+    .customer-message,
+    .service-message
+).error {
+    border-color: #EDD6D0;
+    background: #FBEFED;
+    color: #AA4D42;
+}
+
+/* THE THONG KE */
+
+body[data-page="rooms"] .room-overview,
+body[data-page="customers"] .customer-stats,
+body[data-page="services"] .service-stats {
+    display: grid;
+    gap: 14px;
+    margin: 0 0 21px;
+}
+
+body[data-page="rooms"] .room-overview {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+body[data-page="customers"] .customer-stats,
+body[data-page="services"] .service-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body[data-page="rooms"] .room-overview-card,
+body[data-page="customers"] .customer-stat-card,
+body[data-page="services"] .service-stat-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    min-width: 0;
+    min-height: 134px;
+    margin: 0;
+    padding: 20px 20px 20px 78px;
+    overflow: hidden;
+    border: 1px solid #EAD9C7;
+    border-radius: 14px;
+    background: linear-gradient(
+        135deg,
+        #FFFEFC,
+        #FAF1E7
+    );
+    box-shadow: 0 4px 18px rgba(51,33,20,.025);
+}
+
+body[data-page="rooms"] .room-overview-card::before,
+body[data-page="customers"] .customer-stat-card::before,
+body[data-page="services"] .service-stat-card::before {
+    content: "▤";
+    position: absolute;
+    top: 50%;
+    left: 17px;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    background: #F1E2CF;
+    color: #976832;
+    font-size: 24px;
+    line-height: 1;
+    transform: translateY(-50%);
+}
+
+body[data-page="rooms"] .room-overview-card::after,
+body[data-page="customers"] .customer-stat-card::after,
+body[data-page="services"] .service-stat-card::after {
+    content: "";
+    position: absolute;
+    right: -38px;
+    bottom: -78px;
+    width: 150px;
+    height: 120px;
+    border: 1px solid rgba(182,142,89,.15);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+body[data-page="rooms"] .room-overview-card span,
+body[data-page="customers"] .customer-stat-card span,
+body[data-page="services"] .service-stat-card span {
+    position: relative;
+    z-index: 1;
+    color: #6E5745;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+body[data-page="rooms"] .room-overview-card strong,
+body[data-page="customers"] .customer-stat-card strong,
+body[data-page="services"] .service-stat-card strong {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: #805229;
+    font-family: var(--ui-body);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+}
+
+body[data-page="customers"] .customer-stat-card small,
+body[data-page="services"] .service-stat-card small {
+    position: relative;
+    z-index: 1;
+    color: #958273;
+    font-size: 12px;
+}
+
+body[data-page="rooms"] .room-overview-card:nth-child(2),
+body[data-page="customers"] .customer-stat-card:nth-child(2),
+body[data-page="services"] .service-stat-card:nth-child(2) {
+    border-color: #DFE8DF;
+    background: linear-gradient(135deg,#FDFFFC,#EDF5EC);
+}
+
+body[data-page="rooms"] .room-overview-card:nth-child(2)::before,
+body[data-page="customers"] .customer-stat-card:nth-child(2)::before,
+body[data-page="services"] .service-stat-card:nth-child(2)::before {
+    content: "✓";
+    background: #DFEEE0;
+    color: #38764A;
+}
+
+body[data-page="rooms"] .room-overview-card:nth-child(3) {
+    border-color: #DFE4F0;
+    background: linear-gradient(135deg,#FCFDFF,#EDF2FA);
+}
+
+body[data-page="rooms"] .room-overview-card:nth-child(3)::before {
+    content: "▣";
+    background: #E0E9F8;
+    color: #426CA9;
+}
+
+body[data-page="rooms"] .room-overview-card:nth-child(4)::before {
+    content: "⚒";
+}
+
+body[data-page="customers"] .customer-stat-card:nth-child(1)::before {
+    content: "♙";
+}
+
+body[data-page="customers"] .customer-stat-card:nth-child(2)::before {
+    content: "☎";
+}
+
+body[data-page="customers"] .customer-stat-card:nth-child(3)::before {
+    content: "✉";
+}
+
+body[data-page="services"] .service-stat-card:nth-child(1)::before {
+    content: "✧";
+}
+
+body[data-page="services"] .service-stat-card:nth-child(3)::before {
+    content: "⊖";
+    background: #F5E6E0;
+    color: #A76750;
+}
+
+/* CAC KHUNG NOI DUNG */
+
+body[data-page="rooms"] .room-section,
+body[data-page="customers"] .customer-panel,
+body[data-page="services"] .service-panel,
+body[data-page="bookings"] .admin-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-bottom: 21px;
+    padding: 24px;
+    border: 1px solid #E9DCCC;
+    border-radius: 15px;
+    background: var(--ui-card);
+    box-shadow: 0 7px 26px rgba(55,37,24,.03);
+}
+
+body[data-page="rooms"] .room-section-top,
+body[data-page="customers"] .customer-panel-heading,
+body[data-page="services"] .service-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 17px;
+    margin-bottom: 22px;
+}
+
+body[data-page="rooms"] .room-section-top h2,
+body[data-page="customers"] .customer-panel-heading h2,
+body[data-page="services"] .service-panel-header h2,
+body[data-page="bookings"] .admin-panel h2 {
+    margin: 0 0 7px;
+    color: #3B291D;
+    font-family: var(--ui-heading);
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+body[data-page="rooms"] .room-section-top p,
+body[data-page="customers"] .customer-panel-heading p,
+body[data-page="services"] .service-panel-header p,
+body[data-page="bookings"] .admin-panel > p {
+    margin: 0;
+    color: #8A796A;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* TAB PHONG */
+
+body[data-page="rooms"] .room-management-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0 0 19px;
+    padding: 5px;
+    border: 1px solid #E6D7C5;
+    border-radius: 12px;
+    background: #F5EDE4;
+}
+
+body[data-page="rooms"] .room-management-tabs .room-tab {
+    min-width: 0;
+    min-height: 45px;
+    margin: 0;
+    padding: 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #72543D;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+body[data-page="rooms"] .room-management-tabs .room-tab:hover {
+    background: #EAE0D3;
+}
+
+body[data-page="rooms"] .room-management-tabs .room-tab.active {
+    background: #75513A;
+    color: #FFFFFF;
+    box-shadow: 0 3px 9px rgba(72,48,30,.15);
+}
+
+body[data-page="rooms"] .room-image-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin: 0 0 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #EAE0D4;
+}
+
+body[data-page="rooms"] .room-image-tabs .room-image-tab {
+    min-height: 42px;
+    padding: 10px 15px;
+    border: 1px solid #DCC9B2;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #795639;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+body[data-page="rooms"] .room-image-tabs .room-image-tab.active {
+    border-color: #75513A;
+    background: #75513A;
+    color: #FFFFFF;
+}
+
+/* BO LOC */
+
+body[data-page="rooms"] .room-toolbar,
+body[data-page="customers"] .customer-toolbar,
+body[data-page="services"] .service-toolbar,
+body[data-page="bookings"] .admin-booking-toolbar {
+    display: grid;
+    align-items: end;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    margin: 18px 0 21px;
+}
+
+body[data-page="rooms"] .room-toolbar {
+    grid-template-columns: minmax(0,1fr) 180px 185px;
+}
+
+body[data-page="customers"] .customer-toolbar {
+    grid-template-columns: minmax(0,1fr) 235px;
+}
+
+body[data-page="services"] .service-toolbar {
+    grid-template-columns: minmax(0,1fr) 175px 175px;
+}
+
+body[data-page="bookings"] .admin-booking-toolbar {
+    grid-template-columns: minmax(0,1fr) 185px 170px auto;
+}
+
+body[data-page="rooms"] .room-toolbar > *,
+body[data-page="customers"] .customer-toolbar > *,
+body[data-page="services"] .service-toolbar > *,
+body[data-page="bookings"] .admin-booking-toolbar > * {
+    min-width: 0;
+}
+
+body[data-page="rooms"] .room-toolbar :is(input,select),
+body[data-page="customers"] .customer-toolbar :is(input,select),
+body[data-page="services"] .service-toolbar :is(input,select),
+body[data-page="bookings"] .admin-booking-toolbar :is(input,select) {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    height: 44px;
+    margin: 0;
+    padding: 10px 13px;
+    border: 1px solid #DFD0BF;
+    border-radius: 8px;
+    outline: none;
+    background: #FFFFFF;
+    color: #4B392B;
+    font-family: var(--ui-body);
+    font-size: 14px;
+}
+
+body[data-page="rooms"] .room-toolbar :is(input,select):focus,
+body[data-page="customers"] .customer-toolbar :is(input,select):focus,
+body[data-page="services"] .service-toolbar :is(input,select):focus,
+body[data-page="bookings"] .admin-booking-toolbar :is(input,select):focus {
+    border-color: #A47C4B;
+    box-shadow: 0 0 0 3px rgba(164,124,75,.12);
+}
+
+body[data-page="customers"] .customer-toolbar label,
+body[data-page="services"] .service-toolbar label {
+    display: block;
+    margin: 0 0 8px;
+    color: #66513F;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* BANG DU LIEU */
+
+body[data-page="rooms"] .admin-table-wrapper,
+body[data-page="customers"] .admin-table-wrapper,
+body[data-page="services"] .service-table-wrapper,
+body[data-page="bookings"] .admin-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    border: 1px solid #EEE3D7;
+    border-radius: 10px;
+    background: #FFFFFF;
+    scrollbar-width: thin;
+    scrollbar-color: #CAA983 #F5EFE7;
+}
+
+body[data-page="rooms"] .admin-table,
+body[data-page="customers"] .customer-table,
+body[data-page="services"] .service-table,
+body[data-page="bookings"] .admin-table {
+    width: 100%;
+    min-width: 790px;
+    border-collapse: collapse;
+    background: #FFFFFF;
+    font-family: var(--ui-body);
+}
+
+body[data-page="rooms"] .admin-table thead,
+body[data-page="customers"] .customer-table thead,
+body[data-page="services"] .service-table thead,
+body[data-page="bookings"] .admin-table thead {
+    background: #F5EDE5;
+}
+
+body[data-page="rooms"] .admin-table th,
+body[data-page="customers"] .customer-table th,
+body[data-page="services"] .service-table th,
+body[data-page="bookings"] .admin-table th {
+    padding: 14px 12px;
+    color: #5E4937;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+body[data-page="rooms"] .admin-table td,
+body[data-page="customers"] .customer-table td,
+body[data-page="services"] .service-table td,
+body[data-page="bookings"] .admin-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #EEE6DD;
+    color: #473629;
+    font-size: 13px;
+    line-height: 1.6;
+    vertical-align: middle;
+}
+
+body[data-page="rooms"] .admin-table tbody tr:hover,
+body[data-page="customers"] .customer-table tbody tr:hover,
+body[data-page="services"] .service-table tbody tr:hover,
+body[data-page="bookings"] .admin-table tbody tr:hover {
+    background: #FCF7F0;
+}
+
+body[data-page="rooms"] .admin-table tbody tr:last-child td,
+body[data-page="customers"] .customer-table tbody tr:last-child td,
+body[data-page="services"] .service-table tbody tr:last-child td,
+body[data-page="bookings"] .admin-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+body[data-page="rooms"] .room-record-count,
+body[data-page="customers"] .customer-table-footer,
+body[data-page="services"] .service-table-footer,
+body[data-page="bookings"] .admin-booking-count {
+    color: #877667;
+    font-size: 13px;
+}
+
+body[data-page="services"] .service-table {
+    min-width: 880px;
+}
+
+body[data-page="services"] .service-name-cell {
+    min-width: 145px;
+    color: #433024;
+    font-weight: 700;
+}
+
+body[data-page="services"] .service-price-cell {
+    color: #91612F;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+body[data-page="services"] .service-actions {
+    min-width: 225px;
+    white-space: normal;
+}
+
+body[data-page="services"] .service-actions button {
+    margin: 3px;
+}
+
+body[data-page="customers"] .customer-table td {
+    overflow-wrap: anywhere;
+}
+
+body[data-page="customers"] .customer-table td:nth-child(4) {
+    white-space: nowrap;
+}
+
+/* TRANG THAI */
+
+body[data-page="rooms"] .room-status-badge,
+body[data-page="services"] .service-status,
+body[data-page="bookings"] .admin-booking-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 11px;
+    border-radius: 23px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+body[data-page="rooms"] .room-status-badge::before,
+body[data-page="services"] .service-status::before,
+body[data-page="bookings"] .admin-booking-status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+body[data-page="rooms"] .room-status-badge,
+body[data-page="services"] .service-status.active {
+    background: #E5F2E7;
+    color: #39764B;
+}
+
+body[data-page="rooms"] .room-status-badge.busy,
+body[data-page="bookings"] .admin-booking-status[data-status="Đã nhận phòng"] {
+    background: #E7EFFB;
+    color: #3669AF;
+}
+
+body[data-page="rooms"] .room-status-badge.maintenance,
+body[data-page="services"] .service-status.inactive {
+    background: #F7E9E5;
+    color: #A25B4C;
+}
+
+body[data-page="bookings"] .admin-booking-status[data-status="Chờ xác nhận"] {
+    background: #FFF1D9;
+    color: #96651F;
+}
+
+body[data-page="bookings"] .admin-booking-status[data-status="Đã xác nhận"],
+body[data-page="bookings"] .admin-booking-status[data-status="Đã đặt cọc"] {
+    background: #E5F2E7;
+    color: #367348;
+}
+
+body[data-page="bookings"] .admin-booking-status[data-status="Đã hủy"] {
+    background: #F8E8E5;
+    color: #A55347;
+}
+
+/* NUT */
+
+body[data-page="rooms"] :is(.room-edit-button,.room-small-button,.room-cancel-button),
+body[data-page="customers"] :is(.customer-view-button,.customer-outline-button),
+body[data-page="services"] :is(.service-action-button,.service-outline-button) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 37px;
+    padding: 8px 12px;
+    border: 1px solid #D8BDA0;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #825B38;
+    font-family: var(--ui-body);
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+body[data-page="rooms"] :is(.room-edit-button,.room-small-button,.room-cancel-button):hover:not(:disabled),
+body[data-page="customers"] :is(.customer-view-button,.customer-outline-button):hover:not(:disabled),
+body[data-page="services"] :is(.service-action-button,.service-outline-button):hover:not(:disabled) {
+    background: #F5EADE;
+}
+
+body[data-page="rooms"] .admin-button,
+body[data-page="customers"] .admin-button,
+body[data-page="services"] .service-primary-button,
+body[data-page="bookings"] .admin-button:not(.secondary):not(.danger) {
+    border-radius: 8px;
+    background: #805431;
+    color: #FFFFFF;
+    font-family: var(--ui-body);
+}
+
+body[data-page="rooms"] .admin-button:hover:not(:disabled),
+body[data-page="customers"] .admin-button:hover:not(:disabled),
+body[data-page="services"] .service-primary-button:hover:not(:disabled),
+body[data-page="bookings"] .admin-button:not(.secondary):not(.danger):hover:not(:disabled) {
+    background: #623F28;
+}
+
+body[data-page="rooms"] .room-small-button.danger,
+body[data-page="services"] .service-action-button.warning {
+    border-color: #D8B0A3;
+    color: #A15A45;
+}
+
+body[data-page="services"] .service-action-button.success {
+    border-color: #AAC8B1;
+    color: #39784D;
+}
+
+body[data-page="bookings"] .admin-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+body[data-page="bookings"] .admin-actions .admin-button {
+    min-height: 36px;
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+body[data-page="bookings"] .admin-button.secondary {
+    border: 1px solid #D8BFA3;
+    background: #FFFFFF;
+    color: #805A39;
+}
+
+body[data-page="bookings"] .admin-button.danger {
+    border: 1px solid #D7B0A8;
+    background: #FFF8F6;
+    color: #A45448;
+}
+
+body:is(
+    [data-page="rooms"],
+    [data-page="customers"],
+    [data-page="services"],
+    [data-page="bookings"]
+) button:disabled {
+    opacity: .48;
+    cursor: not-allowed;
+}
+
+/* PHAN TRANG */
+
+body[data-page="customers"] .customer-table-footer,
+body[data-page="services"] .service-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 13px;
+    margin-top: 18px;
+}
+
+body[data-page="customers"] .customer-pagination,
+body[data-page="services"] .service-pagination {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+body[data-page="customers"] #customerPageInfo,
+body[data-page="services"] #servicePageInfo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #F3EDE6;
+    color: #79583B;
+    white-space: nowrap;
+}
+
+/* TIEN NGHI VA HINH ANH */
+
+body[data-page="rooms"] .room-extra-panel {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid #E9DDD0;
+    border-radius: 12px;
+    background: #FCF9F5;
+}
+
+body[data-page="rooms"] .room-extra-panel h3,
+body[data-page="rooms"] #selectedRoomTitle {
+    color: #493226;
+    font-family: var(--ui-heading);
+    font-size: 21px;
+    font-weight: 600;
+}
+
+body[data-page="rooms"] .room-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 10px;
+}
+
+body[data-page="rooms"] .room-checkbox-grid .room-checkbox-line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    padding: 11px;
+    border: 1px solid #EAE0D5;
+    border-radius: 9px;
+    background: #FFFFFF;
+    font-size: 14px;
+}
+
+body[data-page="rooms"] .room-checkbox-line input {
+    flex-shrink: 0;
+    accent-color: #89613D;
+}
+
+body[data-page="rooms"] .room-image-grid {
+    display: grid;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 15px;
+}
+
+body[data-page="rooms"] .room-image-item {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #E8DBCD;
+    border-radius: 12px;
+    background: #FFFFFF;
+}
+
+body[data-page="rooms"] .room-image-item img {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+body[data-page="rooms"] .room-image-info {
+    padding: 14px;
+}
+
+body[data-page="rooms"] .room-image-form {
+    border-top-color: #EAE0D5;
+}
+
+/* POPUP */
+
+body[data-page="rooms"] .room-dialog,
+body[data-page="customers"] .customer-dialog,
+body[data-page="services"] .service-dialog {
+    width: min(740px,calc(100vw - 28px));
+    max-width: 740px;
+    max-height: 88vh;
+    border: 1px solid #E4D6C5;
+    border-radius: 15px;
+    background: #FFFEFC;
+    color: #3F2D21;
+    font-family: var(--ui-body);
+    box-shadow: 0 25px 80px rgba(30,20,13,.26);
+    scrollbar-width: thin;
+    scrollbar-color: #CAB08E transparent;
+}
+
+body[data-page="rooms"] .room-dialog::backdrop,
+body[data-page="customers"] .customer-dialog::backdrop,
+body[data-page="services"] .service-dialog::backdrop {
+    background: rgba(30,21,14,.58);
+    backdrop-filter: blur(4px);
+}
+
+body[data-page="rooms"] .room-dialog h2,
+body[data-page="customers"] .customer-dialog h2,
+body[data-page="services"] .service-dialog h2 {
+    color: #3B281B;
+    font-family: var(--ui-heading);
+    font-weight: 600;
+}
+
+body[data-page="rooms"] .room-dialog .room-field :is(input,select,textarea),
+body[data-page="services"] .service-dialog .service-field :is(input,select,textarea) {
+    border: 1px solid #DBCCBC;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #4D392B;
+    font-family: var(--ui-body);
+    font-size: 15px;
+}
+
+body[data-page="customers"] .customer-detail-item,
+body[data-page="services"] .service-detail-item {
+    min-width: 0;
+    border: 1px solid #EAE0D5;
+    border-radius: 9px;
+    background: #FAF8F5;
+}
+
+body[data-page="customers"] .customer-detail-item strong,
+body[data-page="services"] .service-detail-item strong {
+    overflow-wrap: anywhere;
+}
+
+body[data-page="customers"] .customer-booking-table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    border-radius: 9px;
+}
+
+body[data-page="services"] .service-image-preview-wrapper {
+    border: 1px dashed #DAC5AD;
+    border-radius: 11px;
+    background: #FAF7F2;
+}
+
+body[data-page="services"] .service-image-preview[hidden] {
+    display: none !important;
+}
+
+/* DAT PHONG */
+
+body[data-page="bookings"] .admin-booking-results {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+body[data-page="bookings"] .admin-table {
+    min-width: 900px;
+}
+
+body[data-page="bookings"] .admin-panel > p {
+    margin-bottom: 15px;
+    line-height: 1.7;
+}
+
+body[data-page="bookings"] .admin-booking-results .admin-table td:nth-child(5) {
+    color: #8A5D31;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+body[data-page="bookings"] .admin-panel:nth-of-type(n+2) .admin-table {
+    min-width: 1080px;
+}
+
+body[data-page="bookings"] .admin-panel:nth-of-type(n+2) > p {
+    padding: 12px 15px;
+    border: 1px solid #EDE0D1;
+    border-radius: 8px;
+    background: #FAF6F0;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1200px) {
+    body[data-page="rooms"] .room-overview {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+
+    body[data-page="rooms"] .room-toolbar,
+    body[data-page="services"] .service-toolbar,
+    body[data-page="bookings"] .admin-booking-toolbar {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+
+    body[data-page="services"] .service-search {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 950px) {
+    body[data-page="customers"] .customer-stats,
+    body[data-page="services"] .service-stats {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+
+    body[data-page="rooms"] .room-checkbox-grid,
+    body[data-page="rooms"] .room-image-grid {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+
+    body[data-page="customers"] .customer-toolbar {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    body:is(
+        [data-page="rooms"],
+        [data-page="bookings"],
+        [data-page="customers"],
+        [data-page="services"]
+    ) .admin-main {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: 100vh;
+        margin-left: 0;
+        padding: 0 15px 25px;
+        overflow: visible;
+    }
+
+    body:is(
+        [data-page="rooms"],
+        [data-page="bookings"],
+        [data-page="customers"],
+        [data-page="services"]
+    ) .admin-topbar {
+        margin: 0 -15px 20px;
+        padding: 20px;
+    }
+
+    body[data-page="rooms"] .room-section,
+    body[data-page="customers"] .customer-panel,
+    body[data-page="services"] .service-panel,
+    body[data-page="bookings"] .admin-panel {
+        padding: 17px;
+    }
+
+    body[data-page="rooms"] .room-management-tabs {
+        display: flex;
+        overflow-x: auto;
+    }
+
+    body[data-page="rooms"] .room-management-tabs .room-tab {
+        min-width: 140px;
+    }
+
+    body[data-page="rooms"] .room-section-top,
+    body[data-page="customers"] .customer-panel-heading,
+    body[data-page="services"] .service-panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 560px) {
+    body[data-page="rooms"] .room-overview,
+    body[data-page="customers"] .customer-stats,
+    body[data-page="services"] .service-stats,
+    body[data-page="rooms"] .room-toolbar,
+    body[data-page="customers"] .customer-toolbar,
+    body[data-page="services"] .service-toolbar,
+    body[data-page="bookings"] .admin-booking-toolbar,
+    body[data-page="rooms"] .room-checkbox-grid,
+    body[data-page="rooms"] .room-image-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-page="services"] .service-search {
+        grid-column: auto;
+    }
+
+    body[data-page="rooms"] .room-overview-card,
+    body[data-page="customers"] .customer-stat-card,
+    body[data-page="services"] .service-stat-card {
+        min-height: 110px;
+    }
+
+    body[data-page="customers"] .customer-table-footer,
+    body[data-page="services"] .service-table-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    body[data-page="rooms"] .room-dialog,
+    body[data-page="customers"] .customer-dialog,
+    body[data-page="services"] .service-dialog {
+        width: calc(100vw - 18px);
+        max-height: 92vh;
+    }
+}
+
+body[data-page="customers"] .customer-stat-card::before {
+    content: none !important;
+    display: none !important;
+}
+
+body[data-page="customers"] .customer-stat-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 17px;
+    min-height: 132px;
+    padding: 20px 23px;
+}
+
+body[data-page="customers"] .customer-stat-icon {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    flex: 0 0 60px;
+    border-radius: 50%;
+    background: #F1E5D6;
+    color: #946A3E;
+}
+
+body[data-page="customers"] .customer-stat-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+body[data-page="customers"] .customer-stat-card > div:last-child {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    min-width: 0;
+}
+
+body[data-page="customers"] .customer-stat-card:nth-child(2) .customer-stat-icon {
+    background: #E1EFE3;
+    color: #39764C;
+}
+
+body[data-page="customers"] .customer-stat-card:nth-child(3) .customer-stat-icon {
+    background: #F3E8D9;
+    color: #9A6C39;
+}
+
+body[data-page="customers"] .customer-stat-card strong {
+    font-size: 34px;
+}
+
+body[data-page="customers"] .customer-stat-card small {
+    font-size: 12px;
+    line-height: 1.4;
+}

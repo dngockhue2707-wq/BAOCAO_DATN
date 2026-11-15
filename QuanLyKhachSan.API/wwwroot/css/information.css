@@ -497,7 +497,7 @@
 }
 
 /* ==========================================
-   DNK HOTEL - ABOUT PAGE LUXURY
+   KS HOTEL - ABOUT PAGE LUXURY
    ========================================== */
 
 .about-page {
@@ -1068,22 +1068,22 @@
 
 
 /* =======================================
-   DNK HOTEL - TRANG TƯ VẤN & HỖ TRỢ
+   KS HOTEL - TRANG TƯ VẤN & HỖ TRỢ
    ======================================= */
 
-.dnk-contact-page {
+.KS-contact-page {
     background: #FAF8F5;
     overflow: hidden;
 }
 
-.dnk-contact-page em {
+.KS-contact-page em {
     color: #926024;
     font-weight: 400;
 }
 
 /* BANNER ĐẦU TRANG */
 
-.dnk-contact-hero {
+.KS-contact-hero {
     position: relative;
     display: flex;
     align-items: center;
@@ -1097,7 +1097,7 @@
     text-align: center;
 }
 
-.dnk-contact-hero-shade {
+.KS-contact-hero-shade {
     position: absolute;
     inset: 0;
     background: linear-gradient(
@@ -1108,13 +1108,13 @@
     );
 }
 
-.dnk-contact-hero-inner {
+.KS-contact-hero-inner {
     position: relative;
     z-index: 1;
     max-width: 790px;
 }
 
-.dnk-contact-kicker {
+.KS-contact-kicker {
     display: block;
     color: #F5D7A3;
     font-size: 13px;
@@ -1122,7 +1122,7 @@
     letter-spacing: 2.8px;
 }
 
-.dnk-contact-rule {
+.KS-contact-rule {
     display: block;
     width: 55px;
     height: 1px;
@@ -1130,7 +1130,7 @@
     background: #F1D4A0;
 }
 
-.dnk-contact-hero h1 {
+.KS-contact-hero h1 {
     margin: 0 0 22px;
     color: #fff;
     font-size: clamp(40px, 5vw, 68px);
@@ -1139,12 +1139,12 @@
     text-shadow: 0 2px 12px rgba(0,0,0,.2);
 }
 
-.dnk-contact-hero h1 em,
-.dnk-contact-cta h2 em {
+.KS-contact-hero h1 em,
+.KS-contact-cta h2 em {
     color: #F1D4A0;
 }
 
-.dnk-contact-hero p {
+.KS-contact-hero p {
     max-width: 650px;
     margin: 0 auto 32px;
     color: #FFF9F1;
@@ -1153,7 +1153,7 @@
     text-shadow: 0 2px 7px rgba(0,0,0,.25);
 }
 
-.dnk-contact-hero-button {
+.KS-contact-hero-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1169,13 +1169,13 @@
     transition: background .25s, transform .25s;
 }
 
-.dnk-contact-hero-button:hover {
+.KS-contact-hero-button:hover {
     transform: translateY(-3px);
     background: #785324;
     color: #fff;
 }
 
-.dnk-contact-hero-caption {
+.KS-contact-hero-caption {
     position: absolute;
     right: 5%;
     bottom: 22px;
@@ -1188,7 +1188,7 @@
 
 /* GIỚI THIỆU */
 
-.dnk-contact-eyebrow {
+.KS-contact-eyebrow {
     display: block;
     margin-bottom: 17px;
     color: #926024;
@@ -1197,29 +1197,29 @@
     letter-spacing: 2px;
 }
 
-.dnk-contact-intro {
+.KS-contact-intro {
     padding: 85px 0 65px;
 }
 
-.dnk-contact-intro-grid {
+.KS-contact-intro-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
     gap: 65px;
 }
 
-.dnk-contact-intro h2,
-.dnk-contact-aside h2,
-.dnk-contact-faq h2 {
+.KS-contact-intro h2,
+.KS-contact-aside h2,
+.KS-contact-faq h2 {
     margin: 0;
     color: #30251E;
     font-size: clamp(30px, 3.2vw, 43px);
     line-height: 1.3;
 }
 
-.dnk-contact-intro p,
-.dnk-contact-aside-intro,
-.dnk-contact-faq-grid > div > p {
+.KS-contact-intro p,
+.KS-contact-aside-intro,
+.KS-contact-faq-grid > div > p {
     margin: 0;
     color: #72675E;
     font-size: 17px;
@@ -1228,17 +1228,17 @@
 
 /* BA THẺ HỖ TRỢ */
 
-.dnk-contact-help {
+.KS-contact-help {
     padding: 0 0 90px;
 }
 
-.dnk-contact-help-grid {
+.KS-contact-help-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 24px;
 }
 
-.dnk-contact-help-card {
+.KS-contact-help-card {
     padding: 32px 28px;
     border: 1px solid #E8E0D7;
     border-radius: 8px;
@@ -1246,12 +1246,12 @@
     transition: transform .25s, box-shadow .25s;
 }
 
-.dnk-contact-help-card:hover {
+.KS-contact-help-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 14px 30px rgba(48,37,30,.09);
 }
 
-.dnk-contact-help-icon {
+.KS-contact-help-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1263,13 +1263,13 @@
     font-size: 29px;
 }
 
-.dnk-contact-help-card h3 {
+.KS-contact-help-card h3 {
     margin: 20px 0 10px;
     color: #30251E;
     font-size: 23px;
 }
 
-.dnk-contact-help-card p {
+.KS-contact-help-card p {
     margin: 0;
     color: #817569;
     font-size: 16px;
@@ -1278,13 +1278,13 @@
 
 /* KHU VỰC LIÊN HỆ */
 
-.dnk-contact-main {
+.KS-contact-main {
     padding: 90px 0 100px;
     background: #F2ECE4;
     scroll-margin-top: 20px;
 }
 
-.dnk-contact-layout {
+.KS-contact-layout {
     display: grid;
     grid-template-columns: minmax(0, .85fr)
                            minmax(0, 1.15fr);
@@ -1292,19 +1292,19 @@
     gap: 45px;
 }
 
-.dnk-contact-aside {
+.KS-contact-aside {
     padding-top: 12px;
 }
 
-.dnk-contact-aside h2 {
+.KS-contact-aside h2 {
     margin-bottom: 22px;
 }
 
-.dnk-contact-aside-intro {
+.KS-contact-aside-intro {
     margin-bottom: 25px;
 }
 
-.dnk-contact-info-item {
+.KS-contact-info-item {
     display: flex;
     align-items: flex-start;
     gap: 16px;
@@ -1312,7 +1312,7 @@
     border-bottom: 1px solid #D8CFC3;
 }
 
-.dnk-contact-info-icon {
+.KS-contact-info-icon {
     display: flex;
     flex: 0 0 43px;
     align-items: center;
@@ -1325,13 +1325,13 @@
     font-size: 23px;
 }
 
-.dnk-contact-info-item h3 {
+.KS-contact-info-item h3 {
     margin: 0 0 6px;
     color: #382E27;
     font-size: 19px;
 }
 
-.dnk-contact-info-item p {
+.KS-contact-info-item p {
     margin: 0;
     color: #817569;
     font-size: 16px;
@@ -1341,7 +1341,7 @@
 
 /* ẢNH SẢNH KHÁCH SẠN */
 
-.dnk-contact-photo {
+.KS-contact-photo {
     position: relative;
     height: 255px;
     margin-top: 35px;
@@ -1350,7 +1350,7 @@
     background: #D8C6B0;
 }
 
-.dnk-contact-photo img {
+.KS-contact-photo img {
     display: block;
     width: 100%;
     height: 100%;
@@ -1358,11 +1358,11 @@
     transition: transform .5s;
 }
 
-.dnk-contact-photo:hover img {
+.KS-contact-photo:hover img {
     transform: scale(1.05);
 }
 
-.dnk-contact-photo-caption {
+.KS-contact-photo-caption {
     position: absolute;
     right: 0;
     bottom: 0;
@@ -1378,21 +1378,21 @@
     color: #fff;
 }
 
-.dnk-contact-photo-caption strong {
+.KS-contact-photo-caption strong {
     font-family: var(--font-heading);
     font-size: 23px;
     font-weight: 500;
     letter-spacing: 2px;
 }
 
-.dnk-contact-photo-caption span {
+.KS-contact-photo-caption span {
     color: #F1E6D8;
     font-size: 14px;
 }
 
 /* BIỂU MẪU LIÊN HỆ */
 
-.dnk-contact-form-panel {
+.KS-contact-form-panel {
     padding: 43px;
     border: 1px solid #E8E0D7;
     border-radius: 10px;
@@ -1400,39 +1400,39 @@
     box-shadow: 0 18px 45px rgba(48,37,30,.06);
 }
 
-.dnk-contact-form-panel h2 {
+.KS-contact-form-panel h2 {
     margin: 0 0 14px;
     color: #30251E;
     font-size: clamp(28px, 3vw, 37px);
 }
 
-.dnk-contact-form-desc {
+.KS-contact-form-desc {
     margin: 0 0 30px;
     color: #817569;
     font-size: 16px;
     line-height: 1.8;
 }
 
-.dnk-contact-form-panel .contact-field label {
+.KS-contact-form-panel .contact-field label {
     color: #44362D;
     font-weight: 600;
 }
 
-.dnk-contact-form-panel .contact-field input,
-.dnk-contact-form-panel .contact-field textarea {
+.KS-contact-form-panel .contact-field input,
+.KS-contact-form-panel .contact-field textarea {
     background: #FDFBF8;
     border-radius: 5px;
     transition: border-color .2s, box-shadow .2s;
 }
 
-.dnk-contact-form-panel .contact-field input:focus,
-.dnk-contact-form-panel .contact-field textarea:focus {
+.KS-contact-form-panel .contact-field input:focus,
+.KS-contact-form-panel .contact-field textarea:focus {
     border-color: #926024;
     outline: none;
     box-shadow: 0 0 0 3px rgba(146,96,36,.12);
 }
 
-.dnk-contact-submit {
+.KS-contact-submit {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1449,12 +1449,12 @@
     transition: background .25s, transform .25s;
 }
 
-.dnk-contact-submit:hover {
+.KS-contact-submit:hover {
     transform: translateY(-2px);
     background: #785324;
 }
 
-.dnk-contact-form-panel .contact-note {
+.KS-contact-form-panel .contact-note {
     margin-top: 24px;
     padding: 13px 16px;
     border-left: 3px solid #B88B55;
@@ -1466,32 +1466,32 @@
 
 /* CÂU HỎI THƯỜNG GẶP */
 
-.dnk-contact-faq {
+.KS-contact-faq {
     padding: 100px 0;
     background: #fff;
 }
 
-.dnk-contact-faq-grid {
+.KS-contact-faq-grid {
     display: grid;
     grid-template-columns: .8fr 1.2fr;
     align-items: start;
     gap: 75px;
 }
 
-.dnk-contact-faq-grid > div > p {
+.KS-contact-faq-grid > div > p {
     margin-top: 23px;
 }
 
-.dnk-contact-faq-list details {
+.KS-contact-faq-list details {
     padding: 20px 0;
     border-bottom: 1px solid #E8E0D7;
 }
 
-.dnk-contact-faq-list details:first-child {
+.KS-contact-faq-list details:first-child {
     border-top: 1px solid #E8E0D7;
 }
 
-.dnk-contact-faq-list summary {
+.KS-contact-faq-list summary {
     position: relative;
     padding-right: 30px;
     color: #362C24;
@@ -1502,11 +1502,11 @@
     list-style: none;
 }
 
-.dnk-contact-faq-list summary::-webkit-details-marker {
+.KS-contact-faq-list summary::-webkit-details-marker {
     display: none;
 }
 
-.dnk-contact-faq-list summary::after {
+.KS-contact-faq-list summary::after {
     content: "+";
     position: absolute;
     top: 0;
@@ -1516,16 +1516,16 @@
     font-weight: 400;
 }
 
-.dnk-contact-faq-list details[open] summary::after {
+.KS-contact-faq-list details[open] summary::after {
     content: "−";
 }
 
-.dnk-contact-faq-list summary:focus-visible {
+.KS-contact-faq-list summary:focus-visible {
     outline: 2px solid #926024;
     outline-offset: 4px;
 }
 
-.dnk-contact-faq-list details p {
+.KS-contact-faq-list details p {
     margin: 15px 0 0;
     color: #817569;
     font-size: 16px;
@@ -1534,7 +1534,7 @@
 
 /* BANNER CUỐI TRANG */
 
-.dnk-contact-cta {
+.KS-contact-cta {
     position: relative;
     display: flex;
     align-items: center;
@@ -1548,26 +1548,26 @@
     text-align: center;
 }
 
-.dnk-contact-cta-shade {
+.KS-contact-cta-shade {
     position: absolute;
     inset: 0;
     background: rgba(35,26,20,.60);
 }
 
-.dnk-contact-cta-inner {
+.KS-contact-cta-inner {
     position: relative;
     z-index: 1;
     max-width: 760px;
 }
 
-.dnk-contact-cta h2 {
+.KS-contact-cta h2 {
     margin: 20px 0;
     color: #fff;
     font-size: clamp(32px, 4vw, 48px);
     line-height: 1.3;
 }
 
-.dnk-contact-cta p {
+.KS-contact-cta p {
     margin: 0 0 28px;
     color: #F4E9DC;
     font-size: 17px;
@@ -1577,18 +1577,18 @@
 /* MÁY TÍNH BẢNG */
 
 @media (max-width: 950px) {
-    .dnk-contact-intro-grid,
-    .dnk-contact-layout,
-    .dnk-contact-faq-grid {
+    .KS-contact-intro-grid,
+    .KS-contact-layout,
+    .KS-contact-faq-grid {
         grid-template-columns: 1fr;
         gap: 35px;
     }
 
-    .dnk-contact-form-panel {
+    .KS-contact-form-panel {
         padding: 35px;
     }
 
-    .dnk-contact-help-grid {
+    .KS-contact-help-grid {
         gap: 15px;
     }
 }
@@ -1596,70 +1596,70 @@
 /* ĐIỆN THOẠI */
 
 @media (max-width: 700px) {
-    .dnk-contact-hero {
+    .KS-contact-hero {
         min-height: 480px;
         padding: 85px 6%;
     }
 
-    .dnk-contact-hero h1 {
+    .KS-contact-hero h1 {
         font-size: 41px;
     }
 
-    .dnk-contact-hero p {
+    .KS-contact-hero p {
         font-size: 16px;
     }
 
-    .dnk-contact-hero-caption {
+    .KS-contact-hero-caption {
         font-size: 9px;
         letter-spacing: 1px;
     }
 
-    .dnk-contact-intro {
+    .KS-contact-intro {
         padding: 60px 0 45px;
     }
 
-    .dnk-contact-help {
+    .KS-contact-help {
         padding-bottom: 65px;
     }
 
-    .dnk-contact-help-grid {
+    .KS-contact-help-grid {
         grid-template-columns: 1fr;
     }
 
-    .dnk-contact-help-card {
+    .KS-contact-help-card {
         padding: 27px;
     }
 
-    .dnk-contact-main,
-    .dnk-contact-faq {
+    .KS-contact-main,
+    .KS-contact-faq {
         padding: 65px 0;
     }
 
-    .dnk-contact-form-panel {
+    .KS-contact-form-panel {
         padding: 27px 20px;
     }
 
-    .dnk-contact-aside {
+    .KS-contact-aside {
         padding: 0;
     }
 
-    .dnk-contact-photo {
+    .KS-contact-photo {
         height: 230px;
     }
 
-    .dnk-contact-faq-grid {
+    .KS-contact-faq-grid {
         gap: 25px;
     }
 
-    .dnk-contact-cta {
+    .KS-contact-cta {
         min-height: 350px;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .dnk-contact-page *,
-    .dnk-contact-page *::before,
-    .dnk-contact-page *::after {
+    .KS-contact-page *,
+    .KS-contact-page *::before,
+    .KS-contact-page *::after {
         transition: none !important;
     }
 }

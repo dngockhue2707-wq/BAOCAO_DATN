@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tìm phòng trống | DNK Hotel</title>
+    <meta name="description" content="Tìm kiếm phòng còn trống và lựa chọn không gian nghỉ dưỡng phù hợp tại KS Hotel.">
+    <title>Tìm phòng trống | KS Hotel</title>
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/availability.css">
     <script src="/js/layout.js" defer></script>
@@ -15,29 +16,52 @@
     <div id="site-header"></div>
 
     <main class="availability-page">
-        <div class="availability-container">
-            <div class="availability-heading">
-                <span>DNK HOTEL</span>
-                <h1>Tìm phòng còn trống</h1>
-                <p>
-                    Lựa chọn thời gian lưu trú và số lượng khách
-                    để tìm phòng phù hợp với nhu cầu của bạn.
-                </p>
-            </div>
+        <section class="availability-hero">
+            <div class="availability-hero-image"></div>
+            <div class="availability-hero-shade"></div>
 
+            <div class="availability-container availability-hero-inner">
+                <div class="availability-heading">
+                    <span class="availability-eyebrow">
+                        KS HOTEL — KHÁM PHÁ KHÔNG GIAN NGHỈ DƯỠNG
+                    </span>
+
+                    <h1>
+                        Tìm phòng <em>còn trống</em>
+                    </h1>
+
+                    <p>
+                        Lựa chọn thời gian lưu trú và số lượng khách
+                        để tìm kiếm không gian nghỉ dưỡng phù hợp
+                        với chuyến đi của bạn.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div class="availability-container availability-search-container">
             <form id="availabilityForm" class="availability-form">
                 <div class="availability-field">
-                    <label for="checkIn">Ngày nhận phòng</label>
+                    <label for="checkIn">
+                        <span class="availability-field-icon">◷</span>
+                        Ngày nhận phòng
+                    </label>
                     <input id="checkIn" type="date" required>
                 </div>
 
                 <div class="availability-field">
-                    <label for="checkOut">Ngày trả phòng</label>
+                    <label for="checkOut">
+                        <span class="availability-field-icon">◷</span>
+                        Ngày trả phòng
+                    </label>
                     <input id="checkOut" type="date" required>
                 </div>
 
-                <div class="availability-field">
-                    <label for="adults">Người lớn</label>
+                <div class="availability-field availability-field-small">
+                    <label for="adults">
+                        <span class="availability-field-icon">♙</span>
+                        Người lớn
+                    </label>
                     <select id="adults" required>
                         <option value="1">1 người</option>
                         <option value="2" selected>2 người</option>
@@ -48,8 +72,11 @@
                     </select>
                 </div>
 
-                <div class="availability-field">
-                    <label for="children">Trẻ em</label>
+                <div class="availability-field availability-field-small">
+                    <label for="children">
+                        <span class="availability-field-icon">♙</span>
+                        Trẻ em
+                    </label>
                     <select id="children">
                         <option value="0" selected>Không có</option>
                         <option value="1">1 trẻ em</option>
@@ -60,19 +87,82 @@
                 </div>
 
                 <button type="submit" id="searchAvailability">
-                    Tìm phòng trống
+                    <span class="availability-search-icon">⌕</span>
+                    Tìm phòng
+                    <span class="availability-button-arrow">→</span>
                 </button>
             </form>
-
-            <p id="availabilityMessage" role="status" aria-live="polite"></p>
-
-            <div class="availability-results-heading">
-                <h2>Danh sách phòng còn trống</h2>
-                <span id="availabilityCount"></span>
-            </div>
-
-            <div id="availabilityResults" class="availability-grid"></div>
         </div>
+
+        <section class="availability-main">
+            <div class="availability-container">
+                <div class="availability-results-intro">
+                    <span class="availability-section-eyebrow">
+                        KHÁM PHÁ PHÒNG NGHỈ
+                    </span>
+
+                    <h2>
+                        Lựa chọn không gian
+                        <em>dành cho bạn</em>
+                    </h2>
+
+                    <p>
+                        Khám phá những căn phòng còn trống
+                        trong khoảng thời gian bạn lựa chọn.
+                    </p>
+                </div>
+
+                <div class="availability-results-toolbar">
+                    <div class="availability-results-heading">
+                        <h2>Danh sách phòng còn trống</h2>
+                        <span id="availabilityCount"></span>
+                    </div>
+
+                    <span class="availability-toolbar-label">
+                        KHÔNG GIAN NGHỈ DƯỠNG TINH TẾ
+                    </span>
+                </div>
+
+                <p id="availabilityMessage"
+                   role="status"
+                   aria-live="polite"></p>
+
+                <div id="availabilityResults"
+                     class="availability-grid"></div>
+
+                <div class="availability-bottom-note">
+                    <span>✧</span>
+                    <p>
+                        Mỗi kỳ nghỉ đều xứng đáng có một không gian riêng.
+                        Khám phá lựa chọn phù hợp với bạn tại KS Hotel.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="availability-promo">
+            <div class="availability-promo-image"></div>
+            <div class="availability-promo-shade"></div>
+
+            <div class="availability-promo-content">
+                <span>TRẢI NGHIỆM KS HOTEL</span>
+
+                <h2>
+                    Không gian nghỉ dưỡng
+                    <em>tiện nghi &amp; đẳng cấp.</em>
+                </h2>
+
+                <p>
+                    Khám phá thêm những lựa chọn lưu trú
+                    dành cho hành trình đáng nhớ của bạn.
+                </p>
+
+                <a href="/rooms.html">
+                    Khám phá phòng nghỉ
+                    <span>→</span>
+                </a>
+            </div>
+        </section>
     </main>
 
     <div id="site-footer"></div>

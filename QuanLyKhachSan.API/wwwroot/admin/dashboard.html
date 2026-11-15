@@ -4,12 +4,505 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tổng quan | DNK Admin</title>
+    <title>Tổng quan khách sạn | Admin</title>
+
     <link rel="stylesheet" href="/css/admin.css">
-    <script src="/js/admin.js" defer></script>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/dashboard-analytics.css">
+    <link rel="stylesheet" href="/css/backoffice-fonts.css">
+
     <script src="/js/admin-layout.js" defer></script>
+    <script src="/js/admin-dashboard.js" defer></script>
+    <script src="/js/dashboard-analytics.js" defer></script>
 </head>
+
 <body data-page="dashboard">
-    <div id="adminApp"></div>
+    <div class="admin-shell">
+        <div id="adminSidebar"></div>
+
+        <main class="lux-main">
+            <header class="lux-hero">
+                <div class="lux-hero-content">
+                    <span class="lux-eyebrow">
+                        HOTEL ADMINISTRATION
+                    </span>
+
+                    <h1>Tổng quan khách sạn</h1>
+
+                    <p>
+                        Chào mừng Quản trị viên!
+                        Theo dõi tình hình hoạt động của khách sạn.
+                    </p>
+                </div>
+
+                <div class="lux-profile">
+                    <span class="lux-avatar" id="adminAvatar">A</span>
+                    <span id="adminUsername">Quản trị viên</span>
+                </div>
+            </header>
+
+            <div class="lux-content">
+                <div class="lux-toolbar">
+                    <div class="lux-live">
+                        <span class="lux-live-dot"></span>
+                        Dữ liệu quản lý khách sạn
+                    </div>
+
+                    <div class="lux-date" id="todayLabel"></div>
+                </div>
+
+                <div
+                    id="dashboardMessage"
+                    class="lux-message"
+                    role="status">
+                </div>
+
+                <section class="lux-kpis">
+                    <article class="lux-kpi lux-kpi-large">
+                        <div
+                            class="lux-kpi-icon"
+                            data-icon="bed">
+                        </div>
+
+                        <div>
+                            <span>Tổng phòng</span>
+                            <strong id="totalRooms">—</strong>
+                            <small>Số phòng hiện có</small>
+                        </div>
+                    </article>
+
+                    <article class="lux-kpi lux-kpi-large lux-green">
+                        <div
+                            class="lux-kpi-icon"
+                            data-icon="check">
+                        </div>
+
+                        <div>
+                            <span>Phòng trạng thái trống</span>
+                            <strong id="availableRooms">—</strong>
+                            <small>Theo trạng thái hệ thống</small>
+                        </div>
+                    </article>
+
+                    <article class="lux-kpi lux-kpi-large">
+                        <div
+                            class="lux-kpi-icon"
+                            data-icon="building">
+                        </div>
+
+                        <div>
+                            <span>Phòng trạng thái khác</span>
+                            <strong id="otherRooms">—</strong>
+                            <small>Không thuộc trạng thái trống</small>
+                        </div>
+                    </article>
+
+                    <article class="lux-kpi">
+                        <div
+                            class="lux-kpi-icon"
+                            data-icon="calendar">
+                        </div>
+
+                        <div>
+                            <span>Đơn chờ xác nhận</span>
+                            <strong id="pendingBookings">—</strong>
+                        </div>
+                    </article>
+
+                    <article class="lux-kpi">
+                        <div
+                            class="lux-kpi-icon"
+                            data-icon="users">
+                        </div>
+
+                        <div>
+                            <span>Khách hàng</span>
+                            <strong id="totalCustomers">—</strong>
+                        </div>
+                    </article>
+
+                    <article class="lux-kpi">
+                        <div
+                            class="lux-kpi-icon"
+                            data-icon="user">
+                        </div>
+
+                        <div>
+                            <span>Nhân viên</span>
+                            <strong id="totalEmployees">—</strong>
+                        </div>
+                    </article>
+
+                    <article class="lux-kpi lux-revenue-kpi">
+                        <div
+                            class="lux-kpi-icon"
+                            data-icon="coins">
+                        </div>
+
+                        <div>
+                            <span>Doanh thu đã thu trong năm</span>
+                            <strong id="yearRevenue">—</strong>
+                            <small id="revenueCaption">
+                                Đang tải dữ liệu
+                            </small>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="lux-unified-layout">
+                    <article class="lux-panel lux-unified-revenue">
+                        <div class="lux-unified-header">
+                            <div>
+                                <div class="lux-unified-eyebrow">
+                                    BÁO CÁO TÀI CHÍNH
+                                </div>
+
+                                <h2>Thống kê doanh thu</h2>
+
+                                <p>
+                                    Theo dõi doanh thu từ các giao dịch
+                                    thanh toán
+                                </p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="lux-mode-tabs"
+                            role="group"
+                            aria-label="Chế độ thống kê doanh thu">
+
+                            <button
+                                type="button"
+                                class="lux-mode active"
+                                data-mode="day"
+                                aria-pressed="true">
+                                Theo ngày
+                            </button>
+
+                            <button
+                                type="button"
+                                class="lux-mode"
+                                data-mode="week"
+                                aria-pressed="false">
+                                Theo tuần
+                            </button>
+
+                            <button
+                                type="button"
+                                class="lux-mode"
+                                data-mode="month"
+                                aria-pressed="false">
+                                Theo tháng
+                            </button>
+
+                            <button
+                                type="button"
+                                class="lux-mode"
+                                data-mode="year"
+                                aria-pressed="false">
+                                Theo năm
+                            </button>
+                        </div>
+
+                        <div class="lux-mode-filters">
+                            <div
+                                id="luxDayFilter"
+                                class="lux-filter-row">
+
+                                <label for="luxSelectedDay">
+                                    Chọn ngày
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="luxSelectedDay">
+                            </div>
+
+                            <div
+                                id="luxWeekFilter"
+                                class="lux-filter-row"
+                                hidden>
+
+                                <label for="luxSelectedWeek">
+                                    Chọn ngày trong tuần
+                                </label>
+
+                                <input
+                                    type="date"
+                                    id="luxSelectedWeek">
+
+                                <span
+                                    id="luxWeekDescription"
+                                    class="lux-filter-description">
+                                </span>
+                            </div>
+
+                            <div
+                                id="luxMonthFilter"
+                                class="lux-filter-row"
+                                hidden>
+
+                                <label for="luxSelectedMonth">
+                                    Chọn tháng
+                                </label>
+
+                                <input
+                                    type="month"
+                                    id="luxSelectedMonth">
+                            </div>
+
+                            <div
+                                id="luxYearFilter"
+                                class="lux-filter-row"
+                                hidden>
+
+                                <label for="luxSelectedYear">
+                                    Chọn năm
+                                </label>
+
+                                <select id="luxSelectedYear"></select>
+                            </div>
+                        </div>
+
+                        <div class="lux-revenue-summary">
+                            <div class="lux-summary-primary">
+                                <span id="luxTotalLabel">
+                                    Doanh thu trong ngày
+                                </span>
+
+                                <strong id="luxRevenueTotal">
+                                    —
+                                </strong>
+
+                                <small id="luxPeriodLabel">
+                                    Đang tải dữ liệu
+                                </small>
+                            </div>
+
+                            <div class="lux-summary-secondary">
+                                <span id="luxSecondLabel">
+                                    Giao dịch thành công
+                                </span>
+
+                                <strong id="luxSecondValue">
+                                    —
+                                </strong>
+                            </div>
+
+                            <div class="lux-summary-secondary">
+                                <span id="luxThirdLabel">
+                                    Trung bình mỗi giao dịch
+                                </span>
+
+                                <strong id="luxThirdValue">
+                                    —
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div
+                            class="lux-unified-chart"
+                            id="luxRevenueChart"
+                            aria-live="polite">
+                            Đang tải biểu đồ doanh thu...
+                        </div>
+
+                        <div class="lux-report-footer">
+                            <span class="lux-report-legend">
+                                <i></i>
+                                <span>Doanh thu đã thu</span>
+                            </span>
+
+                            <span id="luxChartNote">
+                                Dữ liệu thanh toán thực tế
+                            </span>
+                        </div>
+
+                        <p
+                            id="luxReportError"
+                            class="lux-report-error"
+                            role="alert"
+                            hidden>
+                        </p>
+                    </article>
+
+                    <article class="lux-panel lux-rooms-panel">
+                        <div class="lux-panel-header">
+                            <h2>
+                                <span data-icon="bed"></span>
+                                Tình trạng phòng
+                            </h2>
+                        </div>
+
+                        <div class="lux-room-content">
+                            <div class="lux-donut" id="roomDonut">
+                                <div class="lux-donut-inner">
+                                    <strong id="donutTotal">—</strong>
+                                    <span>Tổng phòng</span>
+                                </div>
+                            </div>
+
+                            <div class="lux-room-legend">
+                                <div class="lux-room-legend-item">
+                                    <i class="lux-dot-available"></i>
+
+                                    <div>
+                                        <span>Phòng trống</span>
+                                        <strong id="donutAvailable">—</strong>
+                                    </div>
+                                </div>
+
+                                <div class="lux-room-legend-item">
+                                    <i class="lux-dot-other"></i>
+
+                                    <div>
+                                        <span>Trạng thái khác</span>
+                                        <strong id="donutOther">—</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="lux-room-details"
+                            id="luxRoomStatusDetails">
+
+                            <h3>Chi tiết trạng thái phòng</h3>
+
+                            <div id="luxRoomStatusList">
+                                Đang tải trạng thái phòng...
+                            </div>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="lux-analytics" hidden>
+                    <article class="lux-panel lux-chart-panel">
+                        <div class="lux-panel-header">
+                            <h2>
+                                <span data-icon="chart"></span>
+                                Doanh thu theo tháng
+                            </h2>
+
+                            <select
+                                id="revenueYear"
+                                class="lux-select"
+                                aria-label="Chọn năm doanh thu">
+                            </select>
+                        </div>
+
+                        <div
+                            class="lux-chart-total"
+                            id="chartRevenue">
+                            —
+                        </div>
+
+                        <p class="lux-subtitle">
+                            Tổng doanh thu đã thu trong năm được chọn
+                        </p>
+
+                        <div
+                            id="revenueChart"
+                            class="lux-chart-area">
+                            Đang tải biểu đồ...
+                        </div>
+
+                        <div class="lux-chart-legend">
+                            <span></span>
+                            Doanh thu đã thu
+                        </div>
+                    </article>
+                </section>
+
+                <section class="lux-bottom">
+                    <article class="lux-panel">
+                        <div class="lux-panel-header">
+                            <h2>
+                                <span data-icon="spark"></span>
+                                Điều hướng nhanh
+                            </h2>
+                        </div>
+
+                        <div class="lux-actions">
+                            <a
+                                href="/admin/rooms.html"
+                                class="lux-action">
+
+                                <span data-icon="bed"></span>
+                                <span>Quản lý phòng</span>
+                            </a>
+
+                            <a
+                                href="/admin/bookings.html"
+                                class="lux-action">
+
+                                <span data-icon="calendar"></span>
+                                <span>Duyệt đặt phòng</span>
+                            </a>
+
+                            <a
+                                href="/admin/services.html"
+                                class="lux-action">
+
+                                <span data-icon="bell"></span>
+                                <span>Quản lý dịch vụ</span>
+                            </a>
+
+                            <a
+                                href="/admin/reports.html"
+                                class="lux-action">
+
+                                <span data-icon="chart"></span>
+                                <span>Xem doanh thu</span>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="lux-panel">
+                        <div class="lux-panel-header">
+                            <h2>
+                                <span data-icon="calendar"></span>
+                                Đặt phòng gần đây
+                            </h2>
+
+                            <a
+                                href="/admin/bookings.html"
+                                class="lux-view-all">
+                                Xem tất cả →
+                            </a>
+                        </div>
+
+                        <div class="lux-table-scroll">
+                            <table class="lux-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đặt phòng</th>
+                                        <th>Khách hàng</th>
+                                        <th>Ngày nhận</th>
+                                        <th>Ngày trả</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="recentBookings">
+                                    <tr>
+                                        <td
+                                            colspan="5"
+                                            class="lux-empty">
+                                            Đang tải đặt phòng...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>
+
+                <footer class="lux-footer">
+                    HOTEL ADMINISTRATION · MANAGEMENT OVERVIEW
+                </footer>
+            </div>
+        </main>
+    </div>
 </body>
 </html>

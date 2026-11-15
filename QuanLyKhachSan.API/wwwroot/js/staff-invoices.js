@@ -2,7 +2,7 @@
 "use strict";
 
 document.addEventListener("staff-auth-ready", () => {
-    const s = Staff;
+    const s = window.Staff;
 
     const elements = {
         modal: document.getElementById("invoiceDetailModal"),
@@ -11,7 +11,6 @@ document.addEventListener("staff-auth-ready", () => {
         print: document.getElementById("printInvoiceButton"),
         paymentHistory: document.getElementById("invoicePaymentHistory"),
         printArea: document.getElementById("invoicePrintArea"),
-
         id: document.getElementById("detailInvoiceId"),
         bookingId: document.getElementById("detailBookingId"),
         date: document.getElementById("detailDate"),
@@ -28,7 +27,7 @@ document.addEventListener("staff-auth-ready", () => {
         paid: document.getElementById("detailPaid"),
         remaining: document.getElementById("detailRemaining"),
         roomDetails: document.getElementById("invoiceRoomDetails"),
-        serviceDetails: document.getElementById("invoiceServiceDetails"),
+        serviceDetails: document.getElementById("invoiceServiceDetails")
     };
 
     let invoices = [];
@@ -36,53 +35,88 @@ document.addEventListener("staff-auth-ready", () => {
     let selectedStatus = "Tất cả";
     let currentInvoice = null;
 
-    function value(item, ...keys) {
+    const el = (tag, className = "", text = "") => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        node.textContent = String(text ?? "");
+        return node;
+    };
+
+    const value = (item, ...keys) => {
         for (const key of keys) {
-            if (item[key] !== undefined && item[key] !== null) {
+            if (item && item[key] !== undefined && item[key] !== null) {
                 return item[key];
             }
         }
         return null;
-    }
+    };
 
-    function setText(element, content) {
-        if (element) {
-            element.textContent = content ?? "Chưa có dữ liệu";
-        }
-    }
+    const setText = (node, content) => {
+        if (node) node.textContent = String(content ?? "—");
+    };
 
-    function money(amount) {
-        return s.money(Number(amount || 0));
-    }
+    const money = amount => s.money(Number(amount) || 0);
+    const date = input => input ? s.date(input) : "—";
 
-    function date(value) {
-        return value ? s.date(value) : "Chưa có dữ liệu";
-    }
+    const statusBadge = status => {
+        const types = {
+            "Đã thanh toán": "paid",
+            "Thanh toán một phần": "partial",
+            "Chưa thanh toán": "unpaid"
+        };
 
-    function button(label, callback) {
-        return s.button(label, callback);
-    }
+        return el(
+            "span",
+            "iv-status " + (types[status] || "neutral"),
+            status
+        );
+    };
 
-    async function load() {
-        try {
-            const data = await s.api("operations/invoices");
-            invoices = data.items || [];
-            render();
-        } catch (error) {
-            s.notify(error.message || "Không thể tải danh sách hóa đơn.", true);
-        }
-    }
+    const stat = (label, amount, symbol, type) => {
+        const card = el("article", "iv-stat");
+        card.appendChild(el("span", "iv-stat-icon " + type, symbol));
 
-    function fillInvoice(invoice) {
-        setText(elements.id, "#" + invoice.id);
-        setText(elements.bookingId, invoice.bookingId ? "#" + invoice.bookingId : "—");
+        const info = el("div", "iv-stat-info");
+        info.append(
+            el("strong", "", amount),
+            el("small", "", label)
+        );
+        card.appendChild(info);
+        return card;
+    };
+
+    const button = (label, handler, secondary = false) => {
+        const node = el(
+            "button",
+            "iv-button" + (secondary ? " secondary" : ""),
+            label
+        );
+        node.type = "button";
+        node.addEventListener("click", handler);
+        return node;
+    };
+
+    function fillDetails(invoice) {
+        setText(elements.id, `#${invoice.id}`);
+        setText(
+            elements.bookingId,
+            invoice.bookingId ? `#${invoice.bookingId}` : "—"
+        );
         setText(elements.date, date(invoice.date));
         setText(elements.status, invoice.status);
         setText(elements.customer, invoice.customer);
-        setText(elements.room, value(invoice, "room", "roomNumber") || "Chưa có dữ liệu");
-        setText(elements.checkIn, date(value(invoice, "checkIn", "ngayNhan")));
-        setText(elements.checkOut, date(value(invoice, "checkOut", "ngayTra")));
-
+        setText(
+            elements.room,
+            value(invoice, "room", "roomNumber") || "—"
+        );
+        setText(
+            elements.checkIn,
+            date(value(invoice, "checkIn", "ngayNhan"))
+        );
+        setText(
+            elements.checkOut,
+            date(value(invoice, "checkOut", "ngayTra"))
+        );
         setText(elements.roomAmount, money(invoice.roomAmount));
         setText(elements.serviceAmount, money(invoice.serviceAmount));
         setText(elements.deposit, money(invoice.deposit));
@@ -92,125 +126,32 @@ document.addEventListener("staff-auth-ready", () => {
         setText(elements.remaining, money(invoice.remaining));
     }
 
-    function renderPaymentHistory(items) {
-        const tbody = elements.paymentHistory;
+    function fillTable(tbody, records, columns, emptyText) {
         if (!tbody) return;
 
         tbody.replaceChildren();
 
-        if (!items.length) {
+        if (!records.length) {
             const row = document.createElement("tr");
-            const cell = document.createElement("td");
-
-            cell.colSpan = 4;
-            cell.textContent = "Chưa có giao dịch thanh toán.";
-
+            const cell = el("td", "", emptyText);
+            cell.colSpan = columns;
             row.appendChild(cell);
             tbody.appendChild(row);
             return;
         }
 
-        items.forEach(item => {
+        records.forEach(values => {
             const row = document.createElement("tr");
 
-            const values = [
-                date(item.date),
-                item.method || "Không rõ",
-                money(item.amount),
-                item.status || "Chưa xác định"
-            ];
-
-            values.forEach(value => {
+            values.forEach(item => {
                 const cell = document.createElement("td");
-                cell.textContent = value;
+                cell.textContent = String(item ?? "—");
                 row.appendChild(cell);
             });
 
             tbody.appendChild(row);
         });
     }
-
-    async function loadPayments(invoice) {
-        if (!elements.paymentHistory) return;
-
-        const row = document.createElement("tr");
-        const cell = document.createElement("td");
-
-        cell.colSpan = 4;
-        cell.textContent = "Đang tải lịch sử thanh toán...";
-
-        row.appendChild(cell);
-        elements.paymentHistory.replaceChildren(row);
-
-        try {
-            const data = await s.api(
-                `operations/invoices/${invoice.id}/payments`
-            );
-
-            renderPaymentHistory(data.items || []);
-        } catch (error) {
-            renderPaymentHistory([]);
-            s.notify(error.message || "Không thể tải lịch sử thanh toán.", true);
-        }
-    }
-
-    function renderRooms(items) {
-        const tbody = elements.roomDetails;
-        if (!tbody) return;
-
-        tbody.replaceChildren();
-
-        if (!items.length) {
-            const row = tbody.insertRow();
-            const cell = row.insertCell();
-            cell.colSpan = 4;
-            cell.textContent = "Không có thông tin phòng.";
-            return;
-        }
-
-        items.forEach(item => {
-            const row = tbody.insertRow();
-
-            [
-                item.roomNumber,
-                item.floor == null ? "Chưa xác định" : item.floor,
-                item.quantity,
-                money(item.amount)
-            ].forEach(value => {
-                row.insertCell().textContent = value;
-            });
-        });
-    }
-
-    function renderServices(items) {
-        const tbody = elements.serviceDetails;
-        if (!tbody) return;
-
-        tbody.replaceChildren();
-
-        if (!items.length) {
-            const row = tbody.insertRow();
-            const cell = row.insertCell();
-            cell.colSpan = 5;
-            cell.textContent = "Khách chưa sử dụng dịch vụ.";
-            return;
-        }
-
-        items.forEach(item => {
-            const row = tbody.insertRow();
-
-            [
-                item.name,
-                item.quantity,
-                money(item.unitPrice),
-                money(item.amount),
-                date(item.date)
-            ].forEach(value => {
-                row.insertCell().textContent = value;
-            });
-        });
-    }
-
 
     async function showDetail(invoice) {
         try {
@@ -220,49 +161,76 @@ document.addEventListener("staff-auth-ready", () => {
                 `operations/invoices/${invoice.id}/detail`
             );
 
-            const detail = data.invoice;
+            const detail = data.invoice || invoice;
+            fillDetails({ ...invoice, ...detail });
 
-            setText(elements.id, "#" + detail.id);
-            setText(elements.bookingId, "#" + detail.bookingId);
-            setText(elements.date, date(detail.date));
-            setText(elements.status, detail.status);
-            setText(elements.customer, detail.customer);
-            setText(elements.checkIn, date(detail.checkIn));
-            setText(elements.checkOut, date(detail.checkOut));
-
-            setText(elements.roomAmount, money(detail.roomAmount));
-            setText(elements.serviceAmount, money(detail.serviceAmount));
-            setText(elements.deposit, money(detail.deposit));
-            setText(elements.discount, money(detail.discount));
-            setText(elements.total, money(detail.total));
-            setText(elements.paid, money(invoice.paid));
-            setText(elements.remaining, money(detail.remaining));
+            const rooms = Array.isArray(data.rooms) ? data.rooms : [];
+            const services = Array.isArray(data.services) ? data.services : [];
+            const payments = Array.isArray(data.payments) ? data.payments : [];
 
             setText(
                 elements.room,
-                (data.rooms || []).map(x => x.roomNumber).join(", ") || "Chưa có phòng"
+                rooms.map(x => x.roomNumber).join(", ") ||
+                    value(invoice, "room", "roomNumber") ||
+                    "—"
             );
 
-            renderRooms(data.rooms || []);
-            renderServices(data.services || []);
-            renderPaymentHistory(data.payments || []);
+            fillTable(
+                elements.roomDetails,
+                rooms.map(x => [
+                    x.roomNumber,
+                    x.floor ?? "—",
+                    x.quantity,
+                    money(x.amount)
+                ]),
+                4,
+                "Không có thông tin phòng."
+            );
+
+            fillTable(
+                elements.serviceDetails,
+                services.map(x => [
+                    x.name,
+                    x.quantity,
+                    money(x.unitPrice),
+                    money(x.amount),
+                    date(x.date)
+                ]),
+                5,
+                "Khách chưa sử dụng dịch vụ."
+            );
+
+            fillTable(
+                elements.paymentHistory,
+                payments.map(x => [
+                    date(x.date),
+                    x.method || "—",
+                    money(x.amount),
+                    x.status || "—"
+                ]),
+                4,
+                "Chưa có giao dịch thanh toán."
+            );
 
             if (elements.modal) {
                 elements.modal.hidden = false;
                 document.body.classList.add("invoice-modal-open");
             }
         } catch (error) {
-            s.notify(error.message || "Không thể tải chi tiết hóa đơn.", true);
+            s.notify(
+                error.message || "Không thể tải chi tiết hóa đơn.",
+                true
+            );
         }
     }
 
     function closeDetail() {
-        if (elements.modal) {
-            elements.modal.hidden = true;
-        }
+        if (elements.modal) elements.modal.hidden = true;
 
-        document.body.classList.remove("invoice-modal-open");
-        document.body.classList.remove("invoice-print-mode");
+        document.body.classList.remove(
+            "invoice-modal-open",
+            "invoice-print-mode"
+        );
 
         currentInvoice = null;
     }
@@ -283,7 +251,7 @@ document.addEventListener("staff-auth-ready", () => {
         const remaining = Number(invoice.remaining || 0);
 
         if (remaining <= 0) {
-            s.notify("Hóa đơn đã được thanh toán đầy đủ.", true);
+            s.notify("Hóa đơn đã thanh toán đầy đủ.", true);
             return;
         }
 
@@ -319,20 +287,50 @@ document.addEventListener("staff-auth-ready", () => {
                 { amount }
             );
 
-            s.notify(result.message || "Đã ghi nhận thanh toán.");
             await load();
+            s.notify(result.message || "Đã ghi nhận thanh toán.");
         } catch (error) {
-            s.notify(error.message || "Không thể ghi nhận thanh toán.", true);
+            s.notify(
+                error.message || "Không thể ghi nhận thanh toán.",
+                true
+            );
         }
     }
 
     function render() {
-        const panel = s.panel("Danh sách hóa đơn");
-        const filters = s.el("div", "", "staff-filters");
+        const page = el("div", "iv-page");
+        const stats = el("div", "iv-stats");
+
+        const totalPaid = invoices.reduce(
+            (sum, item) => sum + (Number(item.paid) || 0),
+            0
+        );
+
+        const paidCount = invoices.filter(
+            item => item.status === "Đã thanh toán"
+        ).length;
+
+        const unpaidCount = invoices.filter(
+            item => item.status !== "Đã thanh toán"
+        ).length;
+
+        stats.append(
+            stat("Tổng hóa đơn", invoices.length, "▤", "total"),
+            stat("Tổng tiền đã thu", money(totalPaid), "◉", "money"),
+            stat("Đã thanh toán", paidCount, "✓", "paid"),
+            stat("Chưa hoàn tất", unpaidCount, "◷", "unpaid")
+        );
+
+        const panel = el("section", "iv-panel");
+        panel.appendChild(
+            el("h2", "iv-panel-title", "Danh sách hóa đơn")
+        );
+
+        const filters = el("div", "iv-filters");
 
         const search = document.createElement("input");
         search.type = "search";
-        search.placeholder = "Tìm mã hóa đơn, mã đặt phòng, khách hàng...";
+        search.placeholder = "Mã hóa đơn, mã đặt phòng, khách hàng...";
         search.value = keyword;
 
         const status = document.createElement("select");
@@ -342,63 +340,63 @@ document.addEventListener("staff-auth-ready", () => {
             "Chưa thanh toán",
             "Thanh toán một phần",
             "Đã thanh toán"
-        ].forEach(item => {
-            const option = document.createElement("option");
-            option.value = item;
-            option.textContent = item;
-            status.appendChild(option);
-        });
+        ].forEach(x => status.add(new Option(x, x)));
 
         status.value = selectedStatus;
         filters.append(search, status);
 
-        const result = s.el("div");
+        const count = el("p", "iv-result");
+        const results = el("div");
 
         function update() {
-            keyword = search.value.trim().toLocaleLowerCase("vi");
+            keyword = search.value.trim().toLocaleLowerCase("vi-VN");
             selectedStatus = status.value;
 
             const filtered = invoices.filter(item => {
-                const text = [
+                const searchable = [
                     item.id,
                     item.bookingId,
                     item.customer
-                ].join(" ").toLocaleLowerCase("vi");
+                ].join(" ").toLocaleLowerCase("vi-VN");
 
-                return text.includes(keyword) &&
-                    (selectedStatus === "Tất cả" ||
-                        item.status === selectedStatus);
+                return searchable.includes(keyword) &&
+                    (
+                        selectedStatus === "Tất cả" ||
+                        item.status === selectedStatus
+                    );
             });
 
+            count.textContent =
+                `Hiển thị ${filtered.length}/${invoices.length} hóa đơn`;
+
             const rows = filtered.map(item => {
-                const actions = s.el("div", "", "staff-actions");
+                const actions = el("div", "iv-actions");
 
                 actions.appendChild(
-                    button("Xem chi tiết", () => showDetail(item))
+                    button("Chi tiết", () => showDetail(item), true)
                 );
 
                 if (Number(item.remaining || 0) > 0) {
                     actions.appendChild(
-                        button("Thu tiền mặt", () => collectCash(item))
+                        button("Thu tiền", () => collectCash(item))
                     );
                 }
 
                 return [
-                    "#" + item.id,
-                    "#" + item.bookingId,
-                    item.customer,
+                    el("strong", "iv-id", `#${item.id}`),
+                    `#${item.bookingId}`,
+                    el("strong", "iv-customer", item.customer),
                     date(item.date),
                     money(item.total),
                     money(item.deposit),
                     money(item.paid),
-                    money(item.remaining),
-                    item.status,
+                    el("strong", "iv-money", money(item.remaining)),
+                    statusBadge(item.status),
                     actions
                 ];
             });
 
-            result.replaceChildren(
-                s.el("p", `Hiển thị ${filtered.length}/${invoices.length} hóa đơn`),
+            results.replaceChildren(
                 s.table(
                     [
                         "Mã HĐ",
@@ -420,10 +418,23 @@ document.addEventListener("staff-auth-ready", () => {
         search.addEventListener("input", update);
         status.addEventListener("change", update);
 
-        panel.append(filters, result);
-        s.content.replaceChildren(panel);
-
+        panel.append(filters, count, results);
+        page.append(stats, panel);
+        s.content.replaceChildren(page);
         update();
+    }
+
+    async function load() {
+        try {
+            const data = await s.api("operations/invoices");
+            invoices = Array.isArray(data.items) ? data.items : [];
+            render();
+        } catch (error) {
+            s.notify(
+                error.message || "Không thể tải danh sách hóa đơn.",
+                true
+            );
+        }
     }
 
     elements.close?.addEventListener("click", closeDetail);
@@ -431,13 +442,15 @@ document.addEventListener("staff-auth-ready", () => {
     elements.print?.addEventListener("click", printInvoice);
 
     elements.modal?.addEventListener("click", event => {
-        if (event.target === elements.modal) {
-            closeDetail();
-        }
+        if (event.target === elements.modal) closeDetail();
     });
 
     document.addEventListener("keydown", event => {
-        if (event.key === "Escape" && elements.modal && !elements.modal.hidden) {
+        if (
+            event.key === "Escape" &&
+            elements.modal &&
+            !elements.modal.hidden
+        ) {
             closeDetail();
         }
     });

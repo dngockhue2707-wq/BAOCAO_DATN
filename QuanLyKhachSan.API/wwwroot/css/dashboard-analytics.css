@@ -1,0 +1,528 @@
+
+body[data-page="dashboard"] [hidden] {
+    display: none !important;
+}
+
+body[data-page="dashboard"] .lux-unified-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+body[data-page="dashboard"] .lux-unified-revenue {
+    width: 100%;
+    min-width: 0;
+    padding: 28px !important;
+}
+
+.lux-unified-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 21px;
+}
+
+.lux-unified-eyebrow {
+    margin-bottom: 8px;
+    color: #A98455;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.lux-unified-header h2 {
+    margin: 0;
+    color: #392B20;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.lux-unified-header p {
+    margin: 7px 0 0;
+    color: #938579;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+}
+
+.lux-mode-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    padding: 6px;
+    margin-bottom: 20px;
+    background: #F4EFE8;
+    border: 1px solid #EAE0D3;
+    border-radius: 11px;
+}
+
+.lux-mode {
+    min-height: 45px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #78685A;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition:
+        background .2s ease,
+        color .2s ease,
+        box-shadow .2s ease;
+}
+
+.lux-mode:hover {
+    background: rgba(255, 255, 255, .72);
+}
+
+.lux-mode.active {
+    background: #684B35;
+    color: #FFFFFF;
+    box-shadow: 0 3px 10px rgba(60, 42, 28, .13);
+}
+
+.lux-mode:focus-visible {
+    outline: 2px solid #A98455;
+    outline-offset: 2px;
+}
+
+.lux-mode-filters {
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    background: #FBF9F6;
+    border: 1px solid #EEE6DC;
+    border-radius: 10px;
+}
+
+.lux-filter-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    min-height: 45px;
+}
+
+.lux-filter-row label {
+    color: #786859;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.lux-filter-row input,
+.lux-filter-row select {
+    min-width: 185px;
+    min-height: 43px;
+    padding: 9px 13px;
+    border: 1px solid #E5DACE;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #5A4230;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15px;
+    outline-color: #A98455;
+    cursor: pointer;
+}
+
+.lux-filter-description {
+    color: #897A6B;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+}
+
+.lux-revenue-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.lux-summary-primary,
+.lux-summary-secondary {
+    min-width: 0;
+    min-height: 112px;
+    padding: 19px 21px;
+    background: #FAF7F2;
+    border: 1px solid #EEE5DA;
+    border-radius: 11px;
+}
+
+.lux-summary-primary {
+    background: linear-gradient(
+        135deg,
+        #F7F0E6,
+        #FDFBF8
+    );
+}
+
+.lux-revenue-summary span {
+    display: block;
+    color: #897B6D;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+}
+
+.lux-revenue-summary strong {
+    display: block;
+    margin-top: 8px;
+    color: #61462F;
+    font-family: "Times New Roman", Times, serif;
+    font-size: clamp(21px, 2.1vw, 29px);
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.lux-summary-primary strong {
+    color: #805A35;
+    font-size: clamp(24px, 2.3vw, 32px);
+}
+
+.lux-summary-primary small {
+    display: block;
+    margin-top: 7px;
+    color: #A09284;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12px;
+}
+
+.lux-unified-chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    min-height: 350px;
+    padding: 10px 0;
+    color: #928374;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+}
+
+.lux-unified-chart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 420px;
+    overflow: visible;
+}
+
+.lux-unified-chart svg text {
+    font-family: "Times New Roman", Times, serif;
+}
+
+.lux-chart-bar {
+    transition: fill .2s ease;
+}
+
+.lux-chart-bar:hover {
+    fill: #87613C;
+}
+
+.lux-chart-empty {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 180px;
+    padding: 25px;
+    background: #FAF7F2;
+    border: 1px dashed #E2D4C2;
+    border-radius: 11px;
+    color: #8C7B6C;
+    text-align: center;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15px;
+}
+
+.lux-unified-chart:has(.lux-chart-empty) {
+    min-height: 210px;
+}
+
+.lux-day-chart {
+    width: 100%;
+    padding: 28px 30px;
+    background: #FAF7F2;
+    border: 1px solid #EEE5DA;
+    border-radius: 12px;
+}
+
+.lux-unified-chart:has(.lux-day-chart) {
+    min-height: 190px;
+}
+
+.lux-day-chart-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.lux-day-chart-heading span {
+    color: #695341;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 16px;
+}
+
+.lux-day-chart-heading strong {
+    color: #6C4B30;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.lux-day-chart-track {
+    width: 100%;
+    height: 30px;
+    overflow: hidden;
+    background: #EDE2D3;
+    border-radius: 8px;
+}
+
+.lux-day-chart-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        #C6A477,
+        #A77C4C,
+        #806044
+    );
+    border-radius: 8px;
+}
+
+.lux-day-chart-caption {
+    margin-top: 14px;
+    color: #897868;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+}
+
+.lux-report-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 15px;
+    border-top: 1px solid #F0E8DE;
+    color: #948678;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+}
+
+.lux-report-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.lux-report-legend i {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    background: #B18A59;
+    border-radius: 3px;
+}
+
+.lux-report-error {
+    margin: 16px 0 0;
+    padding: 13px 16px;
+    border: 1px solid #F0D6D1;
+    border-radius: 8px;
+    background: #F9ECEA;
+    color: #A2534C;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+}
+
+body[data-page="dashboard"] .lux-unified-layout .lux-rooms-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+    column-gap: 28px;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    min-height: 240px;
+    padding: 24px 30px;
+}
+
+.lux-unified-layout .lux-rooms-panel .lux-panel-header {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+}
+
+.lux-unified-layout .lux-rooms-panel .lux-room-content {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    min-height: 190px;
+    margin: 0;
+}
+
+.lux-unified-layout .lux-rooms-panel .lux-donut {
+    width: 160px;
+    height: 160px;
+}
+
+.lux-unified-layout .lux-rooms-panel .lux-donut::before {
+    inset: 29px;
+}
+
+.lux-unified-layout .lux-rooms-panel .lux-room-legend {
+    gap: 18px;
+}
+
+.lux-room-details {
+    grid-column: 2;
+    align-self: center;
+    min-width: 0;
+    margin: 0;
+    padding: 0 0 0 25px;
+    border-top: 0;
+    border-left: 1px solid #EEE6DC;
+}
+
+.lux-room-details h3 {
+    margin: 0 0 17px;
+    color: #513D2C;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.lux-room-detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #F1EBE4;
+}
+
+.lux-room-detail-row:last-child {
+    border-bottom: none;
+}
+
+.lux-room-detail-row > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.lux-room-detail-row i {
+    display: block;
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    border-radius: 3px;
+}
+
+.lux-room-detail-row span {
+    color: #7F7163;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+}
+
+.lux-room-detail-row strong {
+    color: #523D2D;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    body[data-page="dashboard"] .lux-unified-layout .lux-rooms-panel {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .lux-unified-layout .lux-rooms-panel .lux-panel-header,
+    .lux-unified-layout .lux-rooms-panel .lux-room-content,
+    .lux-room-details {
+        grid-column: 1;
+    }
+
+    .lux-room-details {
+        border-left: 0;
+        border-top: 1px solid #EEE6DC;
+        padding: 18px 0 0;
+    }
+}
+
+@media (max-width: 700px) {
+    body[data-page="dashboard"] .lux-unified-revenue {
+        padding: 18px !important;
+    }
+
+    .lux-unified-header h2 {
+        font-size: 21px;
+    }
+
+    .lux-mode-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lux-mode-filters {
+        padding: 14px;
+    }
+
+    .lux-filter-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .lux-filter-row input,
+    .lux-filter-row select {
+        width: 100%;
+    }
+
+    .lux-revenue-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .lux-unified-chart {
+        min-height: 250px;
+    }
+
+    .lux-day-chart {
+        padding: 19px;
+    }
+
+    .lux-day-chart-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    body[data-page="dashboard"] .lux-unified-layout .lux-rooms-panel {
+        padding: 18px;
+    }
+
+    .lux-unified-layout .lux-rooms-panel .lux-room-content {
+        flex-wrap: wrap;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lux-mode,
+    .lux-chart-bar {
+        transition: none;
+    }
+}

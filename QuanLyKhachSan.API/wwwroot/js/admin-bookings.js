@@ -14,11 +14,11 @@ window.AdminBookings = {
         showMessage,
         content
     }) {
-        const data = await api("bookings");
-        const bookings = Array.isArray(data.items) ? data.items : [];
+        let bookings = [];
+        let cancellations = [];
+        let refunds = [];
 
         const box = panel("Danh sách đặt phòng");
-
         const toolbar = el("div", "", "admin-booking-toolbar");
 
         const search = document.createElement("input");
@@ -50,7 +50,7 @@ window.AdminBookings = {
             search.value = "";
             statusFilter.value = "";
             checkInFilter.value = "";
-            render();
+            renderBookings();
         }, "secondary");
 
         toolbar.append(
@@ -64,52 +64,168 @@ window.AdminBookings = {
         const results = el("div", "", "admin-booking-results");
 
         box.append(toolbar, count, results);
-        content.replaceChildren(box);
+
+        // Khu vuc yeu cau huy phong.
+        const cancelBox = panel("Yêu cầu hủy phòng");
+        const cancelDescription = document.createElement("p");
+        cancelDescription.textContent =
+            "Xét duyệt các yêu cầu hủy phòng đã đặt cọc. " +
+            "Tiền hoàn chỉ được ghi nhận sau khi chuyển khoản thực tế.";
+
+        const cancelActions = document.createElement("div");
+        cancelActions.className = "admin-actions";
+
+        const cancelRefresh = button(
+            "Cập nhật yêu cầu",
+            () => refreshAll(),
+            "secondary"
+        );
+
+        cancelActions.appendChild(cancelRefresh);
+
+        const cancelCount = document.createElement("p");
+        const cancelResults = document.createElement("div");
+
+        cancelBox.append(
+            cancelDescription,
+            cancelActions,
+            cancelCount,
+            cancelResults
+        );
+
+        // Khu vuc hoan coc.
+        const refundBox = panel("Giao dịch hoàn cọc");
+        const refundDescription = document.createElement("p");
+        refundDescription.textContent =
+            "Chỉ xác nhận Đã hoàn sau khi kiểm tra " +
+            "giao dịch hoàn tiền thành công ngoài hệ thống.";
+
+        const refundCount = document.createElement("p");
+        const refundResults = document.createElement("div");
+
+        refundBox.append(
+            refundDescription,
+            refundCount,
+            refundResults
+        );
+
+        content.replaceChildren(
+            box,
+            cancelBox,
+            refundBox
+        );
 
         function dateKey(value) {
-            if (!value) return "";
-            return String(value).slice(0, 10);
+            return value ? String(value).slice(0, 10) : "";
         }
 
-        function render() {
-            const keyword = search.value.trim().toLocaleLowerCase("vi-VN");
-            const selectedStatus = statusFilter.value;
-            const selectedDate = checkInFilter.value;
+        function dateTime(value) {
+            if (!value) return "—";
 
-            const filtered = bookings.filter(booking => {
+            const d = new Date(value);
+
+            if (Number.isNaN(d.getTime())) {
+                return String(value);
+            }
+
+            return d.toLocaleString("vi-VN");
+        }
+
+        function cell(text) {
+            const span = document.createElement("span");
+            span.textContent = String(text ?? "—");
+            return span;
+        }
+
+        function isPendingCancellation(bookingId) {
+            return cancellations.some(item =>
+                Number(item.bookingId) === Number(bookingId) &&
+                item.status === "Chờ xử lý"
+            );
+        }
+
+        async function requestJson(url, options = {}) {
+            const response = await fetch(url, {
+                credentials: "same-origin",
+                cache: "no-store",
+                ...options
+            });
+
+            const data = await response.json()
+                .catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message ||
+                    data.title ||
+                    `HTTP ${response.status}`
+                );
+            }
+
+            return data;
+        }
+
+        async function cancellationPost(path, body) {
+            const csrf = await requestJson(
+                "/api/account/csrf-token"
+            );
+
+            if (!csrf.csrfToken) {
+                throw new Error("Không lấy được mã bảo mật.");
+            }
+
+            return await requestJson(
+                `/api/cancellations/${path}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrf.csrfToken
+                    },
+                    body: JSON.stringify(body)
+                }
+            );
+        }
+
+        function renderBookings() {
+            const keyword = search.value
+                .trim()
+                .toLocaleLowerCase("vi-VN");
+
+            const filtered = bookings.filter(item => {
                 const searchable = [
-                    booking.id,
-                    `#${booking.id}`,
-                    booking.customer,
-                    booking.roomNumber,
-                    booking.roomType
+                    item.id,
+                    `#${item.id}`,
+                    item.customer,
+                    item.roomNumber,
+                    item.roomType
                 ].join(" ").toLocaleLowerCase("vi-VN");
 
-                const matchesKeyword =
-                    !keyword || searchable.includes(keyword);
-
-                const matchesStatus =
-                    !selectedStatus ||
-                    booking.status === selectedStatus;
-
-                const matchesDate =
-                    !selectedDate ||
-                    dateKey(booking.checkIn) === selectedDate;
-
-                return matchesKeyword && matchesStatus && matchesDate;
+                return (
+                    (!keyword || searchable.includes(keyword)) &&
+                    (!statusFilter.value ||
+                        item.status === statusFilter.value) &&
+                    (!checkInFilter.value ||
+                        dateKey(item.checkIn) ===
+                            checkInFilter.value)
+                );
             });
 
             count.textContent =
                 `Hiển thị ${filtered.length}/${bookings.length} đơn đặt phòng`;
 
-            const rows = filtered.map(booking => {
+            const rows = filtered.map(item => {
                 const actions = el("div", "", "admin-actions");
+                const pending = isPendingCancellation(item.id);
 
-                if (booking.status === "Chờ xác nhận") {
+                if (
+                    item.status === "Chờ xác nhận" &&
+                    !pending
+                ) {
                     const confirmButton = button(
                         "Xác nhận",
                         () => changeStatus(
-                            booking,
+                            item,
                             "Đã xác nhận",
                             confirmButton,
                             cancelButton
@@ -119,7 +235,7 @@ window.AdminBookings = {
                     const cancelButton = button(
                         "Hủy",
                         () => changeStatus(
-                            booking,
+                            item,
                             "Đã hủy",
                             confirmButton,
                             cancelButton
@@ -128,24 +244,28 @@ window.AdminBookings = {
                     );
 
                     actions.append(confirmButton, cancelButton);
+                } else if (pending) {
+                    actions.appendChild(
+                        cell("Có yêu cầu hủy đang chờ")
+                    );
                 } else {
                     actions.textContent = "—";
                 }
 
                 const status = el(
                     "span",
-                    booking.status,
+                    item.status,
                     "admin-booking-status"
                 );
 
-                status.dataset.status = booking.status;
+                status.dataset.status = item.status;
 
                 return [
-                    `#${booking.id}`,
-                    booking.customer,
-                    `${booking.roomType} · ${booking.roomNumber}`,
-                    `${date(booking.checkIn)} – ${date(booking.checkOut)}`,
-                    money(booking.total),
+                    `#${item.id}`,
+                    item.customer,
+                    `${item.roomType} · ${item.roomNumber}`,
+                    `${date(item.checkIn)} – ${date(item.checkOut)}`,
+                    money(item.total),
                     status,
                     actions
                 ];
@@ -173,15 +293,23 @@ window.AdminBookings = {
             confirmButton,
             cancelButton
         ) {
+            if (isPendingCancellation(booking.id)) {
+                showMessage(
+                    "Đơn có yêu cầu hủy đang chờ. " +
+                    "Vui lòng xử lý yêu cầu trước."
+                );
+                return;
+            }
+
             const actionText = newStatus === "Đã hủy"
                 ? "hủy"
                 : "xác nhận";
 
-            const accepted = confirm(
-                `Bạn có chắc muốn ${actionText} đơn đặt phòng #${booking.id}?`
-            );
-
-            if (!accepted) return;
+            if (!confirm(
+                `Bạn có chắc muốn ${actionText} đơn #${booking.id}?`
+            )) {
+                return;
+            }
 
             confirmButton.disabled = true;
             cancelButton.disabled = true;
@@ -193,20 +321,12 @@ window.AdminBookings = {
                     { status: newStatus }
                 );
 
-                const index = bookings.findIndex(
-                    item => item.id === booking.id
-                );
-
-                if (index !== -1) {
-                    bookings[index].status = newStatus;
-                }
-
                 showMessage(
                     result.message ||
-                    "Cập nhật đơn đặt phòng thành công."
+                    "Đã cập nhật trạng thái đặt phòng."
                 );
 
-                render();
+                await refreshAll();
             } catch (error) {
                 showMessage(error.message);
                 confirmButton.disabled = false;
@@ -214,10 +334,300 @@ window.AdminBookings = {
             }
         }
 
-        search.addEventListener("input", render);
-        statusFilter.addEventListener("change", render);
-        checkInFilter.addEventListener("change", render);
+        function actionButton(text, action, variant) {
+            const btn = button(text, action, variant);
+            btn.type = "button";
+            return btn;
+        }
 
-        render();
+        function renderCancellations() {
+            const pendingCount = cancellations.filter(
+                x => x.status === "Chờ xử lý"
+            ).length;
+
+            cancelCount.textContent =
+                `${cancellations.length} yêu cầu · ` +
+                `${pendingCount} đang chờ xử lý`;
+
+            const rows = cancellations.map(item => {
+                const actions = el("div", "", "admin-actions");
+
+                if (item.status === "Chờ xử lý") {
+                    actions.append(
+                        actionButton(
+                            "Duyệt",
+                            () => approveCancellation(item)
+                        ),
+                        actionButton(
+                            "Từ chối",
+                            () => rejectCancellation(item),
+                            "danger"
+                        )
+                    );
+                } else {
+                    actions.textContent = "—";
+                }
+
+                return [
+                    `#${item.requestId}`,
+                    `#${item.bookingId}`,
+                    item.customerName,
+                    item.reason,
+                    dateTime(item.requestedAt),
+                    cell(item.status),
+                    money(item.depositAmount),
+                    `${Number(item.refundRate)}%`,
+                    money(item.estimatedRefund),
+                    actions
+                ];
+            });
+
+            cancelResults.replaceChildren(
+                table(
+                    [
+                        "Yêu cầu",
+                        "Đơn",
+                        "Khách hàng",
+                        "Lý do",
+                        "Ngày gửi",
+                        "Trạng thái",
+                        "Tiền cọc",
+                        "Tỷ lệ",
+                        "Dự kiến hoàn",
+                        "Thao tác"
+                    ],
+                    rows
+                )
+            );
+        }
+
+        function renderRefunds() {
+            refundCount.textContent =
+                `${refunds.length} giao dịch hoàn cọc`;
+
+            const rows = refunds.map(item => {
+                const actions = el("div", "", "admin-actions");
+
+                if (item.status === "Chờ hoàn") {
+                    actions.appendChild(
+                        actionButton(
+                            "Xác nhận đã hoàn",
+                            () => confirmRefund(item)
+                        )
+                    );
+                } else {
+                    actions.textContent = "—";
+                }
+
+                return [
+                    `#${item.refundId}`,
+                    `#${item.bookingId}`,
+                    money(item.amount),
+                    cell(item.status),
+                    item.paymentMethod || "—",
+                    item.transactionReference || "—",
+                    dateTime(item.refundedAt),
+                    actions
+                ];
+            });
+
+            refundResults.replaceChildren(
+                table(
+                    [
+                        "Mã hoàn",
+                        "Đơn",
+                        "Số tiền",
+                        "Trạng thái",
+                        "Phương thức",
+                        "Mã giao dịch",
+                        "Ngày hoàn",
+                        "Thao tác"
+                    ],
+                    rows
+                )
+            );
+        }
+
+        async function approveCancellation(item) {
+            const text =
+                `Duyệt hủy đơn #${item.bookingId}?\n` +
+                `Tiền cọc: ${money(item.depositAmount)}\n` +
+                `Dự kiến hoàn: ${money(item.estimatedRefund)}\n\n` +
+                "Duyệt sẽ hủy đơn và giải phóng lịch phòng.";
+
+            if (!confirm(text)) return;
+
+            const note = prompt(
+                "Ghi chú xử lý (có thể để trống):",
+                ""
+            );
+
+            if (note === null) return;
+
+            if (note.length > 500) {
+                alert("Ghi chú tối đa 500 ký tự.");
+                return;
+            }
+
+            try {
+                const result = await cancellationPost(
+                    `${item.requestId}/approve`,
+                    { note }
+                );
+
+                showMessage(result.message || "Đã duyệt yêu cầu.");
+                await refreshAll();
+            } catch (error) {
+                showMessage(error.message);
+            }
+        }
+
+        async function rejectCancellation(item) {
+            const note = prompt(
+                `Lý do từ chối yêu cầu #${item.requestId} ` +
+                "(từ 5 đến 500 ký tự):",
+                ""
+            );
+
+            if (note === null) return;
+
+            if (note.trim().length < 5 ||
+                note.trim().length > 500) {
+                alert("Vui lòng nhập lý do từ 5 đến 500 ký tự.");
+                return;
+            }
+
+            if (!confirm(
+                `Xác nhận từ chối yêu cầu #${item.requestId}?`
+            )) {
+                return;
+            }
+
+            try {
+                const result = await cancellationPost(
+                    `${item.requestId}/reject`,
+                    { note: note.trim() }
+                );
+
+                showMessage(
+                    result.message || "Đã từ chối yêu cầu."
+                );
+
+                await refreshAll();
+            } catch (error) {
+                showMessage(error.message);
+            }
+        }
+
+        async function confirmRefund(item) {
+            alert(
+                "Chỉ xác nhận sau khi đã chuyển tiền thật " +
+                "và kiểm tra giao dịch thành công."
+            );
+
+            const method = prompt(
+                "Phương thức đã hoàn tiền " +
+                "(ví dụ: Chuyển khoản ngân hàng):",
+                "Chuyển khoản ngân hàng"
+            );
+
+            if (method === null) return;
+
+            const reference = prompt(
+                "Nhập mã giao dịch hoàn tiền thực tế:",
+                ""
+            );
+
+            if (reference === null) return;
+
+            const note = prompt(
+                "Ghi chú (có thể để trống):",
+                ""
+            );
+
+            if (note === null) return;
+
+            if (
+                method.trim().length < 2 ||
+                method.trim().length > 50 ||
+                reference.trim().length < 3 ||
+                reference.trim().length > 100 ||
+                note.trim().length > 500
+            ) {
+                alert("Thông tin giao dịch hoàn tiền không hợp lệ.");
+                return;
+            }
+
+            if (!confirm(
+                `Xác nhận đã hoàn ${money(item.amount)} ` +
+                `cho đơn #${item.bookingId}?\n\n` +
+                "Thao tác này chỉ ghi nhận hoàn tiền " +
+                "trong website, KHÔNG chuyển tiền tự động."
+            )) {
+                return;
+            }
+
+            try {
+                const result = await cancellationPost(
+                    `refunds/${item.refundId}/confirm`,
+                    {
+                        paymentMethod: method.trim(),
+                        transactionReference: reference.trim(),
+                        note: note.trim()
+                    }
+                );
+
+                showMessage(
+                    result.message || "Đã ghi nhận hoàn cọc."
+                );
+
+                await refreshAll();
+            } catch (error) {
+                showMessage(error.message);
+            }
+        }
+
+        async function refreshAll() {
+            cancelRefresh.disabled = true;
+
+            try {
+                const bookingData = await api("bookings");
+
+                const [cancelData, refundData] = await Promise.all([
+                    requestJson("/api/cancellations/management"),
+                    requestJson("/api/cancellations/refunds")
+                ]);
+
+                bookings = Array.isArray(bookingData.items)
+                    ? bookingData.items
+                    : [];
+
+                cancellations = Array.isArray(cancelData.requests)
+                    ? cancelData.requests
+                    : [];
+
+                refunds = Array.isArray(refundData.refunds)
+                    ? refundData.refunds
+                    : [];
+
+                renderBookings();
+                renderCancellations();
+                renderRefunds();
+
+            } catch (error) {
+                showMessage(
+                    "Không tải được dữ liệu quản lý: " +
+                    error.message
+                );
+            } finally {
+                cancelRefresh.disabled = false;
+            }
+        }
+
+        search.addEventListener("input", renderBookings);
+        statusFilter.addEventListener("change", renderBookings);
+        checkInFilter.addEventListener("change", renderBookings);
+
+        await refreshAll();
     }
 };

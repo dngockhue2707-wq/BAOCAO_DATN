@@ -1,0 +1,213 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lora:wght@400;500;600;700&display=swap");
+
+:root {
+    --font-heading: "Playfair Display", Georgia, serif;
+    --font-body: "Times New Roman", Times, serif;
+    --font-number: "Lora", Georgia, serif;
+}
+
+.admin-shell,
+.staff-shell {
+    --font-heading: "Playfair Display", Georgia, serif;
+    --font-body: "Times New Roman", Times, serif;
+    --font-number: "Lora", Georgia, serif;
+}
+
+:is(.admin-shell, .staff-shell) {
+    font-family: var(--font-body);
+}
+
+:is(.admin-shell, .staff-shell) :is(
+    p,
+    a,
+    label,
+    li,
+    th,
+    td,
+    button,
+    input,
+    select,
+    textarea,
+    option,
+    summary
+) {
+    font-family: var(--font-body);
+}
+
+:is(.admin-shell, .staff-shell) :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6
+) {
+    font-family: var(--font-heading);
+}
+
+:is(.admin-shell, .staff-shell) :is(
+    .admin-brand,
+    .staff-brand,
+    .lux-unified-header h2,
+    .lux-room-details h3,
+    .dashboard-heading h1,
+    .dashboard-panel h2,
+    .bt-panel-head h2,
+    .sb-panel-title,
+    .sc-panel-head h2,
+    .iv-panel-title,
+    .rq-panel-head h2,
+    .sr-panel-head h2,
+    .sr-floor-header h3,
+    .sv-panel-title,
+    .staff-account-intro h2,
+    .staff-account-card-header h3,
+    .invoice-modal-header h2,
+    .invoice-print-heading h2,
+    .invoice-detail-section h3,
+    .sr-modal-title-wrap h2
+) {
+    font-family: var(--font-heading) !important;
+}
+
+.admin-shell :is(
+    .dashboard-stats strong,
+    .admin-stat strong,
+    .lux-kpi strong,
+    .lux-revenue-kpi strong,
+    .lux-revenue-summary strong,
+    .lux-day-chart-heading strong,
+    .lux-room-detail-row strong,
+    .lux-donut-inner strong,
+    .lux-room-legend strong,
+    .lux-room-legend-item strong,
+    .lux-chart-total,
+    .re-main-number,
+    .re-kpi-value,
+    .re-percentage > span,
+    .room-overview-card strong,
+    .customer-stat-card strong,
+    .service-stat-card strong,
+    .contacts-stat-info strong,
+    .employee-stat-info strong,
+    .service-price-cell
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.admin-shell :is(
+    .lux-unified-chart svg text,
+    .re-chart-axis-label
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.admin-shell :is(
+    .contacts-code,
+    .contacts-date,
+    .employee-code,
+    .room-number,
+    .invoice-number,
+    .invoice-price,
+    .invoice-total,
+    .booking-price,
+    .booking-total,
+    .booking-amount,
+    .money-value,
+    .price-value,
+    .revenue-value
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.staff-shell :is(
+    .staff-card strong,
+    .bt-stat strong,
+    .sb-stat-info strong,
+    .sc-stat strong,
+    .iv-stat-info strong,
+    .rq-stat strong,
+    .sr-stat-body strong,
+    .sr-room-number,
+    .bt-room,
+    .sb-tab-count,
+    .sr-floor-number,
+    .staff-number
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.staff-shell :is(
+    .sb-id,
+    .sb-room-number,
+    .sc-id,
+    .iv-id,
+    .iv-money,
+    .rq-id,
+    .sv-booking-id,
+    .sv-money,
+    .staff-account-id,
+    #staffAccountId,
+    .invoice-money-grid .invoice-money-highlight strong,
+    .invoice-total,
+    .invoice-amount,
+    .invoice-price,
+    .sr-room-number
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+:is(.admin-shell, .staff-shell) :is(
+    input[type="number"],
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="time"]
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+:is(.admin-shell, .staff-shell) :is(
+    .font-number,
+    .numeric-value,
+    .currency-value,
+    .total-amount,
+    .total-price,
+    .price-value,
+    .amount-value
+) {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+:is(.admin-shell, .staff-shell) .font-heading {
+    font-family: var(--font-heading) !important;
+}
+
+:is(.admin-shell, .staff-shell) .font-body {
+    font-family: var(--font-body) !important;
+}
+
+:is(.admin-shell, .staff-shell) .font-number {
+    font-family: var(--font-number) !important;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+@media print {
+    .staff-shell :is(
+        .invoice-money-grid .invoice-money-highlight strong,
+        .iv-money,
+        .sv-money,
+        .invoice-total,
+        .invoice-amount
+    ) {
+        font-family: var(--font-number) !important;
+        font-variant-numeric: lining-nums tabular-nums;
+    }
+}

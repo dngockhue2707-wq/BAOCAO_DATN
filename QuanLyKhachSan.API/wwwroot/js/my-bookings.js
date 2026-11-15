@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // VNPay đang cấu hình thời hạn 15 phút.
     // Dùng 14 phút để tránh mở đường dẫn sát lúc hết hạn.
     const PAYMENT_LINK_LIFETIME = 14 * 60 * 1000;
-    const PAYMENT_PREFIX = "dnk-payment-";
+    const PAYMENT_PREFIX = "KS-payment-";
 
     const money = value => new Intl.NumberFormat("vi-VN", {
         style: "currency",
@@ -286,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalEyebrow = element(
         "span",
         "booking-detail-eyebrow",
-        "DNK HOTEL · CHI TIẾT ĐẶT PHÒNG"
+        "KS HOTEL · CHI TIẾT ĐẶT PHÒNG"
     );
 
     const modalTitle = element(
@@ -787,7 +787,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
             show(
                 "Đơn có giao dịch cọc cần xử lý. " +
-                "Vui lòng liên hệ DNK Hotel để được hỗ trợ hủy.",
+                "Vui lòng liên hệ KS Hotel để được hỗ trợ hủy.",
                 true
             );
             return;
@@ -932,7 +932,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "h2",
                     "",
                     booking.roomName ||
-                    "Phòng DNK Hotel"
+                    "Phòng KS Hotel"
                 )
             );
 

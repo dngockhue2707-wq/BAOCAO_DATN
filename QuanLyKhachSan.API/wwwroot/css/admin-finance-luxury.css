@@ -1,0 +1,521 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap");
+
+body:is([data-page="invoices"], [data-page="reports"]) {
+    --finance-bg: #FAF8F5;
+    --finance-surface: #FFFEFC;
+    --finance-cream: #F5EDE4;
+    --finance-dark: #39291F;
+    --finance-brown: #76513A;
+    --finance-gold: #B48A55;
+    --finance-muted: #89786A;
+    --finance-border: #E9DCCC;
+    --finance-heading: "Playfair Display", Georgia, serif;
+    --finance-body: "Times New Roman", Times, serif;
+
+    margin: 0;
+    background: var(--finance-bg);
+    color: var(--finance-dark);
+    font-family: var(--finance-body);
+    overflow-x: hidden;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) *,
+body:is([data-page="invoices"], [data-page="reports"]) *::before,
+body:is([data-page="invoices"], [data-page="reports"]) *::after {
+    box-sizing: border-box;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) [hidden] {
+    display: none !important;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    button,
+    input,
+    select,
+    textarea
+) {
+    font-family: var(--finance-body);
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    #adminApp,
+    .admin-shell,
+    .admin-main,
+    .admin-content
+) {
+    min-width: 0;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-main {
+    background: var(--finance-bg);
+}
+
+/* DAU TRANG */
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-topbar {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 155px;
+    overflow: hidden;
+    border-bottom: 1px solid #E7D9C9;
+    background: linear-gradient(
+        110deg,
+        #FFFCF8,
+        #F2E7DA
+    );
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-topbar::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    right: -40px;
+    top: -90px;
+    width: 350px;
+    height: 280px;
+    border: 1px solid rgba(179, 138, 85, .24);
+    border-radius: 50%;
+    transform: rotate(-18deg);
+    pointer-events: none;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-topbar::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    right: 5%;
+    top: -85px;
+    width: 240px;
+    height: 260px;
+    border: 1px solid rgba(179, 138, 85, .13);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #986A3C;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-topbar h1 {
+    margin: 0;
+    color: #352419;
+    font-family: var(--finance-heading);
+    font-size: clamp(29px, 3vw, 39px);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-user {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    max-width: 200px;
+    padding: 9px 16px;
+    border: 1px solid #E2D1BE;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, .92);
+    color: #705039;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* KHUNG NOI DUNG */
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-bottom: 21px;
+    padding: 24px;
+    border: 1px solid var(--finance-border);
+    border-radius: 15px;
+    background: var(--finance-surface);
+    box-shadow: 0 6px 24px rgba(55, 37, 24, .035);
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-panel h2 {
+    margin: 0 0 12px;
+    color: #3C291D;
+    font-family: var(--finance-heading);
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-panel h3 {
+    color: #493322;
+    font-family: var(--finance-heading);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-panel > p {
+    margin: 0 0 17px;
+    color: #89796A;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* CAC THE THONG KE NEU CO */
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-stat-card,
+    .admin-kpi-card,
+    .stat-card,
+    .kpi-card
+) {
+    position: relative;
+    min-width: 0;
+    min-height: 125px;
+    padding: 19px 21px;
+    overflow: hidden;
+    border: 1px solid #EADACA;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #FFFEFC, #F9F1E8);
+    box-shadow: 0 4px 17px rgba(52, 35, 22, .03);
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-stat-card,
+    .admin-kpi-card,
+    .stat-card,
+    .kpi-card
+)::after {
+    content: "";
+    position: absolute;
+    right: -42px;
+    bottom: -80px;
+    width: 155px;
+    height: 130px;
+    border: 1px solid rgba(184, 141, 87, .15);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-stat-card,
+    .admin-kpi-card,
+    .stat-card,
+    .kpi-card
+) strong {
+    color: #80542D;
+    font-family: var(--finance-body);
+    font-variant-numeric: tabular-nums;
+}
+
+/* BO LOC */
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-toolbar,
+    .admin-filters,
+    .report-filters,
+    .invoice-filters
+) {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 11px;
+    min-width: 0;
+    margin: 18px 0;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-input,
+    .admin-select,
+    .admin-textarea,
+    input[type="date"],
+    input[type="search"],
+    input[type="text"],
+    select
+) {
+    max-width: 100%;
+    min-height: 43px;
+    padding: 10px 13px;
+    border: 1px solid #DED0C0;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #4A382B;
+    font-size: 14px;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-input,
+    .admin-select,
+    .admin-textarea,
+    input,
+    select,
+    textarea
+):focus {
+    outline: none;
+    border-color: #A47C4E;
+    box-shadow: 0 0 0 3px rgba(164, 124, 78, .12);
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) label {
+    color: #6B5543;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* BANG HOA DON VA BAO CAO */
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    border: 1px solid #ECE1D5;
+    border-radius: 10px;
+    background: #FFFFFF;
+    scrollbar-width: thin;
+    scrollbar-color: #C7A781 #F5EEE7;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-table {
+    width: 100%;
+    min-width: 780px;
+    border-collapse: collapse;
+    background: #FFFFFF;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-table thead {
+    background: #F5EDE4;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-table th {
+    padding: 15px 13px;
+    color: #594333;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-table td {
+    padding: 15px 13px;
+    border-bottom: 1px solid #EFE6DC;
+    color: #48372A;
+    font-size: 14px;
+    line-height: 1.55;
+    vertical-align: middle;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-table tbody tr:hover {
+    background: #FCF8F2;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-table :is(
+    td,
+    th
+) {
+    overflow-wrap: break-word;
+}
+
+/* NUT THAO TAC */
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 39px;
+    padding: 9px 15px;
+    border-radius: 8px;
+    font-family: var(--finance-body);
+    font-size: 14px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .18s, border-color .18s;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-button:not(
+    .secondary,
+    .danger
+) {
+    border-color: #805430;
+    background: #805430;
+    color: #FFFFFF;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-button:not(
+    .secondary,
+    .danger
+):hover:not(:disabled) {
+    background: #65432B;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-button.secondary {
+    border: 1px solid #D7BDA0;
+    background: #FFFFFF;
+    color: #825B39;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-button.secondary:hover:not(:disabled) {
+    background: #F5EBDE;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-button.danger {
+    border-color: #DBB2A6;
+    background: #FFF7F5;
+    color: #A45145;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) .admin-actions .admin-button {
+    min-height: 35px;
+    padding: 8px 12px;
+    margin: 0;
+    font-size: 13px;
+}
+
+/* TRANG THAI VA THONG BAO */
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-booking-status,
+    .admin-status,
+    .status-badge
+) {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 11px;
+    border-radius: 22px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-booking-status,
+    .admin-status,
+    .status-badge
+)::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-message,
+    .admin-alert,
+    .admin-notice
+) {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* BIEU DO VA BANG SO LIEU */
+
+body[data-page="reports"] :is(
+    canvas,
+    svg
+) {
+    max-width: 100%;
+}
+
+body[data-page="reports"] :is(
+    .chart-container,
+    .admin-chart,
+    .report-chart
+) {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 11px;
+}
+
+body[data-page="reports"] .admin-panel:has(canvas) {
+    background: #FFFEFC;
+}
+
+body:is([data-page="invoices"], [data-page="reports"]) :is(
+    .admin-grid,
+    .stats-grid,
+    .kpi-grid
+) {
+    min-width: 0;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-panel {
+        padding: 20px;
+    }
+
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-topbar h1 {
+        font-size: 31px;
+    }
+}
+
+@media (max-width: 768px) {
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-panel {
+        padding: 17px;
+    }
+
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-topbar {
+        min-height: 125px;
+    }
+
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-topbar h1 {
+        font-size: 28px;
+    }
+
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-panel h2 {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 560px) {
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-panel {
+        padding: 14px;
+        border-radius: 11px;
+    }
+
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-topbar {
+        gap: 10px;
+    }
+
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-user {
+        max-width: 105px;
+        padding: 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body:is([data-page="invoices"], [data-page="reports"]) .admin-button {
+        transition: none;
+    }
+}

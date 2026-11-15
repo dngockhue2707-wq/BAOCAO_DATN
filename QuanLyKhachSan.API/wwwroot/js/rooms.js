@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
             makeElement(
                 "span",
                 "",
-                room.tang != null ? `Tầng ${room.tang}` : "DNK Hotel"
+                room.tang != null ? `Tầng ${room.tang}` : "KS Hotel"
             ),
             makeElement(
                 "span",
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "p",
             "rooms-description",
             room.moTa || type.moTa ||
-            "Không gian nghỉ dưỡng tiện nghi tại DNK Hotel."
+            "Không gian nghỉ dưỡng tiện nghi tại KS Hotel."
         );
 
         // 3. Thong tin suc chua, dien tich
@@ -449,8 +449,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 activeTypeId = type.maLoaiPhong;
                 elements.pageTitle.textContent = type.tenLoaiPhong;
                 elements.pageDescription.textContent =
-                    type.moTa || `Khám phá danh sách ${type.tenLoaiPhong} tại DNK Hotel.`;
-                document.title = `${type.tenLoaiPhong} | DNK Hotel`;
+                    type.moTa || `Khám phá danh sách ${type.tenLoaiPhong} tại KS Hotel.`;
+                document.title = `${type.tenLoaiPhong} | KS Hotel`;
             } else {
                 elements.overviewPanel.hidden = false;
                 elements.typeNavigation.hidden = true;

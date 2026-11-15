@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
             node(
                 "h3",
                 "",
-                room.roomName || "Phòng DNK Hotel"
+                room.roomName || "Phòng KS Hotel"
             )
         );
 

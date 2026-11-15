@@ -20,6 +20,9 @@ builder.Services.AddDbContext<HotelDbContext>(options =>
 
 builder.Services.AddScoped<VnPayService>();
 
+builder.Services.AddScoped<BookingEmailService>();
+builder.Services.AddScoped<LichSuGuiEmailService>();
+
 builder.Services.AddScoped<IPasswordHasher<object>,
     PasswordHasher<object>>();
 
@@ -32,7 +35,7 @@ builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.Cookie.Name = "DNK.Auth";
+        options.Cookie.Name = "KS.Auth";
         options.Cookie.HttpOnly = true;
         options.Cookie.SameSite = SameSiteMode.Strict;
         options.Cookie.SecurePolicy =
@@ -71,6 +74,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
+
+app.UseMiddleware<CancellationEmailMiddleware>();
 
 app.MapControllers();
 

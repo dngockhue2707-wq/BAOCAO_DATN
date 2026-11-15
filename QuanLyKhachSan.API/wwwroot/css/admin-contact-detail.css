@@ -1,0 +1,354 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap");
+
+body[data-page="contacts"] .contacts-dialog {
+    position: fixed;
+    width: min(790px, calc(100vw - 32px));
+    max-width: 790px;
+    max-height: min(86vh, 790px);
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    display: none;
+    grid-template-rows: auto minmax(0, 1fr);
+    border: 1px solid #E8DCCE;
+    border-radius: 18px;
+    background: #FFFEFC;
+    color: #392B20;
+    box-shadow: 0 26px 85px rgba(30, 20, 12, .28);
+    font-family: "Times New Roman", Times, serif;
+}
+
+body[data-page="contacts"] .contacts-dialog[open] {
+    display: grid;
+}
+
+body[data-page="contacts"] .contacts-dialog::backdrop {
+    background: rgba(29, 22, 17, .60);
+    backdrop-filter: blur(5px);
+}
+
+body[data-page="contacts"] .contacts-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 21px 28px;
+    border-bottom: 1px solid #E8DFD5;
+    background: linear-gradient(110deg, #FBF7F1, #F2E9DF);
+}
+
+body[data-page="contacts"] .contacts-dialog-eyebrow {
+    display: block;
+    margin-bottom: 5px;
+    color: #9D7549;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+}
+
+body[data-page="contacts"] .contacts-dialog-header h2 {
+    margin: 0;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #3D2A1D;
+}
+
+body[data-page="contacts"] #contactDialogClose {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid #E1D1BF;
+    border-radius: 50%;
+    background: #FFFFFF;
+    color: #795D43;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+}
+
+body[data-page="contacts"] #contactDialogClose:hover {
+    background: #684B35;
+    color: #FFFFFF;
+}
+
+body[data-page="contacts"] .contacts-dialog-content {
+    display: block;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+    scrollbar-width: thin;
+    scrollbar-color: #D1B99B transparent;
+}
+
+body[data-page="contacts"] .contacts-detail-intro {
+    padding: 21px 28px 0;
+}
+
+body[data-page="contacts"] .contacts-detail-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 15px;
+    color: #4B3526;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+body[data-page="contacts"] .contacts-detail-section-title svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: #AE8250;
+}
+
+body[data-page="contacts"] .contacts-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 14px;
+}
+
+body[data-page="contacts"] .contacts-detail-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+    min-width: 0;
+    padding: 13px 16px;
+    border: 1px solid #EDE4DA;
+    border-radius: 9px;
+    background: #FAF8F5;
+}
+
+body[data-page="contacts"] .contacts-detail-row strong {
+    color: #948170;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+body[data-page="contacts"] .contacts-detail-row span {
+    color: #493528;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+body[data-page="contacts"] .contacts-detail-wide {
+    grid-column: 1 / -1;
+}
+
+body[data-page="contacts"] .contacts-detail-content {
+    margin: 0;
+    padding: 22px 28px 0;
+}
+
+body[data-page="contacts"] .contacts-detail-content > strong {
+    display: block;
+    margin-bottom: 12px;
+    color: #4B3526;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+body[data-page="contacts"] .contacts-detail-content p {
+    margin: 0;
+    padding: 18px 20px;
+    border: 1px solid #E9DCCB;
+    border-left: 3px solid #B58B54;
+    border-radius: 9px;
+    background: #FCF8F2;
+    color: #5D4939;
+    font-size: 15px;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+body[data-page="contacts"] #contactReplyForm {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 23px 28px 0;
+}
+
+body[data-page="contacts"] .contacts-reply-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 17px;
+    padding-top: 20px;
+    border-top: 1px solid #EBE2D8;
+    color: #4B3526;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+body[data-page="contacts"] .contacts-reply-heading svg {
+    width: 21px;
+    height: 21px;
+    color: #A57D4E;
+}
+
+body[data-page="contacts"] #contactReplyForm label {
+    margin-bottom: 8px;
+    color: #64503E;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+body[data-page="contacts"] #contactReplyStatus,
+body[data-page="contacts"] #contactReplyContent {
+    width: 100%;
+    border: 1px solid #DED3C5;
+    border-radius: 9px;
+    background: #FFFEFC;
+    color: #46362A;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15px;
+}
+
+body[data-page="contacts"] #contactReplyStatus {
+    height: 45px;
+    margin-bottom: 18px;
+    padding: 9px 13px;
+    cursor: pointer;
+}
+
+body[data-page="contacts"] #contactReplyContent {
+    min-height: 125px;
+    margin-bottom: 11px;
+    padding: 14px 15px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+body[data-page="contacts"] #contactReplyStatus:focus,
+body[data-page="contacts"] #contactReplyContent:focus {
+    outline: none;
+    border-color: #AF8552;
+    box-shadow: 0 0 0 3px rgba(175, 133, 82, .12);
+}
+
+body[data-page="contacts"] .contacts-help {
+    margin: 0 0 10px;
+    padding: 11px 14px;
+    border: 1px solid #E5E8E0;
+    border-radius: 8px;
+    background: #F4F8F2;
+    color: #57705A;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+body[data-page="contacts"] #contactReplyMessage {
+    margin: 0 0 12px;
+    min-height: 0;
+    font-size: 13px;
+}
+
+body[data-page="contacts"] .contacts-dialog-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 11px;
+    margin: 0 -28px;
+    padding: 16px 28px;
+    border-top: 1px solid #EAE0D6;
+    background: #FFFEFC;
+    box-shadow: 0 -7px 18px rgba(55, 39, 28, .035);
+}
+
+body[data-page="contacts"] .contacts-dialog-actions button {
+    min-height: 43px;
+    padding: 10px 21px;
+    border-radius: 8px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+body[data-page="contacts"] #contactReplyCancel {
+    border: 1px solid #D9C8B4;
+    background: #FFFFFF;
+    color: #795639;
+}
+
+body[data-page="contacts"] #contactReplySubmit {
+    min-width: 175px;
+    border: 1px solid #725039;
+    background: #725039;
+    color: #FFFFFF;
+}
+
+body[data-page="contacts"] #contactReplySubmit:hover {
+    background: #563B2A;
+}
+
+body[data-page="contacts"] .contacts-dialog-actions button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    body[data-page="contacts"] .contacts-dialog {
+        width: calc(100vw - 18px);
+        max-height: 92vh;
+        border-radius: 13px;
+    }
+
+    body[data-page="contacts"] .contacts-dialog-header {
+        padding: 17px 19px;
+    }
+
+    body[data-page="contacts"] .contacts-dialog-header h2 {
+        font-size: 22px;
+    }
+
+    body[data-page="contacts"] .contacts-detail-intro {
+        padding: 18px 19px 0;
+    }
+
+    body[data-page="contacts"] .contacts-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-page="contacts"] .contacts-detail-wide {
+        grid-column: auto;
+    }
+
+    body[data-page="contacts"] .contacts-detail-content {
+        padding: 19px 19px 0;
+    }
+
+    body[data-page="contacts"] #contactReplyForm {
+        padding: 19px 19px 0;
+    }
+
+    body[data-page="contacts"] .contacts-dialog-actions {
+        margin: 0 -19px;
+        padding: 13px 19px;
+    }
+
+    body[data-page="contacts"] .contacts-dialog-actions button {
+        flex: 1;
+        min-width: 0 !important;
+        padding: 10px;
+        font-size: 14px;
+    }
+}

@@ -3,22 +3,38 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tài khoản nhân viên | DNK Hotel</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Tài khoản nhân viên | KS Hotel</title>
+
     <link rel="stylesheet" href="/css/staff.css">
     <link rel="stylesheet" href="/css/staff-account.css">
+    <link rel="stylesheet" href="/css/staff-account-boutique.css">
+    <link rel="stylesheet" href="/css/backoffice-fonts.css">
 
     <script src="/js/staff-layout.js" defer></script>
     <script src="/js/staff-core.js" defer></script>
     <script src="/js/staff-account.js" defer></script>
 </head>
+
 <body data-page="account">
     <div id="staffApp"></div>
 
-    <div id="staffAccountPage" class="staff-account-page" hidden>
+    <div id="staffAccountPage"
+         class="staff-account-page"
+         hidden>
+
         <div class="staff-account-intro">
-            <h2>Thông tin tài khoản</h2>
-            <p>Quản lý hồ sơ cá nhân và bảo mật tài khoản nhân viên DNK Hotel.</p>
+            <div>
+                <span class="boutique-account-eyebrow">
+                    STAFF PROFILE
+                </span>
+                <h2>Hồ sơ của tôi</h2>
+            </div>
+            <span class="boutique-account-tag">
+                Tài khoản nhân viên
+            </span>
         </div>
 
         <div id="staffAccountMessage"
@@ -27,10 +43,11 @@
              aria-live="polite"
              hidden></div>
 
-        <section class="staff-account-card">
+        <!-- THÔNG TIN NHÂN VIÊN -->
+
+        <section class="staff-account-card boutique-profile-card">
             <div class="staff-account-card-header">
-                <h3>Hồ sơ nhân viên</h3>
-                <p>Thông tin quản lý được hiển thị theo tài khoản đang đăng nhập.</p>
+                <h3>Thông tin nhân viên</h3>
             </div>
 
             <div class="staff-account-grid">
@@ -66,16 +83,23 @@
             </div>
         </section>
 
-        <section class="staff-account-card">
+        <!-- CẬP NHẬT HỒ SƠ -->
+
+        <section class="staff-account-card boutique-edit-card">
             <div class="staff-account-card-header">
-                <h3>Cập nhật thông tin cá nhân</h3>
-                <p>Bạn có thể chỉnh sửa thông tin liên hệ của mình.</p>
+                <h3>Thông tin cá nhân</h3>
+                <p>Cập nhật hồ sơ</p>
             </div>
 
-            <form id="staffProfileForm" class="staff-account-form">
+            <form id="staffProfileForm"
+                  class="staff-account-form">
+
                 <div class="staff-account-form-grid">
+
                     <div class="staff-account-input-group">
-                        <label for="staffFullName">Họ và tên</label>
+                        <label for="staffFullName">
+                            Họ và tên
+                        </label>
                         <input id="staffFullName"
                                type="text"
                                maxlength="100"
@@ -84,30 +108,36 @@
                     </div>
 
                     <div class="staff-account-input-group">
-                        <label for="staffPhone">Số điện thoại</label>
+                        <label for="staffPhone">
+                            Số điện thoại
+                        </label>
                         <input id="staffPhone"
                                type="tel"
                                maxlength="20"
                                autocomplete="tel"
-                               placeholder="Nhập số điện thoại">
+                               placeholder="Số điện thoại">
                     </div>
 
                     <div class="staff-account-input-group">
-                        <label for="staffEmail">Email</label>
+                        <label for="staffEmail">
+                            Email
+                        </label>
                         <input id="staffEmail"
                                type="email"
                                maxlength="150"
                                autocomplete="email"
-                               placeholder="Nhập email">
+                               placeholder="Địa chỉ email">
                     </div>
 
                     <div class="staff-account-input-group">
-                        <label for="staffAddress">Địa chỉ</label>
+                        <label for="staffAddress">
+                            Địa chỉ
+                        </label>
                         <input id="staffAddress"
                                type="text"
                                maxlength="255"
                                autocomplete="street-address"
-                               placeholder="Nhập địa chỉ">
+                               placeholder="Địa chỉ liên hệ">
                     </div>
                 </div>
 
@@ -127,16 +157,22 @@
             </form>
         </section>
 
-        <section class="staff-account-card">
+        <!-- ĐỔI MẬT KHẨU -->
+
+        <section class="staff-account-card boutique-password-card">
             <div class="staff-account-card-header">
                 <h3>Đổi mật khẩu</h3>
-                <p>Mật khẩu mới phải có ít nhất 12 ký tự.</p>
+                <p>Bảo mật tài khoản</p>
             </div>
 
-            <form id="staffPasswordForm" class="staff-account-form">
+            <form id="staffPasswordForm"
+                  class="staff-account-form">
+
                 <div class="staff-account-password-grid">
                     <div class="staff-account-input-group">
-                        <label for="staffOldPassword">Mật khẩu hiện tại</label>
+                        <label for="staffOldPassword">
+                            Mật khẩu hiện tại
+                        </label>
                         <input id="staffOldPassword"
                                type="password"
                                autocomplete="current-password"
@@ -144,17 +180,22 @@
                     </div>
 
                     <div class="staff-account-input-group">
-                        <label for="staffNewPassword">Mật khẩu mới</label>
+                        <label for="staffNewPassword">
+                            Mật khẩu mới
+                        </label>
                         <input id="staffNewPassword"
                                type="password"
                                minlength="12"
                                maxlength="128"
                                autocomplete="new-password"
+                               placeholder="Tối thiểu 12 ký tự"
                                required>
                     </div>
 
                     <div class="staff-account-input-group">
-                        <label for="staffConfirmPassword">Xác nhận mật khẩu mới</label>
+                        <label for="staffConfirmPassword">
+                            Xác nhận mật khẩu
+                        </label>
                         <input id="staffConfirmPassword"
                                type="password"
                                minlength="12"
@@ -165,7 +206,8 @@
                 </div>
 
                 <label class="staff-account-show-password">
-                    <input type="checkbox" id="staffShowPassword">
+                    <input type="checkbox"
+                           id="staffShowPassword">
                     <span>Hiện mật khẩu</span>
                 </label>
 

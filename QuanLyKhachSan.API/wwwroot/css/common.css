@@ -1,5 +1,6 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap");
+@import url("./user-fonts.css");
 
 :root {
     --primary: #926024;
@@ -138,7 +139,7 @@ b {
 
 
 /* =========================
-   DNK HOTEL - ROOM DROPDOWN
+   KS HOTEL - ROOM DROPDOWN
    ========================= */
 
 #site-header .site-dropdown {
@@ -434,3 +435,98 @@ b {
     }
 }
 
+
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
+
+:root {
+    --font-heading: "Playfair Display", Georgia, serif;
+    --font-body: "Times New Roman", Times, serif;
+    --font-number: "Lora", Georgia, serif;
+}
+
+body {
+    font-family: var(--font-body);
+}
+
+button,
+input,
+select,
+textarea,
+option {
+    font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+}
+
+.site-logo,
+.footer-brand,
+.info-visual-name {
+    font-family: var(--font-heading);
+}
+
+.site-nav,
+.site-nav a,
+.site-dropdown-menu a,
+.footer-column a,
+.footer-about,
+.footer-bottom {
+    font-family: var(--font-body);
+}
+
+.availability-price strong,
+.booking-summary strong,
+#bookingTotal,
+#roomPrice,
+.booking-total-value,
+.booking-refund-emphasis,
+.recommendation-price,
+.recommendation-score strong,
+.rooms-summary-right strong,
+.rooms-card-number,
+.info-service-price,
+.home-price,
+.room-price,
+.price,
+.price-value,
+.total-price,
+.total-amount,
+.amount,
+.currency-value {
+    font-family: var(--font-number);
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.booking-card-code,
+.review-booking-code,
+.cancellation-request-code,
+.booking-detail-code,
+.room-number,
+.review-room-number,
+.recommendation-percent,
+.recommendation-score-value,
+.rating-value,
+.numeric-value {
+    font-family: var(--font-number);
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+    font-family: var(--font-number);
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.customer-number,
+.font-number {
+    font-family: var(--font-number);
+    font-variant-numeric: lining-nums tabular-nums;
+}
